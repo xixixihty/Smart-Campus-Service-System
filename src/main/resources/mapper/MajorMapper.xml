@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.MajorMapper">
+    <!-- 更新专业信息 -->
+    <update id="update" parameterType="com.hxq.smart_campus.entity.dto.MajorUpdateDTO">
+        update major
+        <set>
+            <if test="majorName != null">
+                major_name = #{majorName},
+            </if>
+            <if test="studyYears != null">
+                study_years = #{studyYears},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除专业 -->
+    <delete id="deleteBatch" >
+        delete from major where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 获取专业列表 -->
+    <select id="selectMajorList" resultType="com.hxq.smart_campus.entity.vo.MajorListVO">
+        select m.id, c.college_name, m.major_code, m.major_name, m.study_years, m.status, m.create_time from major m
+        left join college c on m.college_id = c.id
+        <where>
+            <if test="collegeId != null">
+                and m.college_id = #{collegeId}
+            </if>
+            <if test="majorName != null">
+                and m.major_name like CONCAT('%', #{majorName}, '%')
+            </if>
+            <if test="status != null">
+                and m.status = #{status}
+            </if>
+        </where>
+        order by m.create_time desc
+    </select>
+    <!-- 获取专业详情 -->
+    <select id="getMajorDetail" resultType="com.hxq.smart_campus.entity.vo.MajorDetailVO"
+            parameterType="java.lang.Long">
+        select m.id, m.college_id, c.college_name, m.major_code, m.major_name, m.study_years, m.status, m.create_time, m.update_time
+        from major m
+        left join college c on m.college_id = c.id
+        where m.id = #{id}
+    </select>
+    <!-- 新增专业 -->
+    <insert id="insert" parameterType="com.hxq.smart_campus.entity.dto.MajorCreateDTO">
+        insert into major
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collegeId != null">college_id,</if>
+            <if test="majorCode != null">major_code,</if>
+            <if test="majorName != null">major_name,</if>
+            <if test="studyYears != null">study_years,</if>
+            status,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collegeId != null">#{collegeId},</if>
+            <if test="majorCode != null">#{majorCode},</if>
+            <if test="majorName != null">#{majorName},</if>
+            <if test="studyYears != null">#{studyYears},</if>
+            '启用',
+        </trim>
+    </insert>
+
+    <!-- 查询专业关联的班级数量 -->
+    <select id="countRelatedClasses" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM class WHERE major_id = #{id}
+    </select>
+
+</mapper>

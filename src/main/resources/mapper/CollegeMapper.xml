@@ -3,27 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hxq.smart_campus.mapper.CollegeMapper">
+
     <!-- 获取学院列表 -->
     <select id="getCollegeList" resultType="com.hxq.smart_campus.entity.vo.CollegeListVO">
-        select id, college_code, college_name, status, create_time from college
+        SELECT id, college_code, college_name, status, create_time
+        FROM college
         <where>
-            <!-- 默认只查询启用状态的学院 -->
-            <if test="status == null or status == ''">
-                and status = '启用'
-            </if>
             <if test="status != null and status != ''">
-                and status = #{status}
+                AND status = #{status}
             </if>
             <if test="collegeName != null and collegeName != ''">
-                and college_name like concat('%', #{collegeName}, '%')
+                AND college_name LIKE CONCAT('%', #{collegeName}, '%')
             </if>
         </where>
-        order by create_time desc
+        ORDER BY create_time DESC
     </select>
+
     <!-- 新增学院 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.hxq.smart_campus.entity.pojo.College">
-        insert into college
+    <insert id="insert" parameterType="com.hxq.smart_campus.entity.dto.CollegeCreateDTO">
+        INSERT INTO college
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="collegeCode != null and collegeCode != ''">college_code,</if>
             <if test="collegeName != null and collegeName != ''">college_name,</if>
@@ -31,33 +29,40 @@
             <if test="contactPhone != null and contactPhone != ''">contact_phone,</if>
             status,
         </trim>
-            values
+        VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="collegeCode != null and collegeCode != null">#{collegeCode},</if>
+            <if test="collegeCode != null and collegeCode != ''">#{collegeCode},</if>
             <if test="collegeName != null and collegeName != ''">#{collegeName},</if>
             <if test="dean != null and dean != ''">#{dean},</if>
             <if test="contactPhone != null and contactPhone != ''">#{contactPhone},</if>
             '启用',
         </trim>
     </insert>
+
     <!-- 更新学院 -->
     <update id="update">
-        update college
+        UPDATE college
         <set>
             <if test="collegeName != null and collegeName != ''">college_name = #{collegeName},</if>
             <if test="dean != null and dean != ''">dean = #{dean},</if>
             <if test="contactPhone != null and contactPhone != ''">contact_phone = #{contactPhone},</if>
             <if test="status != null and status != ''">status = #{status},</if>
         </set>
-        where id = #{id}
+        WHERE id = #{id}
     </update>
 
     <!-- 批量删除学院 -->
-    <update id="deleteBatch">
-        update college set status = "禁用"
-        where id in
+    <delete id="deleteBatch">
+        delete from college
+        WHERE id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
-    </update>
+    </delete>
+
+    <!-- 查询学院关联的专业数量 -->
+    <select id="countRelatedMajors" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM major WHERE college_id = #{id}
+    </select>
+
 </mapper>
