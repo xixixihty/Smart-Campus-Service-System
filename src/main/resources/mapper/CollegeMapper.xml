@@ -64,5 +64,21 @@
     <select id="countRelatedMajors" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM major WHERE college_id = #{id}
     </select>
+    
+    <!-- 批量获取学院详情 -->
+    <select id="getCollegeDetailsByIds" parameterType="java.util.List" resultType="com.hxq.smart_campus.entity.vo.CollegeDetailVO">
+        SELECT * FROM college WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+    
+    <!-- 批量查询学院关联的专业数量 -->
+    <select id="countRelatedMajorsByCollegeIds" parameterType="java.util.List" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM major WHERE college_id IN
+        <foreach collection="collegeIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

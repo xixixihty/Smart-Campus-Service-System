@@ -81,4 +81,16 @@
         where s.student_no = #{studentNo}
         and s.status = '正常'
     </select>
+    
+    <!-- 批量根据ID获取学生详情 -->
+    <select id="getStudentDetailsByIds" resultType="com.hxq.smart_campus.entity.vo.StudentDetailVO">
+        select s.id, s.student_no, s.name, s.gender, s.class_id, c.class_name, s.enrollment_date,
+        s.status, s.id_card, s.phone, s.account_status, s.create_time, s.update_time
+        from student s
+        left join class c on s.class_id = c.id
+        where s.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

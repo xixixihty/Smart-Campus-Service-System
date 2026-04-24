@@ -84,4 +84,16 @@
 
         order by t.create_time desc
     </select>
+    
+    <!-- 批量根据ID获取教师详情 -->
+    <select id="getTeacherDetailsByIds" resultType="com.hxq.smart_campus.entity.vo.TeacherDetailVO">
+        select t.id as teacherId, t.teacher_no, t.name, t.gender, t.college_id, c.college_name, t.title, t.phone, t.email
+        , t.status, t.account_status, t.create_time, t.update_time
+        from teacher t
+        left join college c on t.college_id = c.id
+        where t.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

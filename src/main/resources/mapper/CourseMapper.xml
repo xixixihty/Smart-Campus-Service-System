@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.CourseMapper">
+
+    <!-- 插入课程 -->
+    <insert id="insertCourse">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCode != null and courseCode != ''">course_code</if>
+            <if test="courseName != null and courseName != ''">course_name</if>
+            <if test="credit != null">credit</if>
+            <if test="hours != null">hours</if>
+            <if test="type != null and type != ''">type</if>
+            <if test="status != null and status != ''">status</if>
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCode != null and courseCode != ''">#{courseCode}</if>
+            <if test="courseName != null and courseName != ''">#{courseName}</if>
+            <if test="credit != null">#{credit}</if>
+            <if test="hours != null">#{hours}</if>
+            <if test="type != null and type != ''">#{type}</if>
+            <if test="status != null and status != ''">#{status}</if>
+        </trim>
+    </insert>
+    <!-- 更新课程 -->
+    <update id="updateCourse">
+        update course
+        <set>
+            <if test="courseName != null and courseName != ''">course_name = #{courseName}</if>
+            <if test="credit != null">credit = #{credit}</if>
+            <if test="hours != null">hours = #{hours}</if>
+            <if test="type != null and type != ''">type = #{type}</if>
+            <if test="status != null and status != ''">status = #{status}</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 删除课程 -->
+    <delete id="deleteBatch">
+        delete from course where id in (
+        <foreach collection="ids" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 获取课程列表 -->
+    <select id="getCourseList" resultType="com.hxq.smart_campus.entity.vo.CourseListVO">
+        select id, course_code, course_name, credit, hours, type, status, create_time
+        from course
+        <where>
+            <if test="courseCode != null">course_code like concat('%', #{courseCode}, '%')</if>
+            <if test="courseName != null">and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="type != null">and type = #{type}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

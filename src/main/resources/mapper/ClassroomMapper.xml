@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.ClassroomMapper">
+    <!-- 新增教室 -->
+    <insert id="insertClassroom">
+        insert into classroom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="building != null">building,</if>
+            <if test="roomNumber != null">room_number,</if>
+            <if test="capacity != null">capacity,</if>
+            <if test="type != null">type,</if>
+            <if test="status != null">status</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="building != null">#{building},</if>
+            <if test="roomNumber != null">#{roomNumber},</if>
+            <if test="capacity != null">#{capacity},</if>
+            <if test="type != null">#{type},</if>
+            <if test="status != null">#{status}</if>
+        </trim>
+    </insert>
+
+    <!-- 修改教室 -->
+    <update id="updateClassroom">
+        update classroom
+        <set>
+            <if test="capacity != null">capacity = #{capacity},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 批量删除教室 -->
+    <delete id="deleteBatch">
+        delete from classroom where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据建筑、类型、状态查询教室列表 -->
+    <select id="selectByBuildingAndTypeAndStatus" resultType="com.hxq.smart_campus.entity.vo.ClassroomListVO">
+        select id, building, room_number, capacity, type, status, create_time
+        from classroom
+        <where>
+            <if test="building != null">building like concat('%', #{building}, '%')</if>
+            <if test="type != null">type = #{type}</if>
+            <if test="status != null">status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

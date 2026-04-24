@@ -76,4 +76,11 @@ public interface TeacherMapper {
      * @return 教师详情
      */
     TeacherDetailVO getTeacherByTeacherNo(@Param("teacherNo") String teacherNo);
+    
+    /**
+     * 批量根据ID获取教师详情
+     * @param ids 教师ID列表
+     * @return 教师详情列表
+     */
+    List<TeacherDetailVO> getTeacherDetailsByIds(@Param("ids") List<Long> ids);
 }

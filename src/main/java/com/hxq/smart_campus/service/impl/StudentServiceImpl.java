@@ -93,23 +93,28 @@ public class StudentServiceImpl implements StudentService {
 
     /**
      * 批量删除学生
-     * @param ids
-     * @return
+     * @param ids 学生ID列表
+     * @return 是否删除成功
      */
     @Override
     public boolean deleteStudent(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("参数不能为空");
         }
-        for (Long id : ids) {
-            // 判断学生是否存在以及学生的状态
-            if (studentMapper.getStudentDetail(id) == null) {
-                throw new IllegalArgumentException("学生不存在");
-            }
-            if (!studentMapper.getStudentDetail(id).getStatus().equals(STUDENT_STATUS_DROPPED_OUT)) {
+        
+        // 批量获取学生详情，减少数据库查询次数
+        List<StudentDetailVO> studentDetails = studentMapper.getStudentDetailsByIds(ids);
+        if (studentDetails.size() != ids.size()) {
+            throw new IllegalArgumentException("部分学生不存在");
+        }
+        
+        // 检查学生状态
+        for (StudentDetailVO student : studentDetails) {
+            if (!STUDENT_STATUS_DROPPED_OUT.equals(student.getStatus())) {
                 throw new IllegalArgumentException("学生状态不是退学，不能删除");
             }
         }
+        
         int result = studentMapper.deleteBatch(ids);
         if (result <= 0) {
             throw new IllegalArgumentException("删除学生失败");

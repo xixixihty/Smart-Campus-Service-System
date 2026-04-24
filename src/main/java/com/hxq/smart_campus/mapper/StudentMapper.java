@@ -79,4 +79,11 @@ public interface StudentMapper {
      * @return 学生详情
      */
     StudentDetailVO getStudentByStudentNo(@Param("studentNo") String studentNo);
+    
+    /**
+     * 批量根据ID获取学生详情
+     * @param ids 学生ID列表
+     * @return 学生详情列表
+     */
+    List<StudentDetailVO> getStudentDetailsByIds(@Param("ids") List<Long> ids);
 }

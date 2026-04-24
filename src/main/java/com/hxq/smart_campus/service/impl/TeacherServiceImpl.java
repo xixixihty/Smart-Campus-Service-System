@@ -96,6 +96,8 @@ public class TeacherServiceImpl implements TeacherService {
     }
     /**
      * 批量删除教师
+     * @param ids 教师ID列表
+     * @return 是否删除成功
      */
     @Override
     public boolean deleteByIds(List<Long> ids) {
@@ -103,17 +105,20 @@ public class TeacherServiceImpl implements TeacherService {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("ID列表不能为空");
         }
-        for (Long id : ids) {
-            // 校验教师是否存在
-            TeacherDetailVO teacherDetailVO = teacherMapper.getTeacherDetail(id);
-            if (teacherDetailVO == null) {
-                throw new IllegalArgumentException("教师不存在，ID=" + id);
-            }
-            // 校验教师的状态是否为离职状态，不是离职状态的不能删除
-            if (teacherDetailVO.getStatus().equals(TEACHER_STATUS_DISABLED)) {
+        
+        // 批量获取教师详情，减少数据库查询次数
+        List<TeacherDetailVO> teacherDetails = teacherMapper.getTeacherDetailsByIds(ids);
+        if (teacherDetails.size() != ids.size()) {
+            throw new IllegalArgumentException("部分教师不存在");
+        }
+        
+        // 校验教师的状态是否为离职状态，不是离职状态的不能删除
+        for (TeacherDetailVO teacher : teacherDetails) {
+            if (TEACHER_STATUS_DISABLED.equals(teacher.getStatus())) {
                 throw new IllegalArgumentException("教师状态不是离职状态，不能删除！");
             }
         }
+        
         // 删除教师
         int result = teacherMapper.deleteBatch(ids);
         if (result == 0) {

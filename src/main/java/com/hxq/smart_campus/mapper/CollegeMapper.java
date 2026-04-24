@@ -87,4 +87,20 @@ public interface CollegeMapper {
      * @return 关联的专业数量
      */
     int countRelatedMajors(@Param("id") Long id);
+    
+    /**
+     * 批量获取学院详情
+     *
+     * @param ids 学院ID列表
+     * @return 学院详情列表
+     */
+    List<CollegeDetailVO> getCollegeDetailsByIds(@Param("ids") List<Long> ids);
+    
+    /**
+     * 批量查询学院关联的专业数量
+     *
+     * @param collegeIds 学院ID列表
+     * @return 关联的专业数量
+     */
+    int countRelatedMajorsByCollegeIds(@Param("collegeIds") List<Long> collegeIds);
 }

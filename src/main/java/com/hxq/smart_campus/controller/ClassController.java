@@ -110,7 +110,7 @@ public class ClassController {
      */
     @PutMapping("/{id}/status")
     @Operation(summary = "更新班级状态")
-    public Result<Boolean> udpateStatus(@PathVariable Long id
+    public Result<Boolean> updateStatus(@PathVariable Long id
     ) {
         log.info("更新班级状态，参数：{}", id);
         boolean result = classService.updateStatus(id);

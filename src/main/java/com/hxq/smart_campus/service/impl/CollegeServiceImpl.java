@@ -162,22 +162,25 @@ public class CollegeServiceImpl implements CollegeService {
             throw new IllegalArgumentException("ID列表不能为空");
         }
 
-        // 遍历ids，检查是否存在该学院、学院的状态以及关联数据
-        for (Long id : ids) {
-            CollegeDetailVO collegeDetailVO = collegeMapper.getCollegeDetail(id);
-            if (collegeDetailVO == null) {
-                log.warn("删除学院失败：学院不存在，ID={}", id);
-                throw new RuntimeException("学院不存在");
-            }
-            if (!collegeDetailVO.getStatus().equals(COLLEGE_STATUS_DISABLED)) {
+        // 批量获取学院详情，减少数据库查询次数
+        List<CollegeDetailVO> collegeDetails = collegeMapper.getCollegeDetailsByIds(ids);
+        if (collegeDetails.size() != ids.size()) {
+            log.warn("删除学院失败：部分学院不存在");
+            throw new RuntimeException("部分学院不存在");
+        }
+
+        // 检查学院状态
+        for (CollegeDetailVO college : collegeDetails) {
+            if (!COLLEGE_STATUS_DISABLED.equals(college.getStatus())) {
                 throw new IllegalArgumentException("学院删除参数，学院状态异常，只能删除禁用状态的学院");
             }
-            // 检查学院是否有关联的专业
-            int relatedMajorsCount = collegeMapper.countRelatedMajors(id);
-            if (relatedMajorsCount > 0) {
-                log.warn("删除学院失败：学院下存在专业，ID={}", id);
-                throw new IllegalArgumentException("该学院下存在专业，无法执行操作");
-            }
+        }
+
+        // 批量检查学院是否有关联的专业
+        int relatedMajorsCount = collegeMapper.countRelatedMajorsByCollegeIds(ids);
+        if (relatedMajorsCount > 0) {
+            log.warn("删除学院失败：部分学院下存在专业");
+            throw new IllegalArgumentException("部分学院下存在专业，无法执行操作");
         }
 
         int result = collegeMapper.deleteBatch(ids);

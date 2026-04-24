@@ -112,4 +112,52 @@ public class MessageConstant {
      */
     public static final String STUDENT_ACCOUNT_STATUS_DISABLED = "禁用";
 
+
+    /**
+     * 教室状态正常
+     */
+    public static final String CLASSROOM_STATUS_ENABLED = "正常";
+    /**
+     * 教室状态停用
+     */
+    public static final String CLASSROOM_STATUS_DISABLED = "停用";
+    /**
+     * 教室状态维修
+     */
+    public static final String CLASSROOM_STATUS_REPAIR = "维修";
+
+
+
+
+
+    /**
+     * 课程状态正开课
+     */
+    public static final String COURSE_STATUS_ENABLED = "正开课";
+    /**
+     * 课程状态停用
+     */
+    public static final String COURSE_STATUS_DISABLED = "停用";
+
+
+    /**
+     * 课程状态进行中
+     */
+    public static final String COURSE_STATUS_IN_PROGRESS = "进行中";
+    /**
+     * 课程状态已结束
+     */
+    public static final String COURSE_STATUS_FINISHED = "已结束";
+    /**
+     * 课程状态未开始
+     */
+    public static final String COURSE_STATUS_NOT_STARTED = "未开始";
+    /**
+     * 是否是当前学期 -- 是
+     */
+    public static final Boolean IS_CURRENT_SEMESTER_YES = true;
+    /**
+     * 是否是当前学期 -- 否
+     */
+    public static final Boolean IS_CURRENT_SEMESTER_NO = false;
 }
