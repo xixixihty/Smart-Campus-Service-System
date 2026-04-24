@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.hxq.smart_campus.constant.MessageConstant.MAJOR_STATUS_DISABLED;
+
 /**
  * 专业管理服务实现类
  *
@@ -29,8 +31,7 @@ import java.util.List;
 @Slf4j
 public class MajorServiceImpl implements MajorService {
     private final MajorMapper majorMapper;
-    private static final String MAJOR_STATUS_DISABLED = MessageConstant.MAJOR_STATUS_DISABLED;
-    private static final String MAJOR_STATUS_ENABLED = MessageConstant.MAJOR_STATUS_ENABLED;
+
 
     /**
      * 查询专业列表
@@ -193,10 +194,10 @@ public class MajorServiceImpl implements MajorService {
         }
         String currentStatus = majorDetailVO.getStatus();
         String newStatus;
-        if (MessageConstant.MAJOR_STATUS_DISABLED.equals(currentStatus)) {
+        if (MAJOR_STATUS_DISABLED.equals(currentStatus)) {
             newStatus = MessageConstant.MAJOR_STATUS_ENABLED;
         } else {
-            newStatus = MessageConstant.MAJOR_STATUS_DISABLED;
+            newStatus = MAJOR_STATUS_DISABLED;
         }
         int result = majorMapper.updateStatus(id, newStatus);
         if (result <= 0) {

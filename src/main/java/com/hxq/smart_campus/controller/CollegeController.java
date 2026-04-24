@@ -67,7 +67,7 @@ public class CollegeController {
      * @param id 学院ID
      * @return 学院详情信息
      */
-    @GetMapping("/{id}/detail")
+    @GetMapping("/{id}")
     @Operation(summary = "获取学院详情")
     public Result<CollegeDetailVO> getCollegeDetail(@PathVariable Long id) {
         log.info("获取学院详情，学院ID：{}", id);
@@ -109,7 +109,7 @@ public class CollegeController {
      * @param ids 学院ID列表
      * @return 删除结果
      */
-    @DeleteMapping("/{ids}/delete")
+    @DeleteMapping("/{ids}")
     @Operation(summary = "删除学院")
     public Result<Boolean> deleteCollege(@PathVariable List<Long> ids) {
         log.info("删除学院，学院ID列表：{}", ids);

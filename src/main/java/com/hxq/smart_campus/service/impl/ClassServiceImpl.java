@@ -18,15 +18,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.hxq.smart_campus.constant.MessageConstant.CLASS_STATUS_GRADUATED;
+import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ClassServiceImpl implements ClassService {
 
     private final ClassMapper classMapper;
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final String CLASS_STATUS_GRADUATED = MessageConstant.CLASS_STATUS_GRADUATED;
-    private static final String CLASS_STATUS_ENABLED = MessageConstant.CLASS_STATUS_ENABLED;
     /**
      * 查询班级列表
      *
@@ -158,7 +158,7 @@ public class ClassServiceImpl implements ClassService {
         String currentStatus = classDetailVO.getStatus();
         String newStatus;
         if (currentStatus.equals(MessageConstant.CLASS_STATUS_ENABLED)) {
-            newStatus = MessageConstant.CLASS_STATUS_GRADUATED;
+            newStatus = CLASS_STATUS_GRADUATED;
         } else {
             newStatus = MessageConstant.CLASS_STATUS_ENABLED;
         }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.TeacherMapper">
+    <!-- 创建教师 -->
+    <insert id="insert">
+        insert into teacher
+        <trim suffixOverrides="," prefix="(" suffix=")">
+           <if test="teacherNo != null and teacherNo != ''">teacher_no,</if>
+           <if test="name != null and name != ''">name,</if>
+           <if test="gender != null and gender != ''">gender,</if>
+           <if test="collegeId != null and collegeId != ''">college_id,</if>
+           <if test="title != null and title != ''">title,</if>
+           <if test="phone != null and phone != ''">phone,</if>
+           <if test="email != null and email != ''">email,</if>
+           <if test="password != null and password != ''">password,</if>
+        </trim>
+           values
+        <trim suffixOverrides="," prefix="(" suffix=")">
+           <if test="teacherNo != null and teacherNo != ''">#{teacherNo},</if>
+           <if test="name != null and name != ''">#{name},</if>
+           <if test="gender != null and gender != ''">#{gender},</if>
+           <if test="collegeId != null and collegeId != ''">#{collegeId},</if>
+           <if test="title != null and title != ''">#{title},</if>
+           <if test="phone != null and phone != ''">#{phone},</if>
+           <if test="email != null and email != ''">#{email},</if>
+           <if test="password != null and password != ''">#{password},</if>
+        </trim>
+    </insert>
+    <!-- 更新教师 -->
+    <update id="update">
+        update teacher
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="collegeId != null and collegeId != ''">college_id = #{collegeId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="accountStatus != null and accountStatus != ''">account_status = #{accountStatus},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除教师 -->
+    <delete id="deleteBatch">
+        delete from teacher where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 根据ID查询教师详情 -->
+    <select id="getTeacherDetail" resultType="com.hxq.smart_campus.entity.vo.TeacherDetailVO">
+        select t.id as teacherId, t.teacher_no, t.name, t.gender, t.college_id, c.college_name, t.title, t.phone, t.email
+        , t.status, t.account_status, t.create_time, t.update_time
+        from teacher t
+        left join college c on t.college_id = c.id
+        where t.id = #{id}
+    </select>
+    <!-- 根据工号查询教师 -->
+    <select id="getTeacherByTeacherNo" resultType="com.hxq.smart_campus.entity.vo.TeacherDetailVO">
+        select t.id as teacherId, t.teacher_no, t.name, t.gender, t.college_id, c.college_name, t.title, t.phone, t.email
+        , t.status, t.account_status, t.password, t.create_time, t.update_time
+        from teacher t
+        left join college c on t.college_id = c.id
+        where t.teacher_no = #{teacherNo}
+        and t.status = '在职'
+    </select>
+    <!-- 根据条件查询教师列表 -->
+    <select id="getTeacherList" resultType="com.hxq.smart_campus.entity.vo.TeacherListVO">
+        select t.id, t.teacher_no, t.name, t.gender, c.college_name, t.title,
+        t.status, t.account_status, t.create_time
+        from teacher t
+        left join college c on t.college_id = c.id
+        <where>
+            <if test="teacherNo != null and teacherNo != ''">t.teacher_no like CONCAT('%', #{teacherNo}, '%')</if>
+            <if test="name != null and name != ''">t.name like CONCAT('%', #{name}, '%')</if>
+            <if test="gender != null and gender != ''">t.gender = #{gender}</if>
+            <if test="collegeId != null and collegeId != ''">t.college_id = #{collegeId}</if>
+            <if test="status != null and status != ''">t.status = #{status}</if>
+            <if test="accountStatus != null and accountStatus != ''">t.account_status = #{accountStatus}</if>
+        </where>
+
+        order by t.create_time desc
+    </select>
+</mapper>

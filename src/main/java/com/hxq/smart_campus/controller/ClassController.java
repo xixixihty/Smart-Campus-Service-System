@@ -69,7 +69,7 @@ public class ClassController {
      * @param id
      * @return
      */
-    @GetMapping("/{id}/detail")
+    @GetMapping("/{id}")
     @Operation(summary = "查询班级详情")
     public Result<ClassDetailVO> getClassDetail(@PathVariable Long id) {
         log.info("查询班级详情，参数：{}", id);
@@ -95,7 +95,7 @@ public class ClassController {
      * @param ids
      * @return
      */
-    @DeleteMapping("/{ids}/delete")
+    @DeleteMapping("/{ids}")
     @Operation(summary = "删除班级")
     public Result<Boolean> deleteClass(@PathVariable List<Long> ids) {
         log.info("删除班级，参数：{}", ids);

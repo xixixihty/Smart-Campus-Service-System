@@ -83,7 +83,7 @@ public class MajorController {
      * @return
      */
     @Operation(summary = "批量删除专业")
-    @DeleteMapping("/{ids}/delete")
+    @DeleteMapping("/{ids}")
     public Result<Boolean> deleteMajorByIds(@PathVariable List<Long> ids) {
         log.info("批量删除专业，参数：{}", ids);
         boolean b = majorService.deleteMajorByIds(ids);
@@ -96,7 +96,7 @@ public class MajorController {
      * @return
      */
     @Operation(summary = "查询专业详情")
-    @GetMapping("/{id}/detail")
+    @GetMapping("/{id}")
     public Result<MajorDetailVO> getMajorDetail(@PathVariable Long id) {
         log.info("查询专业详情，参数：{}", id);
         MajorDetailVO majorDetailVO = majorService.getMajorDetail(id);

@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static com.hxq.smart_campus.constant.MessageConstant.COLLEGE_STATUS_DISABLED;
-import static com.hxq.smart_campus.constant.MessageConstant.COLLEGE_STATUS_ENABLED;
+import static com.hxq.smart_campus.constant.MessageConstant.*;
 
 /**
  * 学院管理服务实现类
@@ -33,7 +32,7 @@ public class CollegeServiceImpl implements CollegeService {
 
     private final CollegeMapper collegeMapper;
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
     /**
      * 获取学院列表

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.StudentMapper">
+    <!-- 创建学生 -->
+    <insert id="insert">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentNo != null and studentNo != ''">student_no,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="classId != null and classId != 0">class_id,</if>
+            <if test="enrollmentDate != null">enrollment_date,</if>
+            <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="password != null and password != ''">password,</if>
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentNo != null and studentNo != ''">#{studentNo},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null and gender != ''">#{gender},</if>
+            <if test="classId != null and classId != 0">#{classId},</if>
+            <if test="enrollmentDate != null">#{enrollmentDate},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="password != null and password != ''">#{password},</if>
+        </trim>
+    </insert>
+    <!-- 获取最后插入的id -->
+    <update id="update">
+        update student
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="classId != null and classId != 0">class_id = #{classId},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="accountStatus != null and accountStatus != ''">account_status = #{accountStatus},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除学生 -->
+    <delete id="deleteBatch">
+        delete from student where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 获取学生详情 -->
+    <select id="getStudentDetail" resultType="com.hxq.smart_campus.entity.vo.StudentDetailVO">
+        select s.id, s.student_no, s.name, s.gender, s.class_id, c.class_name, s.enrollment_date,
+        s.status, s.id_card, s.phone, s.account_status, s.create_time, s.update_time
+        from student s
+        left join class c on s.class_id = c.id
+        where s.id = #{id}
+    </select>
+    <!-- 获取学生列表 -->
+    <select id="getStudentList" resultType="com.hxq.smart_campus.entity.vo.StudentListVO">
+        select s.id, s.student_no, s.name, s.gender, c.class_name, s.status, s.account_status, s.create_time
+        from student s
+        left join class c on s.class_id = c.id
+        <where>
+            <if test="name != null and name != ''">s.name like CONCAT('%', #{name}, '%')</if>
+            <if test="studentNo != null and studentNo != ''">s.student_no like CONCAT('%', #{studentNo}, '%')</if>
+            <if test="classId != null and classId != 0">s.class_id = #{classId}</if>
+            <if test="status != null and status != ''">s.status = #{status}</if>
+            <if test="accountStatus != null and accountStatus != ''">s.account_status = #{accountStatus}</if>
+        </where>
+        order by s.create_time desc
+    </select>
+
+    <!-- 根据学号查询学生 -->
+    <select id="getStudentByStudentNo" resultType="com.hxq.smart_campus.entity.vo.StudentDetailVO">
+        select s.id, s.student_no, s.name, s.gender, s.class_id, c.class_name, s.enrollment_date,
+        s.status, s.id_card, s.phone, s.account_status, s.password, s.create_time, s.update_time
+        from student s
+        left join class c on s.class_id = c.id
+        where s.student_no = #{studentNo}
+        and s.status = '正常'
+    </select>
+</mapper>
