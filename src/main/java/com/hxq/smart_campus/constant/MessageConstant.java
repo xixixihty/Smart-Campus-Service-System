@@ -160,4 +160,22 @@ public class MessageConstant {
      * 是否是当前学期 -- 否
      */
     public static final Boolean IS_CURRENT_SEMESTER_NO = false;
+
+
+    /**
+     * 图书状态在库
+     */
+    public static final String BOOK_STATUS_ENABLED = "在库";
+    /**
+     * 图书状态借出
+     */
+    public static final String BOOK_STATUS_BORROWED = "借出";
+    /**
+     * 图书状态维修
+     */
+    public static final String BOOK_STATUS_REPAIR = "维修";
+    /**
+     * 图书状态遗失
+     */
+    public static final String BOOK_STATUS_LOST = "遗失";
 }

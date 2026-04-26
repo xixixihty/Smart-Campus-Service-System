@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.BookMapper">
+
+    <!-- 插入图书 -->
+    <insert id="insertBook">
+        insert into book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="isbn != null">#{isbn},</if>
+            <if test="title != null">#{title},</if>
+            <if test="author != null">#{author},</if>
+            <if test="publisher != null">#{publisher},</if>
+            <if test="publishDate != null">#{publish_date},</if>
+            <if test="categoryId != null">#{category_id},</if>
+            <if test="totalCopies != null">#{total_copies},</if>
+            <if test="coverImage != null">#{cover_image},</if>
+            <if test="description != null">#{description},</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=")">
+            <if test="isbn != null">#{isbn},</if>
+            <if test="title != null">#{title},</if>
+            <if test="author != null">#{author},</if>
+            <if test="publisher != null">#{publisher},</if>
+            <if test="publishDate != null">#{publishDate},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="totalCopies != null">#{totalCopies},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="description != null">#{description},</if>
+        </trim>
+    </insert>
+    <!-- 更新图书 -->
+    <update id="updateBook">
+        update book
+        <set>
+            <if test="isbn != null">isbn = #{isbn},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="author != null">author = #{author},</if>
+            <if test="publisher != null">publisher = #{publisher},</if>
+            <if test="publishDate != null">publish_date = #{publishDate},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="totalCopies != null">total_copies = #{totalCopies},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除图书 -->
+    <delete id="deleteBookBatch">
+        delete from book where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 获取图书列表 -->
+    <select id="getBookList" resultType="com.hxq.smart_campus.entity.vo.BookListVO">
+        select id, isbn, title, author, category_name, available_copies, status
+        from book
+        <where>
+            <if test="categoryName != null">category_name like concat('%', #{categoryName}, '%') and</if>
+            <if test="title != null">title like concat('%', #{title}, '%') and</if>
+            <if test="author != null">author like concat('%', #{author}, '%') and</if>
+            <if test="categoryId != null">category_id = #{categoryId} and</if>
+            <if test="status != null">status = #{status}</if>
+        </where>
+        order by id desc
+    </select>
+    <!-- 获取图书详情 -->
+    <select id="getBookDetail" resultType="com.hxq.smart_campus.entity.vo.BookDetailVO">
+        select b.id, b.isbn, b.title, b.author, b.publisher, b.publish_date, c.category_name, b.total_copies, b.available_copies,
+               b.status, b.cover_image, b.description, b.create_time, b.update_time
+        from book b
+        left join book_category c on b.category_id = c.id
+        where b.id = #{id}
+    </select>
+    <!-- 更新图书状态 -->
+    <update id="updateBookStatus">
+        update book set status = #{status} where id = #{id}
+    </update>
+</mapper>

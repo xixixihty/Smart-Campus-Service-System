@@ -47,6 +47,15 @@ spring:
       chat:
         options:
           model: qwen-max
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    endpoint: https://oss-cn-hangzhou.aliyuncs.com
+    access-key-id: REDACTED_ACCESS_KEY_ID
+    access-key-secret: REDACTED_ACCESS_KEY_SECRET
+    bucket-name: hexiongqi
+
 # MyBatis ??
 mybatis:
   mapper-locations: classpath:mapper/*.xml
