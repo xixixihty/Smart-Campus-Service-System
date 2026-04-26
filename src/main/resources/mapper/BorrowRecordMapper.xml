@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.BorrowRecordMapper">
+    <!-- 创建借阅记录 -->
+    <insert id="insertBorrowRecord">
+        insert into borrow_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="bookId != null and bookId != ''">book_id,</if>
+            <if test="dueDate != null">due_date,</if>
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="userId != null and userId != ''">#{userId},</if>
+                <if test="bookId != null and bookId != ''">#{bookId},</if>
+                <if test="dueDate != null">#{dueDate},</if>
+        </trim>
+    </insert>
+    <!-- 获取借阅记录详情 -->
+    <select id="getBorrowRecordDetail" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO">
+        select r.id, r.user_id, s.name as userName, r.book_id, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
+               r.due_date as dueDate, r.return_date as returnDate, r.status, r.create_time, r.update_time
+        from borrow_record r
+        left join student s on r.user_id = s.id
+        left join book b on r.book_id = b.id
+        where r.id = #{id}
+    </select>
+    <!-- 获取借阅记录列表 -->
+    <select id="getBorrowRecordList" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordListVO">
+        select r.id, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
+        from borrow_record r
+        left join student s on r.user_id = s.id
+        left join book b on r.book_id = b.id
+        <where>
+            <if test="userId != null">and r.user_id = #{userId}</if>
+            <if test="bookId != null">and r.book_id = #{bookId}</if>
+            <if test="status != null">and r.status = #{status}</if>
+        </where>
+        order by r.id desc
+    </select>
+
+    <!-- 归还图书（更新归还日期） -->
+    <update id="returnBook">
+        UPDATE borrow_record
+        SET status = '已归还',
+            return_date = CURDATE()
+        WHERE id = #{id} AND status = '借阅中'
+    </update>
+
+    <!-- 归还图书时更新图书状态（可用数量+1） -->
+    <update id="updateBookAvailableOnReturn">
+        UPDATE book
+        SET status = '可借',
+            available_copies = available_copies + 1
+        WHERE id = #{bookId}
+    </update>
+
+    <!-- 获取借阅统计信息 -->
+    <select id="getBorrowStatistics" resultType="map">
+        SELECT
+            COUNT(*) as totalBorrows,
+            SUM(CASE WHEN r.status = '借阅中' THEN 1 ELSE 0 END) as currentBorrows,
+            SUM(CASE WHEN r.status = '逾期' THEN 1 ELSE 0 END) as overdueBorrows,
+            AVG(DATEDIFF(COALESCE(r.return_date, CURDATE()), r.borrow_date)) as averageBorrowDays
+        FROM borrow_record r
+        WHERE 1=1
+        <if test="userId != null">AND r.user_id = #{userId}</if>
+        <if test="startDate != null">AND r.borrow_date >= #{startDate}</if>
+        <if test="endDate != null">AND r.borrow_date &lt;= #{endDate}</if>
+    </select>
+
+    <!-- 获取分类借阅统计 -->
+    <select id="getCategoryBorrowStatistics" resultType="map">
+        SELECT
+            bc.category_name as categoryName,
+            COUNT(*) as borrowCount
+        FROM borrow_record r
+        JOIN book b ON r.book_id = b.id
+        JOIN book_category bc ON b.category_id = bc.id
+        WHERE 1=1
+        <if test="userId != null">AND r.user_id = #{userId}</if>
+        <if test="startDate != null">AND r.borrow_date >= #{startDate}</if>
+        <if test="endDate != null">AND r.borrow_date &lt;= #{endDate}</if>
+        GROUP BY bc.category_name
+        ORDER BY borrowCount DESC
+    </select>
+</mapper>

@@ -178,4 +178,19 @@ public class MessageConstant {
      * 图书状态遗失
      */
     public static final String BOOK_STATUS_LOST = "遗失";
+
+
+    /**
+     * 借阅状态借出中
+     */
+    public static final String BORROW_STATUS_BORROWING = "借出中";
+    /**
+     * 借阅状态已归还
+     */
+    public static final String BORROW_STATUS_RETURNED = "已归还";
+    /**
+     * 借阅状态逾期
+     */
+    public static final String BORROW_STATUS_OVERDUE = "逾期";
+
 }
