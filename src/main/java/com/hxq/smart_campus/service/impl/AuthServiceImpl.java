@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static com.hxq.smart_campus.constant.MessageConstant.STUDENT_ACCOUNT_STATUS_LOCK;
+import static com.hxq.smart_campus.constant.MessageConstant.*;
 
 @Service
 @Slf4j
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         log.debug("准备验证密码，用户输入长度：{}", loginDTO.getPassword().length());
         log.debug("当前密码验证逻辑：直接使用明文密码与数据库哈希比对");
 
-        if ("student".equals(loginDTO.getUserType())) {
+        if (USER_TYPE_STUDENT.equals(loginDTO.getUserType())) {
             // 学生登录
             StudentDetailVO student = studentMapper.getStudentByStudentNo(loginDTO.getUsername());
             if (student == null) {
@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
             responseDTO.setName(student.getName());
             responseDTO.setStatus(student.getStatus());
             responseDTO.setAccountStatus(student.getAccountStatus());
-        } else if ("teacher".equals(loginDTO.getUserType())) {
+        } else if (USER_TYPE_TEACHER.equals(loginDTO.getUserType())) {
             // 教师登录
             TeacherDetailVO teacher = teacherMapper.getTeacherByTeacherNo(loginDTO.getUsername());
             if (teacher == null) {

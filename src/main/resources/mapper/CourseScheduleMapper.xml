@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.CourseScheduleMapper">
+    <!-- 插入课程安排 -->
+    <insert id="insertCourseSchedule">
+        insert into course_schedule
+        (semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range, create_time, update_time)
+        values
+        (#{semesterId}, #{courseId}, #{teacherId}, #{classroomId}, #{classIds}, #{weekDay}, #{startSection}, #{endSection}, #{weekRange}, now(), now())
+    </insert>
+    <!-- 更新课程安排 -->
+    <update id="updateCourseSchedule">
+        update course_schedule
+        <set>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="classroomId != null">classroom_id = #{classroomId},</if>
+            <if test="classIds != null">class_ids = #{classIds},</if>
+            <if test="weekDay != null">week_day = #{weekDay},</if>
+            <if test="startSection != null">start_section = #{startSection},</if>
+            <if test="endSection != null">end_section = #{endSection},</if>
+            <if test="weekRange != null">week_range = #{weekRange},</if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除课程安排 -->
+    <delete id="deleteCourseScheduleBatch">
+        delete from course_schedule where id in
+        <foreach item="id" collection="ids" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 根据id查询课程安排 -->
+    <select id="getCourseScheduleDetail" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
+        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
+               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time, cs.update_time
+        from course_schedule cs
+        left join semester s on cs.semester_id = s.id
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.id = #{id}
+    </select>
+    <!-- 获取课程安排列表 -->
+    <select id="getCourseScheduleList" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleListVO">
+        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
+               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time, cs.update_time
+        from course_schedule cs
+        left join semester s on cs.semester_id = s.id
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        <where>
+            <if test="semesterId != null">cs.semester_id = #{semesterId}</if>
+            <if test="courseId != null">and cs.course_id = #{courseId}</if>
+            <if test="teacherId != null">and cs.teacher_id = #{teacherId}</if>
+            <if test="classroomId != null">and cs.classroom_id = #{classroomId}</if>
+            <if test="weekDay != null">and cs.week_day = #{weekDay}</if>
+        </where>
+        order by cs.create_time desc
+    </select>
+    <!-- 查询课表 -->
+    <select id="queryTimetable" resultType="com.hxq.smart_campus.entity.vo.TimetableVO">
+        select cs.id as course_schedule_id, c.course_name, t.teacher_name, cr.classroom_name,
+               cs.week_day, cs.start_section, cs.end_section, cs.week_range
+        from course_schedule cs
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        <where>
+            <if test="semesterId != null">cs.semester_id = #{semesterId}</if>
+            <if test="userId != null and userType == 'teacher'">and cs.teacher_id = #{userId}</if>
+            <if test="classIds != null and userType == 'student'">
+                and (
+                <foreach collection="classIds" item="classId" open="" close="" separator="or">
+                    FIND_IN_SET(#{classId}, cs.class_ids)
+                </foreach>
+                )
+            </if>
+        </where>
+        order by cs.week_day asc, cs.start_section asc
+    </select>
+
+    <!-- 检测教师时间冲突 -->
+    <select id="checkTeacherConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
+        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
+               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time, cs.update_time
+        from course_schedule cs
+        left join semester s on cs.semester_id = s.id
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.semester_id = #{semesterId}
+        and cs.teacher_id = #{teacherId}
+        and cs.week_day = #{weekDay}
+        and not (cs.end_section &lt; #{startSection} or cs.start_section &gt; #{endSection})
+        <if test="excludeId != null">and cs.id != #{excludeId}</if>
+    </select>
+
+    <!-- 检测教室时间冲突 -->
+    <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
+        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
+               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time, cs.update_time
+        from course_schedule cs
+        left join semester s on cs.semester_id = s.id
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.semester_id = #{semesterId}
+        and cs.classroom_id = #{classroomId}
+        and cs.week_day = #{weekDay}
+        and not (cs.end_section &lt; #{startSection} or cs.start_section &gt; #{endSection})
+        <if test="excludeId != null">and cs.id != #{excludeId}</if>
+    </select>
+
+    <!-- 检测班级时间冲突 -->
+    <select id="checkClassConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
+        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
+               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time, cs.update_time
+        from course_schedule cs
+        left join semester s on cs.semester_id = s.id
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.semester_id = #{semesterId}
+        and cs.week_day = #{weekDay}
+        and not (cs.end_section &lt; #{startSection} or cs.start_section &gt; #{endSection})
+        <if test="excludeId != null">and cs.id != #{excludeId}</if>
+        and (
+        <foreach collection="classIds" item="classId" open="" close="" separator="or">
+            FIND_IN_SET(#{classId}, cs.class_ids)
+        </foreach>
+        )
+    </select>
+
+    <!-- 根据学生ID获取班级ID列表 -->
+    <select id="getClassIdsByStudentId" resultType="java.lang.Long">
+        select class_id
+        from student
+        where id = #{studentId}
+    </select>
+</mapper>

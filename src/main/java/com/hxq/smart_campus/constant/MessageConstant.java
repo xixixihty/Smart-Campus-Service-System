@@ -13,6 +13,14 @@ public class MessageConstant {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
+    /**
+     * 用户类型教师
+     */
+    public static final String USER_TYPE_TEACHER = "teacher";
+    /**
+     * 用户类型学生
+     */
+    public static final String USER_TYPE_STUDENT = "student";
 
     /**
      * 学院状态正常

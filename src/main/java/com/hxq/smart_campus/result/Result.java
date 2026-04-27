@@ -32,7 +32,14 @@ public class Result<T> implements Serializable {
     /**
      * 失败返回结果
      */
-    public static <T> Result<T> error(String msg) { // 修复拼写错误
+    public static <T> Result<T> error(String msg) {
         return new Result<>("0", msg, null);
+    }
+
+    /**
+     * 失败返回结果（带错误码）
+     */
+    public static <T> Result<T> error(String code, String msg) {
+        return new Result<>(code, msg, null);
     }
 }
