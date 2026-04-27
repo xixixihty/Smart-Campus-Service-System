@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.SeatMapper">
+
+    <!-- 新增座位 -->
+    <insert id="insertSeat">
+        insert into seat(room_id, seat_number, status)
+        values (#{roomId}, #{seatNumber}, '空闲')
+    </insert>
+
+    <!-- 更新座位 -->
+    <update id="updateSeat">
+        update seat
+        <set>
+            <if test="status != null and status != ''">status = #{status}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 批量删除座位 -->
+    <delete id="deleteBatch">
+        delete from seat where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 获取座位详情 -->
+    <select id="getSeatDetail" resultType="com.hxq.smart_campus.entity.vo.SeatDetailVO">
+        select id, room_id as roomId, seat_number as seatNumber, status,
+               create_time as createTime, update_time as updateTime
+        from seat
+        where id = #{id}
+    </select>
+
+    <!-- 获取座位列表 -->
+    <select id="getSeatList" resultType="com.hxq.smart_campus.entity.vo.SeatListVO">
+        select id, room_id as roomId, seat_number as seatNumber, status
+        from seat
+        <where>
+            <if test="roomId != null">and room_id = #{roomId}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+        </where>
+        order by id desc
+    </select>
+
+</mapper>

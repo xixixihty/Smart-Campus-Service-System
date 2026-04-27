@@ -99,7 +99,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         calculateOverdueDays(record);
         return record;
     }
-
+    // TODO： 获取我的借阅记录列表，从登录信息中获取用户ID
     @Override
     public PageInfo<BorrowRecordListVO> getBorrowRecordMyList(Integer pageNum, Integer pageSize, String status, Long userId) {
         log.info("获取我的借阅记录，参数：pageNum={}, pageSize={}, status={}, userId={}", pageNum, pageSize, status, userId);
@@ -129,10 +129,10 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         record.setOverdueDays(overdueDays);
     }
 
-//    /**
-//     * 计算逾期天数
-//     * @param record 借阅记录详情VO
-//     */
+    /**
+     * 计算逾期天数
+     * @param record 借阅记录详情VO
+     */
     private void calculateOverdueDays(BorrowRecordDetailVO record) {
         if (record == null || record.getDueDate() == null) {
             return;

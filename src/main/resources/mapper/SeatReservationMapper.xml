@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.SeatReservationMapper">
+
+    <!-- 座位预约 -->
+    <insert id="insertSeatReservation">
+        insert into seat_reservation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="seatId != null">seat_id</if>
+            <if test="date != null">date</if>
+            <if test="startTime != null">start_time</if>
+            <if test="endTime != null">end_time</if>
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="seatId != null">#{seatId}</if>
+                <if test="date != null">#{date}</if>
+                <if test="startTime != null">#{startTime}</if>
+                <if test="endTime != null">#{endTime}</if>
+        </trim>
+    </insert>
+
+    <!-- 获取座位预约详情 -->
+    <select id="getSeatReservationDetail" resultType="com.hxq.smart_campus.entity.vo.SeatReservationDetailVO">
+        select r.id, r.user_id, stu.name as userName, r.seat_id, s.seat_number,
+            r.date, r.start_time, r.end_time, r.leave_time, r.status, r.create_time, r.update_time,
+            s.room_id, r.room_name
+        from seat_reservation r
+        left join student stu on r.user_id = stu.id
+        left join seat s on r.seat_id = s.id
+        where r.id = #{id}
+    </select>
+
+    <!-- 获取座位预约列表 -->
+    <select id="getSeatReservationList" resultType="com.hxq.smart_campus.entity.vo.SeatReservationListVO">
+        select r.id, stu.name as userName, r.seat_id, s.seat_number,
+               r.date, r.start_time, r.end_time, r.leave_time, r.status, r.create_time, r.update_time,
+               s.room_id
+        from seat_reservation r
+        left join student stu on r.user_id = stu.id
+        left join seat s on r.seat_id = s.id
+        <where>
+            <if test="userId != null">and r.user_id = #{userId}</if>
+            <if test="seatId != null">and r.seat_id = #{seatId}</if>
+            <if test="date != null">and r.date = #{date}</if>
+            <if test="status != null">and r.status = #{status}</if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+</mapper>

@@ -193,4 +193,22 @@ public class MessageConstant {
      */
     public static final String BORROW_STATUS_OVERDUE = "逾期";
 
+
+    /**
+     * 座位状态空闲
+     */
+    public static final String SEAT_STATUS_FREE = "空闲";
+    /**
+     * 座位状态使用中
+     */
+    public static final String SEAT_STATUS_USING = "使用中";
+    /**
+     * 座位状态暂离
+     */
+    public static final String SEAT_STATUS_TEMPORARILY_ABSENT = "暂离";
+    /**
+     * 座位状态维修中
+     */
+    public static final String SEAT_STATUS_REPAIRING = "维修中";
+
 }

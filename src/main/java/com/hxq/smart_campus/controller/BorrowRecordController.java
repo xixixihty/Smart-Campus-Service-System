@@ -62,7 +62,7 @@ public class BorrowRecordController {
         BorrowRecordDetailVO borrowRecordDetailVO = borrowRecordService.getBorrowRecordDetail(id);
         return Result.success(borrowRecordDetailVO);
     }
-
+    // TODO 从登陆信息中获取个人借阅记录列表
     @GetMapping("/my")
     @Operation(summary = "获取我的借阅记录")
     public Result<PageInfo<BorrowRecordListVO>> getBorrowRecordMyList(
