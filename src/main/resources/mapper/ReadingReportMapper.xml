@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.ReadingReportMapper">
+    <!-- 新增读书报告 -->
+    <insert id="insertReadingReport">
+        insert into reading_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id</if>
+            <if test="semester != null">semester</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId}</if>
+            <if test="semester != null">#{semester}</if>
+        </trim>
+    </insert>
+
+    <!-- 获取读书报告列表 -->
+    <select id="getReadingReportList" resultType="com.hxq.smart_campus.entity.vo.ReadingReportListVO">
+        select r.id, stu.name as user_name, r.semester, r.total_borrow, r.fav_category, r.create_time
+        from reading_report r
+        left join student stu on r.user_id = stu.id
+        <where>
+            <if test="userId != null">r.user_id = #{userId}</if>
+            <if test="semester != null">and r.semester = #{semester}</if>
+        </where>
+    </select>
+    <!-- 获取读书报告详情 -->
+    <select id="getReadingReportDetailById" resultType="com.hxq.smart_campus.entity.vo.ReadingReportDetailVO">
+        select r.id, stu.name as user_name, r.semester, r.total_borrow, r.fav_category, r.analysis_text, r.create_time
+        from reading_report r
+        left join student stu on r.user_id = stu.id
+        where r.id = #{id}
+    </select>
+</mapper>
