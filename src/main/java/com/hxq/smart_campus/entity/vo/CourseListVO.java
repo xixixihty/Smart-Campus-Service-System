@@ -13,5 +13,7 @@ public class CourseListVO {
     private Integer hours;          // 总学时
     private String type;            // 课程类型
     private String status;          // 状态
+    private Short capacity;        // 课程容量
     private String createTime;      // 创建时间（格式化显示）
+
 }

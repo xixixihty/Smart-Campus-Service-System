@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.CourseSelectionPeriodMapper">
+
+    <insert id="insertCourseSelectionPeriod">
+        insert into course_selection_period
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            course_id, start_time, end_time
+        </trim>
+             values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{courseId}, #{startTime}, #{endTime}
+        </trim>
+    </insert>
+    <!-- 更新选课时间段 -->
+    <update id="updateCourseSelectionPeriod">
+        update course_selection_period
+        <set>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 批量删除选课时间段 -->
+    <delete id="deleteBatch">
+        delete from course_selection_period where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 获取选课时间段详情 -->
+    <select id="getCourseSelectionPeriodById"
+            resultType="com.hxq.smart_campus.entity.vo.CourseSelectionPeriodDetailVO">
+        select csp.id, s.id as semester_id, s.name as semester_name, csp.start_time, csp.end_time, csp.create_time, csp.update_time
+        from course_selection_period csp
+        left join semester s on csp.semester_id = s.id
+        where csp.id = #{id}
+    </select>
+    <!-- 获取选课时间段列表 -->
+    <select id="getCourseSelectionPeriodList"
+            resultType="com.hxq.smart_campus.entity.vo.CourseSelectionPeriodListVO">
+        select id, s.semester_name, start_time, end_time, create_time
+        from course_selection_period
+        left join semester s on semester_id = s.id
+        <where>
+            <if test="semesterId != null">semester_id = #{semesterId}</if>
+        </where>
+        order by start_time
+    </select>
+</mapper>

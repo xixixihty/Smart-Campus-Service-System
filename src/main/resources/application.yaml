@@ -48,6 +48,46 @@ spring:
         options:
           model: qwen-max
 
+
+
+  # Redisson配置
+  redisson:
+    config: |
+      singleServerConfig:
+        address: "redis://localhost:6379"
+        database: 0
+        connectionPoolSize: 64
+        connectionMinimumIdleSize: 16
+        idleConnectionTimeout: 10000
+        connectTimeout: 10000
+        timeout: 3000
+        retryAttempts: 3
+        retryInterval: 1000
+      lock:
+        leaseTime: 30000
+        waitTime: 3000
+    
+    
+
+    # RabbitMQ配置
+    rabbitmq:
+      host: localhost
+      port: 5672
+      username: guest
+      password: guest
+      listener:
+        simple:
+          acknowledge-mode: manual
+          concurrency: 10
+          max-concurrency: 50
+
+    # Sentinel配置
+    cloud:
+      sentinel:
+        transport:
+          dashboard: localhost:8080
+
+
 # 阿里云OSS配置
 aliyun:
   oss:
@@ -82,5 +122,4 @@ logging:
   level:
     com.hxq.smart_campus: debug
     org.springframework.web: info
-
 

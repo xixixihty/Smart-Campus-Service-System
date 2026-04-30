@@ -4,8 +4,10 @@ import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.CourseCreateDTO;
 import com.hxq.smart_campus.entity.dto.CourseResponseDTO;
 import com.hxq.smart_campus.entity.dto.CourseUpdateDTO;
+import com.hxq.smart_campus.entity.vo.AvailableCourseVO;
 import com.hxq.smart_campus.entity.vo.CourseDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseListVO;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -48,4 +50,18 @@ public interface CourseService {
      * @return
      */
     boolean deleteCourse(List<Long> ids);
+
+    /**
+     * 更新课程容量
+     * @param courseId
+     * @param i
+     */
+    void updateCourseCapacity(Long courseId, int i);
+
+    /**
+     * 获取可选课程列表
+     * @param semesterId
+     * @return
+     */
+    List<AvailableCourseVO> getAvailableCourseList(Long semesterId);
 }

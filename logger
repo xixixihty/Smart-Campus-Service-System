@@ -1,249 +1,79 @@
-2026-04-26T22:17:29.954+08:00  INFO 17852 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-04-26T22:17:29.955+08:00  INFO 17852 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-04-26T22:17:29.955+08:00  INFO 17852 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
-2026-04-26T22:17:29.985+08:00  INFO 17852 --- [nio-8080-exec-1] c.h.s.controller.BorrowRecordController  : 获取借阅记录列表，参数：pageNum=1, pageSize=10, userId=null, bookId=null, status=null
-2026-04-26T22:17:29.986+08:00  INFO 17852 --- [nio-8080-exec-1] c.h.s.s.impl.BorrowRecordServiceImpl     : 获取借阅记录列表，参数：pageNum=1, pageSize=10, userId=null, bookId=null, status=null
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@621c86b3] was not registered for synchronization because synchronization is not active
-Cache Hit Ratio [SQL_CACHE]: 0.0
-2026-04-26T22:17:30.067+08:00  INFO 17852 --- [nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-26T22:17:30.204+08:00  INFO 17852 --- [nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5675e08
-2026-04-26T22:17:30.206+08:00  INFO 17852 --- [nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-JDBC Connection [HikariProxyConnection@736496107 wrapping com.mysql.cj.jdbc.ConnectionImpl@5675e08] will not be managed by Spring
-==>  Preparing: SELECT count(0) FROM borrow_record r LEFT JOIN student s ON r.user_id = s.id LEFT JOIN book b ON r.book_id = b.id
-==> Parameters: 
-<==    Columns: count(0)
-<==        Row: 5
-<==      Total: 1
-==>  Preparing: select r.id, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status, r.overdue_days as overdueDays from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id order by r.id desc LIMIT ?
-==> Parameters: 10(Integer)
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@621c86b3]
-2026-04-26T22:17:30.370+08:00 ERROR 17852 --- [nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.springframework.jdbc.BadSqlGrammarException: 
-### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-### The error may exist in file [D:\JavaWeb\ssm-test\smart-campus\target\classes\mapper\BorrowRecordMapper.xml]
-### The error may involve defaultParameterMap
-### The error occurred while setting parameters
-### SQL: select r.id, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status, r.overdue_days as overdueDays         from borrow_record r         left join student s on r.user_id = s.id         left join book b on r.book_id = b.id                    order by r.id desc  LIMIT ?
-### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-; bad SQL grammar []] with root cause
+2026-04-29T18:57:47.851+08:00  WARN 15692 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-04-29T18:57:48.307+08:00  INFO 15692 --- [n(3)-10.16.8.64] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [localhost:5672]
+2026-04-29T18:57:48.308+08:00  INFO 15692 --- [n(2)-10.16.8.64] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-29T18:57:48.308+08:00  INFO 15692 --- [n(2)-10.16.8.64] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-29T18:57:48.310+08:00  INFO 15692 --- [n(2)-10.16.8.64] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-04-29T18:57:48.337+08:00  WARN 15692 --- [n(3)-10.16.8.64] o.s.b.a.amqp.RabbitHealthIndicator       : Rabbit health check failed
 
-java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44) ~[HikariCP-6.3.3.jar:na]
-	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java) ~[HikariCP-6.3.3.jar:na]
+org.springframework.amqp.AmqpConnectException: java.net.ConnectException: Connection refused: no further information
+	at org.springframework.amqp.rabbit.support.RabbitExceptionTranslator.convertRabbitAccessException(RabbitExceptionTranslator.java:61) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.createBareConnection(AbstractConnectionFactory.java:632) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.connection.CachingConnectionFactory.createConnection(CachingConnectionFactory.java:726) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.connection.ConnectionFactoryUtils.createConnection(ConnectionFactoryUtils.java:257) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.core.RabbitTemplate.doExecute(RabbitTemplate.java:2261) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.core.RabbitTemplate.execute(RabbitTemplate.java:2234) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.core.RabbitTemplate.execute(RabbitTemplate.java:2214) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.boot.actuate.amqp.RabbitHealthIndicator.getVersion(RabbitHealthIndicator.java:48) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.amqp.RabbitHealthIndicator.doHealthCheck(RabbitHealthIndicator.java:44) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.AbstractHealthIndicator.health(AbstractHealthIndicator.java:82) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthIndicator.getHealth(HealthIndicator.java:37) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:82) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:41) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getLoggedHealth(HealthEndpointSupport.java:172) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:145) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getAggregateContribution(HealthEndpointSupport.java:156) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:141) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:110) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:81) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:76) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:66) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy3/jdk.proxy3.$Proxy128.execute(Unknown Source) ~[na:na]
-	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110) ~[mybatis-3.5.19.jar:3.5.19]
-	at com.github.pagehelper.util.ExecutorUtil.pageQuery(ExecutorUtil.java:215) ~[pagehelper-6.1.0.jar:na]
-	at com.github.pagehelper.PageInterceptor.intercept(PageInterceptor.java:161) ~[pagehelper-6.1.0.jar:na]
-	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy2/jdk.proxy2.$Proxy126.query(Unknown Source) ~[na:na]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker.invoke(ReflectiveOperationInvoker.java:74) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation.invoke(AbstractDiscoveredOperation.java:60) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:124) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:97) ~[spring-boot-actuator-3.5.13.jar:3.5.13]
+	at java.management/com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:811) ~[na:na]
+	at java.management/com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:802) ~[na:na]
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doOperation(RMIConnectionImpl.java:1472) ~[na:na]
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl$PrivilegedOperation.run(RMIConnectionImpl.java:1310) ~[na:na]
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doPrivilegedOperation(RMIConnectionImpl.java:1405) ~[na:na]
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.invoke(RMIConnectionImpl.java:829) ~[na:na]
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333) ~[mybatis-spring-3.0.5.jar:3.0.5]
-	at jdk.proxy2/jdk.proxy2.$Proxy83.selectList(Unknown Source) ~[na:na]
-	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194) ~[mybatis-spring-3.0.5.jar:3.0.5]
-	at org.apache.ibatis.binding.MapperMethod.executeForMany(MapperMethod.java:147) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:80) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:141) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:86) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy2/jdk.proxy2.$Proxy94.getBorrowRecordList(Unknown Source) ~[na:na]
-	at com.hxq.smart_campus.service.impl.BorrowRecordServiceImpl.getBorrowRecordList(BorrowRecordServiceImpl.java:81) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.17.jar:6.2.17]
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:724) ~[spring-aop-6.2.17.jar:6.2.17]
-	at com.hxq.smart_campus.service.impl.BorrowRecordServiceImpl$$SpringCGLIB$$0.getBorrowRecordList(<generated>) ~[classes/:na]
-	at com.hxq.smart_campus.controller.BorrowRecordController.getBorrowRecordList(BorrowRecordController.java:54) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360) ~[na:na]
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200) ~[na:na]
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197) ~[na:na]
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712) ~[na:na]
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196) ~[na:na]
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:598) ~[na:na]
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:844) ~[na:na]
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:721) ~[na:na]
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399) ~[na:na]
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:720) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
 	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+Caused by: java.net.ConnectException: Connection refused: no further information
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:539) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:594) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:633) ~[na:na]
+	at com.rabbitmq.client.impl.SocketFrameHandlerFactory.create(SocketFrameHandlerFactory.java:61) ~[amqp-client-5.25.0.jar:5.25.0]
+	at com.rabbitmq.client.ConnectionFactory.newConnection(ConnectionFactory.java:1249) ~[amqp-client-5.25.0.jar:5.25.0]
+	at com.rabbitmq.client.ConnectionFactory.newConnection(ConnectionFactory.java:1198) ~[amqp-client-5.25.0.jar:5.25.0]
+	at org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.connectAddresses(AbstractConnectionFactory.java:678) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.connect(AbstractConnectionFactory.java:647) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	at org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.createBareConnection(AbstractConnectionFactory.java:593) ~[spring-rabbit-3.2.9.jar:3.2.9]
+	... 47 common frames omitted
 
-2026-04-26T22:17:45.921+08:00  INFO 17852 --- [nio-8080-exec-4] c.h.s.controller.BorrowRecordController  : 获取借阅记录详情，参数：id=1
-2026-04-26T22:17:45.921+08:00  INFO 17852 --- [nio-8080-exec-4] c.h.s.s.impl.BorrowRecordServiceImpl     : 获取借阅记录详情，参数：id=1
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1edc5b41] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@1081059851 wrapping com.mysql.cj.jdbc.ConnectionImpl@5675e08] will not be managed by Spring
-==>  Preparing: select r.id, r.user_id, s.name as userName, r.book_id, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate, r.due_date as dueDate, r.return_date as returnDate, r.status, r.overdue_days as overdueDays, r.create_time, r.update_time from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id where r.id = ?
-==> Parameters: 1(Long)
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1edc5b41]
-2026-04-26T22:17:45.927+08:00 ERROR 17852 --- [nio-8080-exec-4] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.springframework.jdbc.BadSqlGrammarException: 
-### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-### The error may exist in file [D:\JavaWeb\ssm-test\smart-campus\target\classes\mapper\BorrowRecordMapper.xml]
-### The error may involve defaultParameterMap
-### The error occurred while setting parameters
-### SQL: select r.id, r.user_id, s.name as userName, r.book_id, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,                r.due_date as dueDate, r.return_date as returnDate, r.status, r.overdue_days as overdueDays, r.create_time, r.update_time         from borrow_record r         left join student s on r.user_id = s.id         left join book b on r.book_id = b.id         where r.id = ?
-### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-; bad SQL grammar []] with root cause
+2026-04-29T18:58:07.181+08:00  INFO 15692 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-29T18:58:07.421+08:00  INFO 15692 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-04-29T18:58:07.431+08:00  INFO 15692 --- [ionShutdownHook] com.hxq.smart_campus.utils.AliOSSUtils   : OSS客户端销毁成功
+2026-04-29T18:58:07.444+08:00  INFO 15692 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-29T18:58:07.450+08:00  INFO 15692 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
 
-java.sql.SQLSyntaxErrorException: Unknown column 'r.overdue_days' in 'field list'
-	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383) ~[mysql-connector-j-9.6.0.jar:9.6.0]
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44) ~[HikariCP-6.3.3.jar:na]
-	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java) ~[HikariCP-6.3.3.jar:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy3/jdk.proxy3.$Proxy128.execute(Unknown Source) ~[na:na]
-	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110) ~[mybatis-3.5.19.jar:3.5.19]
-	at com.github.pagehelper.PageInterceptor.intercept(PageInterceptor.java:169) ~[pagehelper-6.1.0.jar:na]
-	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy2/jdk.proxy2.$Proxy126.query(Unknown Source) ~[na:na]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75) ~[mybatis-3.5.19.jar:3.5.19]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333) ~[mybatis-spring-3.0.5.jar:3.0.5]
-	at jdk.proxy2/jdk.proxy2.$Proxy83.selectOne(Unknown Source) ~[na:na]
-	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:154) ~[mybatis-spring-3.0.5.jar:3.0.5]
-	at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:87) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:141) ~[mybatis-3.5.19.jar:3.5.19]
-	at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:86) ~[mybatis-3.5.19.jar:3.5.19]
-	at jdk.proxy2/jdk.proxy2.$Proxy94.getBorrowRecordDetail(Unknown Source) ~[na:na]
-	at com.hxq.smart_campus.service.impl.BorrowRecordServiceImpl.getBorrowRecordDetail(BorrowRecordServiceImpl.java:90) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.17.jar:6.2.17]
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:724) ~[spring-aop-6.2.17.jar:6.2.17]
-	at com.hxq.smart_campus.service.impl.BorrowRecordServiceImpl$$SpringCGLIB$$0.getBorrowRecordDetail(<generated>) ~[classes/:na]
-	at com.hxq.smart_campus.controller.BorrowRecordController.getBorrowRecordDetail(BorrowRecordController.java:62) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
-
-2026-04-26T22:18:06.046+08:00  INFO 17852 --- [nio-8080-exec-3] c.h.s.controller.BorrowRecordController  : 获取借阅记录统计信息，参数：userId=null, startDate=null, endDate=null
-2026-04-26T22:18:06.046+08:00  INFO 17852 --- [nio-8080-exec-3] c.h.s.s.impl.BorrowRecordServiceImpl     : 获取借阅统计信息，参数：userId=null, startDate=null, endDate=null
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@28271851] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@1840287295 wrapping com.mysql.cj.jdbc.ConnectionImpl@5675e08] will not be managed by Spring
-==>  Preparing: SELECT COUNT(*) as totalBorrows, SUM(CASE WHEN r.status = '借阅中' THEN 1 ELSE 0 END) as currentBorrows, SUM(CASE WHEN r.status = '逾期' THEN 1 ELSE 0 END) as overdueBorrows, AVG(DATEDIFF(COALESCE(r.return_date, CURDATE()), r.borrow_date)) as averageBorrowDays FROM borrow_record r WHERE 1=1
-==> Parameters: 
-<==    Columns: totalBorrows, currentBorrows, overdueBorrows, averageBorrowDays
-<==        Row: 5, 0, 1, 430.0000
-<==      Total: 1
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@28271851]
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7083c996] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@341119275 wrapping com.mysql.cj.jdbc.ConnectionImpl@5675e08] will not be managed by Spring
-==>  Preparing: SELECT bc.category_name as categoryName, COUNT(*) as borrowCount FROM borrow_record r JOIN book b ON r.book_id = b.id JOIN book_category bc ON b.category_id = bc.id WHERE 1=1 GROUP BY bc.category_name ORDER BY borrowCount DESC
-==> Parameters: 
-<==    Columns: categoryName, borrowCount
-<==        Row: 中国文学, 2
-<==        Row: 编程语言, 1
-<==        Row: 数据库, 1
-<==        Row: 人工智能, 1
-<==      Total: 4
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7083c996]
-2026-04-26T22:18:06.067+08:00  INFO 17852 --- [nio-8080-exec-3] c.h.s.s.impl.BorrowRecordServiceImpl     : 获取借阅统计信息成功，总借阅：5，当前借阅：0，逾期：1，平均借阅天数：430.0
+Process finished with exit code 130

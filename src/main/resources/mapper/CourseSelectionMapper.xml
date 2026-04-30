@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.CourseSelectionMapper">
+    <!-- 插入课程选择 -->
+    <insert id="insertCourseSelection">
+        insert into course_selection
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id</if>
+            <if test="courseId != null">course_id</if>
+            <if test="semesterId != null">semester_id</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId}</if>
+            <if test="courseId != null">#{courseId}</if>
+            <if test="semesterId != null">#{semesterId}</if>
+        </trim>
+    </insert>
+    <!-- 退课 -->
+    <update id="dropCourse">
+        update course_selection
+        <set>
+            status = '已退课'
+            update_time = now()
+        </set>
+        where id = #{courseSelectionId}
+    </update>
+
+    <!-- 获取我的课程选择列表 -->
+    <select id="getMyCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.MyCourseSelectionVO">
+        select cs.id, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point
+        from course_selection cs
+        left join course c on cs.course_id = c.id
+        left join semester s on cs.semester_id = s.id
+        <where>
+            <if test="studentId != null">cs.student_id = #{studentId}</if>
+            <if test="semesterId != null">and cs.semester_id = #{semesterId}</if>
+            <if test="status != null">and cs.status = #{status}</if>
+        </where>
+        order by cs.id desc
+    </select>
+    <!-- 获取单一选课信息 -->
+    <select id="getCourseSelectionListVO" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
+        select cs.id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        from course_selection cs
+        left join course c on cs.course_id = c.id
+        left join student stu on cs.student_id = stu.id
+        left join semester s on cs.semester_id = s.id
+        where cs.id = #{courseSelectionId}
+    </select>
+    <!-- 查询选课列表 -->
+    <select id="getCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
+        select cs.id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        from course_selection cs
+                 left join course c on cs.course_id = c.id
+                 left join student stu on cs.student_id = stu.id
+                 left join semester s on cs.semester_id = s.id
+        <where>
+            <if test="studentId != null">cs.student_id = #{studentId}</if>
+            <if test="courseId != null">and cs.course_id = #{courseId}</if>
+            <if test="semesterId != null">and cs.semester_id = #{semesterId}</if>
+            <if test="status != null">and cs.status = #{status}</if>
+        </where>
+        order by cs.create_time desc
+    </select>
+</mapper>

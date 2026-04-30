@@ -1,0 +1,23 @@
+package com.hxq.smart_campus.constant;
+
+/**
+ * redis常量类
+ */
+public class RedisConstant {
+    /**
+     * 选课时间段缓存键前缀
+     */
+    public static final String COURSE_SELECTION_KEY_PERIOD = "courseSelectionPeriod:";
+    /**
+     * 课程详情缓存键前缀
+     */
+    public static final String COURSE_DETAIL_KEY_PREFIX = "courseDetail:";
+    /**
+     * 我的选课缓存键前缀
+     */
+    public static final String MY_COURSE_SELECTION_KEY_PREFIX = "myCourseSelection:";
+    /**
+     * 可选课程缓存键前缀1
+     */
+    public static final String AVAILABLE_COURSE_KEY_PREFIX = "availableCourse:";
+}

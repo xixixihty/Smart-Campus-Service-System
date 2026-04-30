@@ -8,6 +8,7 @@ import com.hxq.smart_campus.mapper.StudentMapper;
 import com.hxq.smart_campus.mapper.TeacherMapper;
 import com.hxq.smart_campus.service.AuthService;
 import com.hxq.smart_campus.utils.BCryptUtils;
+import com.hxq.smart_campus.utils.JwtUtils;
 import com.hxq.smart_campus.utils.SensitiveInfoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
 
@@ -83,10 +83,14 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("用户类型错误");
         }
 
-        // 生成登录令牌
-        String token = UUID.randomUUID().toString();
+        // 生成JWT令牌
+        String token = JwtUtils.generateToken(
+                responseDTO.getUserId(),
+                responseDTO.getUsername(),
+                responseDTO.getName(),
+                responseDTO.getUserType()
+        );
         responseDTO.setToken(token);
-        // 设置令牌过期时间（24小时）
         responseDTO.setExpireTime(LocalDateTime.now().plus(24, ChronoUnit.HOURS));
 
         log.info("用户登录成功：{}，类型：{}", loginDTO.getUsername(), loginDTO.getUserType());

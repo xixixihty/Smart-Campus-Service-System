@@ -247,6 +247,7 @@ course_name VARCHAR(100) NOT NULL COMMENT '课程名称',
 credit DECIMAL(3,1) UNSIGNED NOT NULL COMMENT '学分',
 hours TINYINT UNSIGNED NOT NULL COMMENT '总学时',
 type VARCHAR(20) NOT NULL COMMENT '课程类型（必修/选修/公选）',
+capacity SMALLINT UNSIGNED NULL COMMENT '课程容量（选修/公选课程有效，必修课程为空）',
 status VARCHAR(20) NOT NULL DEFAULT '开课' COMMENT '状态（开课/停课）',
 create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -254,6 +255,7 @@ PRIMARY KEY (id),
 UNIQUE INDEX uk_course_code (course_code),
 INDEX idx_course_name (course_name),
 INDEX idx_type (type),
+INDEX idx_capacity (capacity),
 INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='课程表';
 
@@ -469,14 +471,14 @@ INSERT INTO semester (id, name, start_date, end_date, is_current, status) VALUES
 (2, '2023-2024第二学期', '2024-02-25', '2024-07-10', 1, '进行中');
 
 -- 课程表数据
-INSERT INTO course (id, course_code, course_name, credit, hours, type, status) VALUES
-(1, 'CS101', '计算机导论', 3.0, 48, '必修', '开课'),
-(2, 'CS102', 'Java程序设计', 4.0, 64, '必修', '开课'),
-(3, 'CS201', '数据结构', 4.0, 64, '必修', '开课'),
-(4, 'SE101', '软件工程概论', 3.0, 48, '必修', '开课'),
-(5, 'MATH101', '高等数学', 5.0, 80, '必修', '开课'),
-(6, 'CS301', '人工智能导论', 2.0, 32, '选修', '开课'),
-(7, 'ENG101', '大学英语', 4.0, 64, '公选', '开课');
+INSERT INTO course (id, course_code, course_name, credit, hours, type, capacity, status) VALUES
+(1, 'CS101', '计算机导论', 3.0, 48, '必修', NULL, '开课'),
+(2, 'CS102', 'Java程序设计', 4.0, 64, '必修', NULL, '开课'),
+(3, 'CS201', '数据结构', 4.0, 64, '必修', NULL, '开课'),
+(4, 'SE101', '软件工程概论', 3.0, 48, '必修', NULL, '开课'),
+(5, 'MATH101', '高等数学', 5.0, 80, '必修', NULL, '开课'),
+(6, 'CS301', '人工智能导论', 2.0, 32, '选修', 60, '开课'),
+(7, 'ENG101', '大学英语', 4.0, 64, '公选', 120, '开课');
 
 -- 排课表数据
 INSERT INTO course_schedule (id, semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range) VALUES

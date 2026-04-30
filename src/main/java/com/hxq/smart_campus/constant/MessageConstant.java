@@ -219,4 +219,14 @@ public class MessageConstant {
      */
     public static final String SEAT_STATUS_REPAIRING = "维修中";
 
+
+    /**
+     * 选课状态已选
+     */
+    public static final String COURSE_SELECTION_STATUS_SELECTED = "已选";
+    /**
+     * 选课状态退课
+     */
+    public static final String COURSE_SELECTION_STATUS_DROPPED_OUT = "退课";
+
 }

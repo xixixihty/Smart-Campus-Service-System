@@ -93,4 +93,13 @@
             #{id}
         </foreach>
     </select>
+    <!-- 根据姓名查询学生 -->
+    <select id="getStudentDetailByName" resultType="com.hxq.smart_campus.entity.vo.StudentDetailVO">
+        select s.id, s.student_no, s.name, s.gender, s.class_id, c.class_name, s.enrollment_date,
+               s.status, s.id_card, s.phone, s.account_status, s.create_time, s.update_time
+        from student s
+                 left join class c on s.class_id = c.id
+        where s.name = #{name}
+        and s.status = '在读'
+    </select>
 </mapper>

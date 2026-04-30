@@ -12,4 +12,5 @@ public class CourseUpdateDTO {
     private Integer hours;          // 总学时，可选
     private String type;            // 课程类型，可选
     private String status;          // 状态，可选
+    private Short capacity;        // 课程容量
 }

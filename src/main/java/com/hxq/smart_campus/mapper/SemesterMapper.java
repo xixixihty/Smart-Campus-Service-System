@@ -74,4 +74,11 @@ public interface SemesterMapper {
      * @return 更新的记录数
      */
     int updateAllSemestersToNonCurrent();
+
+    /**
+     * 根据名称获取学期详情
+     * @param semesterName
+     * @return
+     */
+    SemesterDetailVO getSemesterDetailByName(String semesterName);
 }

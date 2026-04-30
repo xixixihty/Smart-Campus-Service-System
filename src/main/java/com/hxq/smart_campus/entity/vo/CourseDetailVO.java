@@ -13,6 +13,13 @@ public class CourseDetailVO {
     private Integer hours;          // 总学时
     private String type;            // 课程类型
     private String status;          // 状态
+    private Short capacity;        // 课程容量
     private String createTime;      // 创建时间（格式化显示）
     private String updateTime;      // 修改时间（格式化显示）
+    private Integer weekDay;
+    private Integer classStart;
+    private Integer classEnd;
+    private Integer weekStart;
+    private Integer weekEnd;
+    private String scheduleType;
 }

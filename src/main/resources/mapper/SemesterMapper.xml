@@ -50,7 +50,13 @@
             <if test="status != null and status != ''">status = #{status}</if>
         </where>
     </select>
-    
+    <!--根据名称获取学期详情-->
+    <select id="getSemesterDetailByName" resultType="com.hxq.smart_campus.entity.vo.SemesterDetailVO">
+        select id, name, start_date, end_date, is_current, status, create_time
+        from semester
+        where name = #{semesterName}
+    </select>
+
     <!--设置当前学期-->
     <update id="updateIsCurrentById">
         update semester set is_current = #{isCurrent} where id = #{id}
