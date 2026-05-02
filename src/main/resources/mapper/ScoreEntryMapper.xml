@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.ScoreEntryMapper">
+
+    <!-- 插入成绩 -->
+    <insert id="insertScore">
+        insert into score_entry
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseId != null">course_id</if>
+            <if test="studentId != null">student_id</if>
+            <if test="semesterId != null">semester_id</if>
+            <if test="usualScore != null">usual_score</if>
+            <if test="finalScore != null">final_score</if>
+            <if test="examStatus != null">exam_status</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseId != null">#{courseId}</if>
+            <if test="studentId != null">#{studentId}</if>
+            <if test="semesterId != null">#{semesterId}</if>
+            <if test="usualScore != null">#{usualScore}</if>
+            <if test="finalScore != null">#{finalScore}</if>
+            <if test="examStatus != null">#{examStatus}</if>
+        </trim>
+    </insert>
+
+    <!-- 更新成绩 -->
+    <update id="updateScore">
+        update score_entry
+        <set>
+            <if test="usualScore != null">usual_score = #{usualScore}</if>
+            <if test="finalScore != null">final_score = #{finalScore}</if>
+            <if test="makeupScore != null">makeup_score = #{makeupScore}</if>
+            <if test="examStatus != null">exam_status = #{examStatus}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 查询成绩详情-->
+    <select id="getScoreDetail" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryDetailVO">
+        select se.id, se.course_id, se.student_id, s.name as studentName, s.student_no as studentNo,
+               se.semester_id, sm.name as semesterName, se.usual_score,
+               se.final_score, se.total_score, se.makeup_score, se.score_point, se.exam_status,
+               me.id as makeup_exam_id, se.create_time, se.update_time
+        from score_entry se
+        left join student s on se.student_id = s.id
+        left join semester sm on se.semester_id = sm.id
+        left join makeup_exam me on se.makeup_exam_id = me.id
+        where se.id = #{id}
+    </select>
+
+    <!-- 查询成绩列表 -->
+    <select id="getScoreList" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryListVO">
+        select se.id, c.course_name, s.name as studentName, s.student_no as studentNo,
+               sm.name as semesterName, se.total_score,
+               se.score_point, se.exam_status, se.create_time
+        from score_entry se
+        left join course c on se.course_id = c.id
+        left join student s on se.student_id = s.id
+        left join semester sm on se.semester_id = sm.id
+        <where>
+            <if test="courseId != null">se.course_id = #{courseId}</if>
+            <if test="studentId != null">se.student_id = #{studentId}</if>
+            <if test="semesterId != null">se.semester_id = #{semesterId}</if>
+        </where>
+    </select>
+
+    <!-- 根据维度查询成绩列表（用于统计分析） -->
+    <!-- Mapper层只做一次查询，获取完整的成绩及相关信息 -->
+    <select id="getScoreListForStatistics" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryForStatisticsVO">
+        select se.id,
+               se.student_id,
+               s.name as studentName,
+               s.student_no as studentNo,
+               s.class_id,
+               cl.class_name,
+               m.id as majorId,
+               m.major_name as majorName,
+               co.id as collegeId,
+               co.college_name as collegeName,
+               se.course_id,
+               c.course_name as courseName,
+               se.usual_score,
+               se.final_score,
+               se.total_score
+        from score_entry se
+        left join student s on se.student_id = s.id
+        left join course c on se.course_id = c.id
+        left join class cl on s.class_id = cl.id
+        left join major m on cl.major_id = m.id
+        left join college co on m.college_id = co.id
+        where se.semester_id = #{query.semesterId}
+          <!-- 根据不同维度添加筛选条件 -->
+          <if test="query.dimension == 'STUDENT'">
+              and se.student_id = #{query.studentId}
+          </if>
+          <if test="query.dimension == 'COURSE'">
+              and se.course_id = #{query.courseId}
+          </if>
+          <if test="query.dimension == 'CLASS'">
+              and s.class_id = #{query.classId}
+          </if>
+          <if test="query.dimension == 'MAJOR'">
+              and m.id = #{query.majorId}
+          </if>
+          <if test="query.dimension == 'COLLEGE'">
+              and co.id = #{query.collegeId}
+          </if>
+    </select>
+
+</mapper>
