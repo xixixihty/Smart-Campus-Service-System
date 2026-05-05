@@ -229,4 +229,43 @@ public class MessageConstant {
      */
     public static final String COURSE_SELECTION_STATUS_DROPPED_OUT = "退课";
 
+
+    /**
+     * 考试状态正常
+     */
+    public static final String EXAM_STATUS_NORMAL = "正常";
+    /**
+     * 考试状态缓考
+     */
+    public static final String EXAM_STATUS_DELAYED = "缓考";
+    /**
+     * 考试状态缺考
+     */
+    public static final String EXAM_STATUS_ABSENT = "缺考";
+    /**
+     * 考试状态补考
+     */
+    public static final String EXAM_STATUS_MAKE_UP = "补考";
+    /**
+     * 考试状态作弊
+         */
+    public static final String EXAM_STATUS_CHEATING = "作弊";
+
+
+
+
+
+    /**
+     * 补考状态待考
+     */
+    public static final String MAKEUP_EXAM_STATUS_WAITING = "待考";
+    /**
+     * 补考状态已考
+     */
+    public static final String MAKEUP_EXAM_STATUS_PASSED = "已考";
+    /**
+     * 补考状态取消
+     */
+    public static final String MAKEUP_EXAM_STATUS_CANCELED = "取消";
+
 }
