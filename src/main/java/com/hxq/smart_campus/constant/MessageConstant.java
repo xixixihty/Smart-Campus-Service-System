@@ -268,4 +268,22 @@ public class MessageConstant {
      */
     public static final String MAKEUP_EXAM_STATUS_CANCELED = "取消";
 
+
+    /**
+     * 请假申请待审批
+     */
+    public static final String LEAVE_APPLY_STATUS_WAITING = "待审批";
+    /**
+     * 请假申请已批准
+     */
+    public static final String LEAVE_APPLY_STATUS_APPROVED = "已批准";
+    /**
+     * 请假申请已驳回
+     */
+    public static final String LEAVE_APPLY_STATUS_REJECTED = "已驳回";
+    /**
+     * 请假申请已取消
+     */
+    public static final String LEAVE_APPLY_STATUS_CANCELED = "已取消";
+
 }

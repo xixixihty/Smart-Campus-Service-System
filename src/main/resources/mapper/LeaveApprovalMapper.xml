@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.LeaveApprovalMapper">
+
+
+    <resultMap id="LeaveRequestDetailMap" type="com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO">
+        <id column="id" property="id"/>
+        <result column="student_id" property="studentId"/>
+        <result column="student_name" property="studentName"/>
+        <result column="leave_type" property="leaveType"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <collection property="approvalLogs" ofType="com.hxq.smart_campus.entity.vo.LeaveApprovalLogVO">
+            <id column="log_id" property="id"/>
+            <result column="approver_id" property="approverId"/>
+            <result column="approver_name" property="approverName"/>
+            <result column="approve_time" property="approveTime"/>
+            <result column="log_result" property="result"/>
+            <result column="comment" property="comment"/>
+        </collection>
+    </resultMap>
+
+
+
+    <!-- 提交请假申请 -->
+    <insert id="insertLeaveRequest" useGeneratedKeys="true" keyProperty="id">
+        insert into leave_request
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="studentId != null">student_id</if>
+                <if test="leaveType != null">leave_type</if>
+                <if test="startTime != null">start_time</if>
+                <if test="endTime != null">end_time</if>
+                <if test="reason != null">reason</if>
+                status
+                create_time
+            </trim>
+                values
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="studentId != null">#{studentId}</if>
+                <if test="leaveType != null">#{leaveType}</if>
+                <if test="startTime != null">#{startTime}</if>
+                <if test="endTime != null">#{endTime}</if>
+                <if test="reason != null">#{reason}</if>
+                '待审批'
+                now()
+            </trim>
+    </insert>
+    <!-- 审批请假申请 -->
+    <insert id="approveLeaveRequest">
+        insert into leave_approval_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">leave_request_id</if>
+            <if test="approverId != null">approver_id</if>
+            <if test="result != null">result</if>
+            <if test="comment != null">comment</if>
+            approve_time
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id}</if>
+            <if test="approverId != null">#{approverId}</if>
+            <if test="result != null">#{result}</if>
+            <if test="comment != null">#{comment}</if>
+            now()
+        </trim>
+    </insert>
+
+
+    <select id="getLeaveRequestDetail" resultMap="LeaveRequestDetailMap">
+        select l.id, l.student_id, s.student_name, l.leave_type,
+               l.start_time, l.end_time, l.reason, l.status,
+               l.create_time, l.update_time,
+               log.id as log_id, log.approver_id, log.approve_time,
+               log.result as log_result, log.comment,
+               t.name as approver_name
+        from leave_request l
+                 left join student s on l.student_id = s.id
+                 left join leave_approval_log log on l.id = log.leave_request_id
+                 left join teacher t on log.approver_id = t.id
+        where l.id = #{id}
+    </select>
+    <!-- 获取请假申请详情 -->
+    <select id="getLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.LeaveRequestListVO">
+        select l.id, s.student_name, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
+        from leave_request l
+        left join student s on l.student_id = s.id
+        <where>
+            <if test="studentId != null">l.student_id = #{studentId}</if>
+            <if test="status != null">l.status = #{status}</if>
+        </where>
+        order by l.id desc
+    </select>
+    <!-- 获取请假申请列表 -->
+    <select id="getMyLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.MyLeaveRequestVO">
+        select l.id, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
+        from leave_request l
+        left join student s on l.student_id = s.id
+        <where>
+            <if test="status != null">l.status = #{status}</if>
+            l.student_id = #{studentId}
+        </where>
+        order by l.id desc
+    </select>
+    <!-- 获取待审批请假申请列表 -->
+    <select id="getPendingApprovalList" resultType="com.hxq.smart_campus.entity.vo.PendingLeaveRequestVO">
+        select l.id, l.student_id, s.student_name, l.leave_type, l.start_time, l.end_time, l.reason, l.create_time
+        from leave_request l
+        left join student s on l.student_id = s.id
+        <where>
+            l.status = #{leaveApplyStatusWaiting}
+        </where>
+        order by l.id desc
+    </select>
+    <!-- 获取请假申请审批日志列表 -->
+    <select id="getLeaveApprovalLogList" resultType="com.hxq.smart_campus.entity.vo.LeaveApprovalLogVO">
+        select l.id, l.approver_id, t.name as approver_name, l.approve_time, l.result, l.comment
+        from leave_approval_log l
+        left join teacher t on l.approver_id = t.id
+        <where>
+            <if test="leaveRequestId != null">l.leave_request_id = #{leaveRequestId}</if>
+        </where>
+    </select>
+</mapper>

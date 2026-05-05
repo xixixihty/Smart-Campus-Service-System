@@ -16,6 +16,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    /**
+     * 资源不存在异常 → HTTP 404
+     */
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Result<Void> handleNotFoundException(NotFoundException e) {
+        log.warn("资源不存在: errorCode={}, errorMessage={}", e.getErrorCode(), e.getErrorMessage());
+        return Result.error(e.getErrorCode(), e.getErrorMessage());
+    }
+
+
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleBusinessException(BusinessException e) {
