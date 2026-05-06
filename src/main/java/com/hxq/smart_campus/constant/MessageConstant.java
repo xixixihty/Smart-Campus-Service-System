@@ -286,4 +286,14 @@ public class MessageConstant {
      */
     public static final String LEAVE_APPLY_STATUS_CANCELED = "已取消";
 
+
+    /**
+     * 通知状态发布
+     */
+    public static final String NOTICE_STATUS_PUBLISHED = "发布";
+    /**
+     * 通知状态撤回
+     */
+    public static final String NOTICE_STATUS_RETRACTED = "撤回";
+
 }

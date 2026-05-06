@@ -20,4 +20,13 @@ public class RedisConstant {
      * 可选课程缓存键前缀1
      */
     public static final String AVAILABLE_COURSE_KEY_PREFIX = "availableCourse:";
+
+    /**
+     * 通知缓存键前缀
+     */
+    public static final String NOTICE_KEY_PREFIX = "notice:";
+    /**
+     * 我的通知缓存键前缀
+     */
+    public static final String MY_NOTICE_KEY_PREFIX = "myNotice:";
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.NoticeMapper">
+    <!-- 发布通知 -->
+    <insert id="insertNotice" useGeneratedKeys="true" keyProperty="id">
+        insert into notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="publisherId != null">publisher_id,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="targetType != null and targetType != ''">target_type,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="targetName != null and targetName != ''">target_name,</if>
+            status,
+            create_time
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="publisherId != null">#{publisherId},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="targetType != null and targetType != ''">#{targetType},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="targetName != null and targetName != ''">#{targetName},</if>
+            '发布',
+            now()
+        </trim>
+    </insert>
+    <!-- 更新通知 -->
+    <update id="updateNotice">
+        update notice
+            <set>
+                <if test="title != null and title != ''">title = #{title},</if>
+                <if test="content != null and content != ''">content = #{content},</if>
+                <if test="targetType != null and targetType != ''">target_type = #{targetType},</if>
+                <if test="targetId != null">target_id = #{targetId},</if>
+                update_time = now()
+            </set>
+        where id = #{id}
+    </update>
+    <!-- 获取通知详情 -->
+    <select id="getNoticeDetail" resultType="com.hxq.smart_campus.entity.vo.NoticeDetailVO">
+        select n.id, n.title, n.content, n.publisher_id, t.name as publisher_name, n.publish_time, n.target_type,
+               n.target_id, n.target_name, n.status, n.create_time, n.update_time
+        from notice n
+        left join teacher t on n.publisher_id = t.id
+        where n.id = #{id}
+    </select>
+    <!-- 获取通知列表 -->
+    <select id="getNoticeList" resultType="com.hxq.smart_campus.entity.vo.NoticeListVO">
+        select n.id, n.title, t.name as publisher_name, n.publish_time, n.target_type, n.status, n.create_time
+        from notice n
+        left join teacher t on n.publisher_id = t.id
+        <where>
+            <if test="title != null and title != ''">n.title like CONCAT('%', #{title}, '%')</if>
+            <if test="targetType != null and targetType != ''">and n.target_type = #{targetType}</if>
+            <if test="status != null and status != ''">and n.status = #{status}</if>
+        </where>
+        order by n.create_time desc
+    </select>
+    <!-- 获取我的通知列表 -->
+    <select id="getMyNoticeList" resultType="com.hxq.smart_campus.entity.vo.MyNoticeVO">
+        select n.id, n.title, n.content, n.publisher_id, t.name as publisher_name, n.publish_time, n.target_type,
+               n.target_id, n.target_name, n.status, n.create_time, n.update_time
+        from notice n
+        left join teacher t on n.publisher_id = t.id
+        where n.status = '发布'
+          and (
+              n.target_type = '全部'
+              <if test="className != null and className != ''">
+                  or n.target_name = #{className}
+              </if>
+              <if test="majorName != null and majorName != ''">
+                  or n.target_name = #{majorName}
+              </if>
+              <if test="collegeName != null and collegeName != ''">
+                  or n.target_name = #{collegeName}
+              </if>
+          )
+        order by n.publish_time desc
+    </select>
+</mapper>

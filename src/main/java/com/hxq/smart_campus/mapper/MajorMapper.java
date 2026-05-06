@@ -69,4 +69,11 @@ public interface MajorMapper {
      * @return 关联的班级数量
      */
     int countRelatedClasses(@Param("id") Long id);
+
+    /**
+     * 根据班级ID查询专业ID
+     * @param classId 班级ID
+     * @return
+     */
+    MajorDetailVO getMajorIdByClassId(Long classId);
 }

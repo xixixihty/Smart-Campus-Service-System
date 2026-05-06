@@ -76,5 +76,11 @@
     <select id="countRelatedClasses" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM class WHERE major_id = #{id}
     </select>
+    <!-- 通过班级id查询专业信息 -->
+    <select id="getMajorIdByClassId" resultType="com.hxq.smart_campus.entity.vo.MajorDetailVO">
+        SELECT m.id, m.college_id, c.college_name, m.major_code, m.major_name, m.study_years, m.status, m.create_time, m.update_time
+        FROM class c left join major m on c.major_id = m.id
+        WHERE c.id = #{classId}
+    </select>
 
 </mapper>
