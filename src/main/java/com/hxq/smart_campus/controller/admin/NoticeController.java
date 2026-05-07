@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.NoticeCreateDTO;
@@ -15,16 +15,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/notices")
+@RequestMapping("/api/notices/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "通知管理模块")
 public class NoticeController {
     private final NoticeService noticeService;
 
+    /**
+     * 发布通知
+     * @param noticeCreateDTO
+     * @return
+     */
     @PostMapping
     @Operation(summary = "发布通知")
     public Result<NoticeResponseDTO> insertNotice(@Valid @RequestBody NoticeCreateDTO noticeCreateDTO) {
@@ -32,7 +37,12 @@ public class NoticeController {
         NoticeResponseDTO noticeResponseDTO = noticeService.insertNotice(noticeCreateDTO);
         return Result.success(noticeResponseDTO);
     }
-
+    /**
+     * 更新通知
+     * @param id
+     * @param noticeUpdateDTO
+     * @return
+     */
     @PutMapping("/{id}")
     @Operation(summary = "更新通知")
     public Result<NoticeResponseDTO> updateNotice(@PathVariable Long id,
@@ -42,6 +52,11 @@ public class NoticeController {
         return Result.success(noticeResponseDTO);
     }
 
+    /**
+     * 撤回通知
+     * @param id
+     * @return
+     */
     @PostMapping("/{id}/withdraw")
     @Operation(summary = "撤回通知")
     public Result<Boolean> withdrawNotice(@PathVariable Long id) {
@@ -50,6 +65,11 @@ public class NoticeController {
         return Result.success(result);
     }
 
+    /**
+     * 删除通知
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除通知")
     public Result<Boolean> deleteNotice(@PathVariable Long id) {
@@ -58,6 +78,15 @@ public class NoticeController {
         return Result.success(result);
     }
 
+    /**
+     * 获取通知列表
+     * @param pageNum
+     * @param pageSize
+     * @param title
+     * @param targetType
+     * @param status
+     * @return
+     */
     @GetMapping
     @Operation(summary = "获取通知列表")
     public Result<PageInfo<NoticeListVO>> getNoticeList(
@@ -72,6 +101,11 @@ public class NoticeController {
         return Result.success(noticeListVO);
     }
 
+    /**
+     * 获取通知详情
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取通知详情")
     public Result<NoticeDetailVO> getNoticeDetail(@PathVariable Long id) {
@@ -80,6 +114,12 @@ public class NoticeController {
         return Result.success(noticeDetailVO);
     }
 
+    /**
+     * 获取我的通知列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/my")
     @Operation(summary = "获取当前用户通知列表")
     public Result<PageInfo<MyNoticeVO>> getMyNoticeList(

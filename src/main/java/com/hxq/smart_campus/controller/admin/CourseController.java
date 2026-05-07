@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 
 import com.github.pagehelper.PageInfo;
@@ -20,12 +20,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/courses")
+@RequestMapping("/api/courses/admin")
 @Tag(name = "课程管理")
 public class CourseController {
     private final CourseService courseService;
 
-    @RequestMapping
+    /**
+     * 获取课程列表
+     * @param pageNum
+     * @param pageSize
+     * @param courseCode
+     * @param courseName
+     * @param type
+     * @param status
+     * @return
+     */
+    @GetMapping
     @Operation(summary = "获取课程列表")
     public Result<PageInfo<CourseListVO>> getCourseList(
             @RequestParam(defaultValue = "1") Integer pageNum,
@@ -41,6 +51,11 @@ public class CourseController {
         return Result.success(pageInfo);
     }
 
+    /**
+     * 获取课程详情
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取课程详情")
     public Result<CourseDetailVO> getCourseDetail(@PathVariable Long id) {
@@ -50,6 +65,11 @@ public class CourseController {
 
     }
 
+    /**
+     * 创建课程
+     * @param courseCreateDTO
+     * @return
+     */
     @PostMapping
     @Operation(summary = "创建课程")
     public Result<CourseResponseDTO> insertCourse(@RequestBody CourseCreateDTO courseCreateDTO) {
@@ -58,6 +78,11 @@ public class CourseController {
         return Result.success(courseResponseDTO);
     }
 
+    /**
+     * 更新课程
+     * @param courseUpdateDTO
+     * @return
+     */
     @PutMapping
     @Operation(summary = "更新课程")
     public Result<CourseResponseDTO> updateCourse(@RequestBody CourseUpdateDTO courseUpdateDTO) {
@@ -66,6 +91,11 @@ public class CourseController {
         return Result.success(courseResponseDTO);
     }
 
+    /**
+     * 删除课程
+     * @param ids
+     * @return
+     */
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除课程")
     public Result<Boolean> deleteCourse(@PathVariable List<Long> ids) {

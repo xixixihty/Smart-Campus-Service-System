@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatCreateDTO;
@@ -17,13 +17,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/seats")
+@RequestMapping("/api/seats/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "座位管理")
 public class SeatController {
     private final SeatService seatService;
 
+    /**
+     * 新增座位
+     * @param seatCreateDTO
+     * @return
+     */
     @PostMapping
     @Operation(summary = "新增座位")
     public Result<SeatResponseDTO> insertSeat(@RequestBody SeatCreateDTO seatCreateDTO) {
@@ -32,6 +37,11 @@ public class SeatController {
         return Result.success(seatResponseDTO);
     }
 
+    /**
+     * 更新座位
+     * @param seatUpdateDTO
+     * @return
+     */
     @PutMapping
     @Operation(summary = "更新座位")
     public Result<SeatResponseDTO> updateSeat(@RequestBody SeatUpdateDTO seatUpdateDTO) {
@@ -40,6 +50,11 @@ public class SeatController {
         return Result.success(seatResponseDTO);
     }
 
+    /**
+     * 删除座位
+     * @param ids
+     * @return
+     */
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除座位")
     public Result<Boolean> deleteSeat(@PathVariable List<Long> ids) {
@@ -48,6 +63,14 @@ public class SeatController {
         return Result.success(b);
     }
 
+    /**
+     * 获取座位列表
+     * @param pageNum
+     * @param pageSize
+     * @param roomId
+     * @param status
+     * @return
+     */
     @GetMapping
     @Operation(summary = "获取座位列表")
     public Result<PageInfo<SeatListVO>> getSeatList(
@@ -61,6 +84,11 @@ public class SeatController {
         return Result.success(pageInfo);
     }
 
+    /**
+     * 获取座位详情
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取座位详情")
     public Result<SeatDetailVO> getSeatDetail(@PathVariable Long id) {

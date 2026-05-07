@@ -73,7 +73,7 @@
 
 
     <select id="getLeaveRequestDetail" resultMap="LeaveRequestDetailMap">
-        select l.id, l.student_id, s.student_name, l.leave_type,
+        select l.id, l.student_id, s.name as student_name, l.leave_type,
                l.start_time, l.end_time, l.reason, l.status,
                l.create_time, l.update_time,
                log.id as log_id, log.approver_id, log.approve_time,
@@ -87,7 +87,7 @@
     </select>
     <!-- 获取请假申请详情 -->
     <select id="getLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.LeaveRequestListVO">
-        select l.id, s.student_name, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
+        select l.id, s.name as student_name, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
         <where>
@@ -109,7 +109,7 @@
     </select>
     <!-- 获取待审批请假申请列表 -->
     <select id="getPendingApprovalList" resultType="com.hxq.smart_campus.entity.vo.PendingLeaveRequestVO">
-        select l.id, l.student_id, s.student_name, l.leave_type, l.start_time, l.end_time, l.reason, l.create_time
+        select l.id, l.student_id, s.name as student_name, l.leave_type, l.start_time, l.end_time, l.reason, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
         <where>

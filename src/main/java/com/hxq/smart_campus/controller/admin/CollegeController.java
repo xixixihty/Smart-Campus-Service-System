@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.CollegeCreateDTO;
@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/colleges")
+@RequestMapping("/api/colleges/admin")
 @Tag(name = "学院管理模块")
 public class CollegeController {
 

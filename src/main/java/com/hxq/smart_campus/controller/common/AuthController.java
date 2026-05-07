@@ -1,7 +1,8 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.common;
 
 import com.hxq.smart_campus.entity.dto.LoginDTO;
 import com.hxq.smart_campus.entity.dto.LoginResponseDTO;
+import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AuthController {
      * @return 登录响应
      */
     @PostMapping("/login")
-    public LoginResponseDTO login(@RequestBody LoginDTO loginDTO) {
-        return authService.login(loginDTO);
+    public Result<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+        return Result.success(authService.login(loginDTO));
     }
 }

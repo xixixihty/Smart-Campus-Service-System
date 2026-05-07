@@ -131,4 +131,11 @@ public interface ScoreEntryMapper {
      */
     @Select("SELECT name FROM semester WHERE id = #{semesterId}")
     String getSemesterNameById(@Param("semesterId") Long semesterId);
+
+    /**
+     * 批量录入成绩
+     * @param scoreEntries
+     * @return
+     */
+    int batchInsertScore(@Param("scoreEntries") List<ScoreEntryCreateDTO> scoreEntries);
 }

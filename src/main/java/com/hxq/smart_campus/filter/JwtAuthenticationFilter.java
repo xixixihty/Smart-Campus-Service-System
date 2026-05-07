@@ -44,7 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException e) {
-            log.warn("JWT认证失败: {}", e.getMessage());
+            response.sendError(401, "JWT认证失败");
+            return;
         } finally {
             try {
                 filterChain.doFilter(request, response);

@@ -1,16 +1,13 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.BookCategoryCreateDTO;
 import com.hxq.smart_campus.entity.dto.BookCategoryResponseDTO;
 import com.hxq.smart_campus.entity.dto.BookCategoryUpdateDTO;
-import com.hxq.smart_campus.entity.pojo.BookCategory;
 import com.hxq.smart_campus.entity.vo.BookCategoryDetailVO;
 import com.hxq.smart_campus.entity.vo.BookCategoryListVO;
-import com.hxq.smart_campus.entity.vo.BookDetailVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.BookCategoryService;
-import com.hxq.smart_campus.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @Tag(name = "图书类别管理")
-@RequestMapping("/book-categories")
+@RequestMapping("/api/book-categories/admin")
 @RequiredArgsConstructor
 public class BookCategoryController {
     private final BookCategoryService bookCategoryService;

@@ -114,7 +114,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         String targetStatus = "批准".equals(leaveApprovalDTO.getResult()) ? LEAVE_APPLY_STATUS_APPROVED : LEAVE_APPLY_STATUS_REJECTED;
         int row = leaveApprovalMapper.updateLeaveRequestStatus(leaveApprovalDTO.getId(), targetStatus);
         if (row <= 0) {
-            throw new BusinessException("请假申请状态更新失败");
+            throw new BusinessException("该申请已被处理，无法重复审批");
         }
         return true;
     }

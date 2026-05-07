@@ -44,7 +44,7 @@ public interface LeaveApprovalMapper {
      * @param leaveApplyStatusApproved
      * @return
      */
-    @Update("UPDATE leave_request SET status = #{leaveApplyStatusApproved} , update_time = now() WHERE id = #{id}")
+    @Update("UPDATE leave_request SET status = #{leaveApplyStatusApproved} , update_time = now() WHERE id = #{id} AND status = #{status}")
     int updateLeaveRequestStatus(@Param("id") Long id,
                                  @Param("leaveApplyStatusApproved") String leaveApplyStatusApproved);
 

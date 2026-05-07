@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.BookCreateDTO;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books/admin")
 @Slf4j
 @Tag(name = "图书管理")
 @RequiredArgsConstructor

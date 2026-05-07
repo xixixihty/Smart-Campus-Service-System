@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.user;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.ReadingReportCreateDTO;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/reading-reports")
+@RequestMapping("/api/reading-reports/user")
 @Tag(name = "读书报告管理")
 @RequiredArgsConstructor
 @Slf4j

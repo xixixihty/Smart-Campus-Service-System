@@ -28,7 +28,7 @@ public interface ScoreEntryService {
      * @param batchScoreEntryDTO
      * @return
      */
-    boolean BatchScore(BatchScoreEntryDTO batchScoreEntryDTO);
+    boolean batchScore(BatchScoreEntryDTO batchScoreEntryDTO);
 
     /**
      * 获取成绩列表

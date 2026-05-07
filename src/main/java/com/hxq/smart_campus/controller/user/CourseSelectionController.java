@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.user;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.CourseSelectionCreateDTO;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/course-selections")
+@RequestMapping("/api/course-selections/user")
 @Tag(name = "选课管理模块")
 @RequiredArgsConstructor
 public class CourseSelectionController {
@@ -60,6 +60,8 @@ public class CourseSelectionController {
      * @param status
      * @return
      */
+    @GetMapping
+    @Operation(summary = "查询选课列表")
     public Result<PageInfo<CourseSelectionListVO>> getCourseSelectionList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,

@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.*;
@@ -15,17 +15,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/score-entries")
+@RequestMapping("/api/score-entries/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "成绩管理模块")
 public class ScoreEntryController {
     private final ScoreEntryService scoreEntryService;
 
-    @PostMapping("/insert")
+    /**
+     * 录入成绩
+     * @param scoreEntryCreateDTO
+     * @return
+     */
+    @PostMapping
     @Operation(summary = "录入成绩")
     public Result<ScoreEntryResponseDTO> insertScore(@RequestBody ScoreEntryCreateDTO scoreEntryCreateDTO) {
         log.info("录入成绩: {}", scoreEntryCreateDTO);
@@ -33,6 +36,11 @@ public class ScoreEntryController {
         return Result.success(scoreEntryResponseDTO);
     }
 
+    /**
+     * 更新成绩
+     * @param scoreEntryUpdateDTO
+     * @return
+     */
     @PutMapping
     @Operation(summary = "更新成绩")
     public Result<ScoreEntryResponseDTO> updateScore(@RequestBody ScoreEntryUpdateDTO scoreEntryUpdateDTO) {
@@ -41,14 +49,28 @@ public class ScoreEntryController {
         return Result.success(scoreEntryResponseDTO);
     }
 
+    /**
+     * 批量录入成绩
+     * @param batchScoreEntryDTO
+     * @return
+     */
     @PostMapping("/batch")
     @Operation(summary = "批量录入成绩")
-    public Result<Boolean> BatchScore(@RequestBody BatchScoreEntryDTO batchScoreEntryDTO) {
+    public Result<Boolean> batchScore(@RequestBody BatchScoreEntryDTO batchScoreEntryDTO) {
         log.info("批量录入成绩: {}", batchScoreEntryDTO);
-        boolean result = scoreEntryService.BatchScore(batchScoreEntryDTO);
+        boolean result = scoreEntryService.batchScore(batchScoreEntryDTO);
         return Result.success(result);
     }
 
+    /**
+     * 获取成绩列表
+     * @param pageNum
+     * @param pageSize
+     * @param courseId
+     * @param studentId
+     * @param semesterId
+     * @return
+     */
     @GetMapping
     @Operation(summary = "获取成绩列表")
     public Result<PageInfo<ScoreEntryListVO>> getScoreList(
@@ -63,6 +85,11 @@ public class ScoreEntryController {
         return Result.success(scoreList);
     }
 
+    /**
+     * 获取成绩详情
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取成绩详情")
     public Result<ScoreEntryDetailVO> getScoreDetail(@PathVariable Long id) {
@@ -71,17 +98,34 @@ public class ScoreEntryController {
         return Result.success(scoreEntryDetailVO);
     }
 
-    @GetMapping("/my")
-    @Operation(summary = "获取我的成绩列表")
-    public Result<List<ScoreEntryListVO>> getMyScoreList(
-            @RequestParam(required = false) Long semesterId,
-            @RequestParam(required = false) Long courseId
-    ) {
-        log.info("获取我的成绩列表: semesterId={}, courseId={}", semesterId, courseId);
-        List<ScoreEntryListVO> scoreList = scoreEntryService.getMyScoreList(semesterId, courseId);
-        return Result.success(scoreList);
-    }
+//    /**
+//     * 获取我的成绩列表
+//     * @param semesterId
+//     * @param courseId
+//     * @return
+//     */
+//    @GetMapping("/my")
+//    @Operation(summary = "获取我的成绩列表")
+//    public Result<List<ScoreEntryListVO>> getMyScoreList(
+//            @RequestParam(required = false) Long semesterId,
+//            @RequestParam(required = false) Long courseId
+//    ) {
+//        log.info("获取我的成绩列表: semesterId={}, courseId={}", semesterId, courseId);
+//        List<ScoreEntryListVO> scoreList = scoreEntryService.getMyScoreList(semesterId, courseId);
+//        return Result.success(scoreList);
+//    }
 
+    /**
+     * 获取成绩统计信息
+     * @param semesterId
+     * @param dimension
+     * @param courseId
+     * @param studentId
+     * @param classId
+     * @param majorId
+     * @param collegeId
+     * @return
+     */
     @GetMapping("/statistics")
     @Operation(summary = "获取成绩统计")
     public Result<ScoreStatisticsVO> getScoreStatistics(
@@ -109,6 +153,12 @@ public class ScoreEntryController {
         return Result.success(scoreStatisticsVO);
     }
 
+    /**
+     * 获取平均绩点
+     * @param studentId
+     * @param semesterId
+     * @return
+     */
     @GetMapping("/gpa")
     @Operation(summary = "获取GPA")
     public Result<GpaVO> getGpa(

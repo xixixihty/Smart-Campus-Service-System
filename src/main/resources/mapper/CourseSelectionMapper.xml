@@ -7,22 +7,18 @@
     <insert id="insertCourseSelection">
         insert into course_selection
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="studentId != null">student_id</if>
-            <if test="courseId != null">course_id</if>
-            <if test="semesterId != null">semester_id</if>
+            student_id, course_id, semester_id, status, create_time, update_time
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="studentId != null">#{studentId}</if>
-            <if test="courseId != null">#{courseId}</if>
-            <if test="semesterId != null">#{semesterId}</if>
+            #{studentId}, #{courseId}, #{semesterId}, '已选', now(), now()
         </trim>
     </insert>
     <!-- 退课 -->
     <update id="dropCourse">
         update course_selection
         <set>
-            status = '已退课'
+            status = '已退课',
             update_time = now()
         </set>
         where id = #{courseSelectionId}
@@ -43,7 +39,7 @@
     </select>
     <!-- 获取单一选课信息 -->
     <select id="getCourseSelectionListVO" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -52,7 +48,7 @@
     </select>
     <!-- 查询选课列表 -->
     <select id="getCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
         from course_selection cs
                  left join course c on cs.course_id = c.id
                  left join student stu on cs.student_id = stu.id

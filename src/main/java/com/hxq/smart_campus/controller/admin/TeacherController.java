@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.TeacherCreateDTO;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/teachers")
+@RequestMapping("/api/teachers/admin")
 @Slf4j
 @Tag(name = "教师管理模块")
 public class TeacherController {

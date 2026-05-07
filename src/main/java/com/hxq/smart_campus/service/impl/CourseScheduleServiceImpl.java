@@ -13,6 +13,7 @@ import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.exception.CourseScheduleException;
 import com.hxq.smart_campus.mapper.CourseScheduleMapper;
 import com.hxq.smart_campus.service.CourseScheduleService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import com.hxq.smart_campus.utils.TimeConflictUtils;
 import com.hxq.smart_campus.utils.WeekRangeUtils;
 import lombok.RequiredArgsConstructor;
@@ -300,19 +301,18 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
     @Override
     public List<TimetableVO> queryTimetable(Long semesterId, Long userId, String userType) {
         log.info("查询课表: semesterId={}, userId={}, userType={}", semesterId, userId, userType);
-        
+        // 从登陆信息中判断用户的类型
+        String currentUserType = SecurityUtils.getCurrentUserType();
         try {
             List<Long> classIds = null;
-            
-            if (userType == null || userType.isEmpty()) {
+            if (currentUserType == null || currentUserType.isEmpty()) {
                 log.info("查询所有的课表");
-            } else if (USER_TYPE_TEACHER.equals(userType)) {
+            } else if (USER_TYPE_TEACHER.equals(currentUserType)) {
                 log.info("查询教师课表: userId={}", userId);
                 userType = USER_TYPE_TEACHER;
-            } else if (USER_TYPE_STUDENT.equals(userType)) {
+            } else if (USER_TYPE_STUDENT.equals(currentUserType)) {
                 log.info("查询学生课表: userId={}", userId);
                 userType = USER_TYPE_STUDENT;
-                
                 if (userId != null) {
                     classIds = getClassIdsByStudentId(userId);
                     if (classIds == null || classIds.isEmpty()) {

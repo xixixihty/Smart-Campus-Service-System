@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SemesterCreateDTO;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/semesters")
+@RequestMapping("/api/semesters/admin")
 @Tag(name = "学期管理")
 public class SemesterController {
     private final SemesterService semesterService;

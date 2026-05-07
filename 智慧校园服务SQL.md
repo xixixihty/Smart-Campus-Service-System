@@ -249,6 +249,12 @@ hours TINYINT UNSIGNED NOT NULL COMMENT '总学时',
 type VARCHAR(20) NOT NULL COMMENT '课程类型（必修/选修/公选）',
 capacity SMALLINT UNSIGNED NULL COMMENT '课程容量（选修/公选课程有效，必修课程为空）',
 status VARCHAR(20) NOT NULL DEFAULT '开课' COMMENT '状态（开课/停课）',
+week_day TINYINT UNSIGNED COMMENT '上课星期几(1-7)',
+class_start TINYINT UNSIGNED COMMENT '上课开始节次',
+class_end TINYINT UNSIGNED COMMENT '上课结束节次',
+week_start TINYINT UNSIGNED COMMENT '开始周次',
+week_end TINYINT UNSIGNED COMMENT '结束周次',
+schedule_type VARCHAR(20) COMMENT '排课类型',
 create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
 PRIMARY KEY (id),
@@ -319,12 +325,15 @@ usual_score DECIMAL(5,2) COMMENT '平时成绩',
 final_score DECIMAL(5,2) COMMENT '期末成绩',
 total_score DECIMAL(5,2) COMMENT '总评成绩',
 makeup_score DECIMAL(5,2) COMMENT '补考成绩',
+score_point DECIMAL(3,2) COMMENT '绩点',
 exam_status VARCHAR(20) NOT NULL DEFAULT '正常' COMMENT '考试状态（正常/缓考/缺考/作弊/补考）',
+makeup_exam_id BIGINT UNSIGNED COMMENT '关联补考ID',
 PRIMARY KEY (id),
 INDEX idx_course_id (course_id),
 INDEX idx_student_id (student_id),
 INDEX idx_semester_id (semester_id),
 INDEX idx_exam_status (exam_status),
+INDEX idx_makeup_exam_id (makeup_exam_id),
 UNIQUE INDEX uk_student_course_semester (student_id, course_id, semester_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='成绩录入表';
 
@@ -353,6 +362,7 @@ leave_request_id BIGINT UNSIGNED NOT NULL COMMENT '请假申请ID',
 approver_id BIGINT UNSIGNED NOT NULL COMMENT '审批人ID',
 approve_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '审批时间',
 result VARCHAR(20) NOT NULL COMMENT '审批结果（批准/驳回）',
+comment VARCHAR(500) COMMENT '审批意见',
 PRIMARY KEY (id),
 INDEX idx_leave_request_id (leave_request_id),
 INDEX idx_approver_id (approver_id),
@@ -367,6 +377,8 @@ content TEXT NOT NULL COMMENT '正文内容',
 publisher_id BIGINT UNSIGNED NOT NULL COMMENT '发布人ID',
 publish_time DATETIME COMMENT '发布时间',
 target_type VARCHAR(20) NOT NULL DEFAULT '全部' COMMENT '发布范围类型（全部/学院/专业/班级）',
+target_id BIGINT UNSIGNED COMMENT '发布范围ID',
+target_name VARCHAR(100) COMMENT '发布范围名称',
 status VARCHAR(20) NOT NULL DEFAULT '发布' COMMENT '状态（发布/撤回）',
 create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -375,6 +387,7 @@ INDEX idx_title (title),
 INDEX idx_publisher_id (publisher_id),
 INDEX idx_publish_time (publish_time),
 INDEX idx_target_type (target_type),
+INDEX idx_target_id (target_id),
 INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知公告表';
 
@@ -471,14 +484,14 @@ INSERT INTO semester (id, name, start_date, end_date, is_current, status) VALUES
 (2, '2023-2024第二学期', '2024-02-25', '2024-07-10', 1, '进行中');
 
 -- 课程表数据
-INSERT INTO course (id, course_code, course_name, credit, hours, type, capacity, status) VALUES
-(1, 'CS101', '计算机导论', 3.0, 48, '必修', NULL, '开课'),
-(2, 'CS102', 'Java程序设计', 4.0, 64, '必修', NULL, '开课'),
-(3, 'CS201', '数据结构', 4.0, 64, '必修', NULL, '开课'),
-(4, 'SE101', '软件工程概论', 3.0, 48, '必修', NULL, '开课'),
-(5, 'MATH101', '高等数学', 5.0, 80, '必修', NULL, '开课'),
-(6, 'CS301', '人工智能导论', 2.0, 32, '选修', 60, '开课'),
-(7, 'ENG101', '大学英语', 4.0, 64, '公选', 120, '开课');
+INSERT INTO course (id, course_code, course_name, credit, hours, type, capacity, status, week_day, class_start, class_end, week_start, week_end, schedule_type) VALUES
+(1, 'CS101', '计算机导论', 3.0, 48, '必修', NULL, '开课', 1, 1, 2, 1, 16, '固定'),
+(2, 'CS102', 'Java程序设计', 4.0, 64, '必修', NULL, '开课', 3, 3, 4, 1, 16, '固定'),
+(3, 'CS201', '数据结构', 4.0, 64, '必修', NULL, '开课', 2, 1, 2, 1, 16, '固定'),
+(4, 'SE101', '软件工程概论', 3.0, 48, '必修', NULL, '开课', 4, 1, 2, 1, 16, '固定'),
+(5, 'MATH101', '高等数学', 5.0, 80, '必修', NULL, '开课', 5, 5, 6, 1, 16, '固定'),
+(6, 'CS301', '人工智能导论', 2.0, 32, '选修', 60, '开课', 1, 7, 8, 1, 8, '灵活'),
+(7, 'ENG101', '大学英语', 4.0, 64, '公选', 120, '开课', 3, 5, 6, 1, 16, '固定');
 
 -- 排课表数据
 INSERT INTO course_schedule (id, semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range) VALUES
@@ -502,13 +515,13 @@ INSERT INTO course_selection (id, student_id, course_id, semester_id, status, sc
 (5, 4, 7, 2, '已选', 82.0, 3.3);
 
 -- 成绩录入表数据
-INSERT INTO score_entry (id, course_id, student_id, semester_id, usual_score, final_score, total_score, makeup_score, exam_status) VALUES
-(1, 2, 1, 2, 90, 85, 87.5, NULL, '正常'),
-(2, 2, 2, 2, 88, 92, 90.0, NULL, '正常'),
-(3, 3, 1, 2, 75, 80, 77.5, NULL, '正常'),
-(4, 5, 5, 2, 60, 55, 57.0, NULL, '缺考'),
-(5, 6, 1, 2, 95, 90, 92.5, NULL, '正常'),
-(6, 6, 2, 2, 90, 92, 91.0, NULL, '正常');
+INSERT INTO score_entry (id, course_id, student_id, semester_id, usual_score, final_score, total_score, makeup_score, score_point, exam_status, makeup_exam_id) VALUES
+(1, 2, 1, 2, 90, 85, 87.5, NULL, 3.3, '正常', NULL),
+(2, 2, 2, 2, 88, 92, 90.0, NULL, 4.0, '正常', NULL),
+(3, 3, 1, 2, 75, 80, 77.5, NULL, 2.7, '正常', NULL),
+(4, 5, 5, 2, 60, 55, 57.0, NULL, 0.0, '缺考', 1),
+(5, 6, 1, 2, 95, 90, 92.5, NULL, 4.0, '正常', NULL),
+(6, 6, 2, 2, 90, 92, 91.0, NULL, 4.0, '正常', NULL);
 
 -- 请假申请表数据
 INSERT INTO leave_request (id, student_id, leave_type, start_time, end_time, reason, status, create_time) VALUES
@@ -517,15 +530,15 @@ INSERT INTO leave_request (id, student_id, leave_type, start_time, end_time, rea
 (3, 3, '事假', '2024-06-15 08:00:00', '2024-06-16 17:00:00', '参加竞赛', '待审批', '2024-06-12 14:20:00');
 
 -- 请假审批记录表数据
-INSERT INTO leave_approval_log (id, leave_request_id, approver_id, approve_time, result) VALUES
-(1, 1, 1, '2024-06-05 14:00:00', '批准'),
-(2, 2, 1, '2024-06-11 08:30:00', '批准');
+INSERT INTO leave_approval_log (id, leave_request_id, approver_id, approve_time, result, comment) VALUES
+(1, 1, 1, '2024-06-05 14:00:00', '批准', '同意请假'),
+(2, 2, 1, '2024-06-11 08:30:00', '批准', '注意休息');
 
 -- 通知公告表数据
-INSERT INTO notice (id, title, content, publisher_id, publish_time, target_type, status) VALUES
-(1, '关于期末考试安排的通知', '本学期期末考试将于第18周进行，请各位同学认真复习。', 1, '2024-06-01 09:00:00', '全部', '发布'),
-(2, '图书馆临时闭馆通知', '因电力检修，图书馆6月15日闭馆一天。', 1, '2024-06-10 10:00:00', '全部', '发布'),
-(3, '计算机学院学术讲座通知', '邀请李教授做AI前沿报告，时间：6月20日14:00，地点：博学楼A101', 2, '2024-06-11 08:00:00', '学院', '发布');
+INSERT INTO notice (id, title, content, publisher_id, publish_time, target_type, target_id, target_name, status) VALUES
+(1, '关于期末考试安排的通知', '本学期期末考试将于第18周进行，请各位同学认真复习。', 1, '2024-06-01 09:00:00', '全部', NULL, NULL, '发布'),
+(2, '图书馆临时闭馆通知', '因电力检修，图书馆6月15日闭馆一天。', 1, '2024-06-10 10:00:00', '全部', NULL, NULL, '发布'),
+(3, '计算机学院学术讲座通知', '邀请李教授做AI前沿报告，时间：6月20日14:00，地点：博学楼A101', 2, '2024-06-11 08:00:00', '学院', 1, '计算机科学与技术学院', '发布');
 
 -- 座位信息表数据
 INSERT INTO seat (id, room_id, seat_number, status) VALUES
@@ -588,6 +601,7 @@ ALTER TABLE course_selection ADD CONSTRAINT fk_course_selection_semester_id FORE
 ALTER TABLE score_entry ADD CONSTRAINT fk_score_entry_course_id FOREIGN KEY (course_id) REFERENCES course(id);
 ALTER TABLE score_entry ADD CONSTRAINT fk_score_entry_student_id FOREIGN KEY (student_id) REFERENCES student(id);
 ALTER TABLE score_entry ADD CONSTRAINT fk_score_entry_semester_id FOREIGN KEY (semester_id) REFERENCES semester(id);
+ALTER TABLE score_entry ADD CONSTRAINT fk_score_entry_makeup_exam_id FOREIGN KEY (makeup_exam_id) REFERENCES makeup_exam(id);
 ALTER TABLE leave_request ADD CONSTRAINT fk_leave_request_student_id FOREIGN KEY (student_id) REFERENCES student(id);
 ALTER TABLE leave_approval_log ADD CONSTRAINT fk_leave_approval_log_request_id FOREIGN KEY (leave_request_id) REFERENCES leave_request(id);
 ALTER TABLE leave_approval_log ADD CONSTRAINT fk_leave_approval_log_approver_id FOREIGN KEY (approver_id) REFERENCES teacher(id);

@@ -136,7 +136,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         /**
          * 3. 判断选课时间冲突
          */
-        if (validateTimeConflict(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getSemesterId())) {
+        if (validateTimeConflict(courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getSemesterId())) {
             throw CourseSelectionException.timeConflict("选课时间冲突");
         }
 
@@ -475,28 +475,24 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      * @return
      */
     private Boolean validateTimeConflict(Long studentId, Long courseId, Long semesterId) {
-        // 获取课程的上课时间
         CourseDetailVO course = courseMapper.getCourseDetail(courseId);
         if (course == null) {
             return false;
         }
-        // 不是可选课程，则返回true
-        if (!"ELEXIBLE".equals(course.getScheduleType())) {
-            return true;
+        if ("灵活".equals(course.getScheduleType())) {
+            return false;
         }
-        // 遍历已选课程
         List<CourseSelectionListVO> selectedCourses = courseSelectionMapper.getCourseSelectionList(studentId, null, semesterId, null);
         for (CourseSelectionListVO selected : selectedCourses) {
-            // 获取已选课程的上课时间
-            CourseDetailVO selectedCourse = courseMapper.getCourseDetail(selected.getId());
+            CourseDetailVO selectedCourse = courseMapper.getCourseDetail(selected.getCourseId());
             if (selectedCourse == null) {
                 continue;
             }
             if (hasTimeConflict(course, selectedCourse)) {
-                throw CourseSelectionException.timeConflict("与课程【" + selected.getCourseName() + "】时间冲突");
+                return true;
             }
         }
-            return true;
+        return false;
     }
 
 

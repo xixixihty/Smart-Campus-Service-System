@@ -9,6 +9,7 @@ import com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordListVO;
 import com.hxq.smart_campus.mapper.BorrowRecordMapper;
 import com.hxq.smart_campus.service.BorrowRecordService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -99,15 +100,12 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         calculateOverdueDays(record);
         return record;
     }
-    // TODO： 获取我的借阅记录列表，从登录信息中获取用户ID
     @Override
     public PageInfo<BorrowRecordListVO> getBorrowRecordMyList(Integer pageNum, Integer pageSize, String status, Long userId) {
         log.info("获取我的借阅记录，参数：pageNum={}, pageSize={}, status={}, userId={}", pageNum, pageSize, status, userId);
-        if (userId == null) {
-            throw new IllegalArgumentException("用户ID不能为空！");
-        }
         PageHelper.startPage(pageNum, pageSize);
-        List<BorrowRecordListVO> list = borrowRecordMapper.getBorrowRecordList(userId, null, status);
+        // 从登陆信息中获取到用户ID
+        List<BorrowRecordListVO> list = borrowRecordMapper.getBorrowRecordList(SecurityUtils.getCurrentUserId(), null, status);
         // 计算逾期天数
         list.forEach(this::calculateOverdueDays);
         return new PageInfo<>(list);

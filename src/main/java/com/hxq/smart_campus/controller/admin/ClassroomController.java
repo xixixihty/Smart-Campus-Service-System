@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.ClassroomCreateDTO;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/classrooms")
+@RequestMapping("/api/classrooms/admin")
 @Tag(name = "教室管理")
 public class ClassroomController {
     private final ClassroomService classroomService;

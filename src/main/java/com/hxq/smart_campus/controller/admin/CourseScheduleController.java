@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.ConflictCheckDTO;
@@ -22,9 +22,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/course-schedules")
+@RequestMapping("/api/course-schedules/admin")
 @Slf4j
-@Tag(name = "排课管理")
+@Tag(name = "排课管理模块")
 @RequiredArgsConstructor
 @Validated
 public class CourseScheduleController {
@@ -36,7 +36,7 @@ public class CourseScheduleController {
      * @param courseScheduleCreateDTO
      * @return
      */
-    @PostMapping("/insert")
+    @PostMapping
     @Operation(summary = "创建排课")
     public Result<CourseScheduleResponseDTO> insertCourseSchedule(@Valid @RequestBody CourseScheduleCreateDTO courseScheduleCreateDTO) {
         log.info("创建排课: {}", courseScheduleCreateDTO);

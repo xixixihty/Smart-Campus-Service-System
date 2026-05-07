@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.MakeupExamCreateDTO;
@@ -7,20 +7,16 @@ import com.hxq.smart_campus.entity.dto.MakeupExamScoreDTO;
 import com.hxq.smart_campus.entity.dto.MakeupExamUpdateDTO;
 import com.hxq.smart_campus.entity.vo.MakeupExamDetailVO;
 import com.hxq.smart_campus.entity.vo.MakeupExamListVO;
-import com.hxq.smart_campus.entity.vo.MyMakeupExamVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.MakeupExamService;
-import com.hxq.smart_campus.service.impl.MakeupExamServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/makeup-exams")
+@RequestMapping("/api/make-up-exams/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "补考管理模块")
@@ -101,21 +97,21 @@ public class MakeUpExamController {
         return Result.success(makeupExamDetailVO);
     }
 
-    /**
-     * 查询我的补考安排列表
-     * @param status
-     * @return
-     */
-    @GetMapping("/my")
-    @Operation(summary = "查询我的补考安排列表")
-    public Result<List<MyMakeupExamVO>> getMyMakeupExamList(
-            @RequestParam(required = false) String  status
-    )
-    {
-        log.info("查询我的补考安排列表: status={}", status);
-        List<MyMakeupExamVO> myMakeupExamList = makeupExamService.getMyMakeupExamList(status);
-        return Result.success(myMakeupExamList);
-    }
+//    /**
+//     * 查询我的补考安排列表
+//     * @param status
+//     * @return
+//     */
+//    @GetMapping("/my")
+//    @Operation(summary = "查询我的补考安排列表")
+//    public Result<List<MyMakeupExamVO>> getMyMakeupExamList(
+//            @RequestParam(required = false) String  status
+//    )
+//    {
+//        log.info("查询我的补考安排列表: status={}", status);
+//        List<MyMakeupExamVO> myMakeupExamList = makeupExamService.getMyMakeupExamList(status);
+//        return Result.success(myMakeupExamList);
+//    }
 
     /**
      * 录入补考成绩

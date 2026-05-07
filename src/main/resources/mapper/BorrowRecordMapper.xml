@@ -7,14 +7,14 @@
     <insert id="insertBorrowRecord">
         insert into borrow_record
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null and userId != ''">user_id,</if>
-            <if test="bookId != null and bookId != ''">book_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="bookId != null">book_id,</if>
             <if test="dueDate != null">due_date,</if>
         </trim>
             values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="userId != null and userId != ''">#{userId},</if>
-                <if test="bookId != null and bookId != ''">#{bookId},</if>
+                <if test="userId != null">#{userId},</if>
+                <if test="bookId != null">#{bookId},</if>
                 <if test="dueDate != null">#{dueDate},</if>
         </trim>
     </insert>
@@ -46,7 +46,7 @@
         UPDATE borrow_record
         SET status = '已归还',
             return_date = CURDATE()
-        WHERE id = #{id} AND status = '借阅中'
+        WHERE id = #{id} AND status = '借出中'
     </update>
 
     <!-- 归还图书时更新图书状态（可用数量+1） -->
@@ -61,7 +61,7 @@
     <select id="getBorrowStatistics" resultType="map">
         SELECT
             COUNT(*) as totalBorrows,
-            SUM(CASE WHEN r.status = '借阅中' THEN 1 ELSE 0 END) as currentBorrows,
+            SUM(CASE WHEN r.status = '借出中' THEN 1 ELSE 0 END) as currentBorrows,
             SUM(CASE WHEN r.status = '逾期' THEN 1 ELSE 0 END) as overdueBorrows,
             AVG(DATEDIFF(COALESCE(r.return_date, CURDATE()), r.borrow_date)) as averageBorrowDays
         FROM borrow_record r

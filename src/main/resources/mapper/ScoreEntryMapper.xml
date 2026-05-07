@@ -13,6 +13,8 @@
             <if test="semesterId != null">semester_id</if>
             <if test="usualScore != null">usual_score</if>
             <if test="finalScore != null">final_score</if>
+            <if test="totalScore != null">total_score</if>
+            <if test="scorePoint != null">score_point</if>
             <if test="examStatus != null">exam_status</if>
         </trim>
         values
@@ -22,8 +24,39 @@
             <if test="semesterId != null">#{semesterId}</if>
             <if test="usualScore != null">#{usualScore}</if>
             <if test="finalScore != null">#{finalScore}</if>
+            <if test="totalScore != null">#{totalScore}</if>
+            <if test="scorePoint != null">#{scorePoint}</if>
             <if test="examStatus != null">#{examStatus}</if>
         </trim>
+    </insert>
+    <!-- 批量插入成绩 - 固定列版本 -->
+    <insert id="batchInsertScore">
+        insert into score_entry (
+            course_id,
+            student_id,
+            semester_id,
+            usual_score,
+            final_score,
+            exam_status,
+            total_score,
+            score_point,
+            create_time,
+            update_time
+        ) values
+        <foreach collection="scoreEntries" item="entry" separator=",">
+            (
+                #{entry.courseId},
+                #{entry.studentId},
+                #{entry.semesterId},
+                #{entry.usualScore},
+                #{entry.finalScore},
+                #{entry.examStatus},
+                #{entry.totalScore},
+                #{entry.scorePoint},
+                NOW(),
+                NOW()
+            )
+        </foreach>
     </insert>
 
     <!-- 更新成绩 -->
@@ -32,6 +65,8 @@
         <set>
             <if test="usualScore != null">usual_score = #{usualScore}</if>
             <if test="finalScore != null">final_score = #{finalScore}</if>
+            <if test="totalScore != null">total_score = #{totalScore}</if>
+            <if test="scorePoint != null">score_point = #{scorePoint}</if>
             <if test="makeupScore != null">makeup_score = #{makeupScore}</if>
             <if test="examStatus != null">exam_status = #{examStatus}</if>
         </set>
@@ -54,8 +89,8 @@
     <!-- 查询成绩列表 -->
     <select id="getScoreList" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryListVO">
         select se.id, c.course_name, s.name as studentName, s.student_no as studentNo,
-               sm.name as semesterName, se.total_score,
-               se.score_point, se.exam_status, se.create_time
+               sm.name as semesterName, se.usual_score, se.final_score, se.total_score,
+               se.score_point, c.credit, se.exam_status, se.create_time
         from score_entry se
         left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id

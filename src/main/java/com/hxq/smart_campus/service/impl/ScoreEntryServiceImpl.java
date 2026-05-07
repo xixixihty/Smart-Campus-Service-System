@@ -42,6 +42,23 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryCreateDTO == null) {
             throw new IllegalArgumentException("成绩录入参数不能为空");
         }
+        validateScore(scoreEntryCreateDTO.getUsualScore(), "平时成绩");
+        validateScore(scoreEntryCreateDTO.getFinalScore(), "期末成绩");
+
+        if (scoreEntryCreateDTO.getUsualScore() != null && scoreEntryCreateDTO.getFinalScore() != null) {
+            BigDecimal totalScore = scoreEntryCreateDTO.getUsualScore()
+                    .multiply(new BigDecimal("0.3"))
+                    .add(scoreEntryCreateDTO.getFinalScore().multiply(new BigDecimal("0.7")))
+                    .setScale(2, RoundingMode.HALF_UP);
+            scoreEntryCreateDTO.setTotalScore(totalScore);
+        } else if (scoreEntryCreateDTO.getFinalScore() != null) {
+            scoreEntryCreateDTO.setTotalScore(scoreEntryCreateDTO.getFinalScore());
+        }
+
+        if (scoreEntryCreateDTO.getTotalScore() != null) {
+            scoreEntryCreateDTO.setScorePoint(calculateScorePoint(scoreEntryCreateDTO.getTotalScore()));
+        }
+
         int result = scoreEntryMapper.insertScore(scoreEntryCreateDTO);
         if (result <= 0) {
             throw new RuntimeException("成绩录入失败");
@@ -67,6 +84,23 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryUpdateDTO == null) {
             throw new IllegalArgumentException("成绩更新参数不能为空");
         }
+        validateScore(scoreEntryUpdateDTO.getUsualScore(), "平时成绩");
+        validateScore(scoreEntryUpdateDTO.getFinalScore(), "期末成绩");
+
+        if (scoreEntryUpdateDTO.getUsualScore() != null && scoreEntryUpdateDTO.getFinalScore() != null) {
+            BigDecimal totalScore = scoreEntryUpdateDTO.getUsualScore()
+                    .multiply(new BigDecimal("0.3"))
+                    .add(scoreEntryUpdateDTO.getFinalScore().multiply(new BigDecimal("0.7")))
+                    .setScale(2, RoundingMode.HALF_UP);
+            scoreEntryUpdateDTO.setTotalScore(totalScore);
+        } else if (scoreEntryUpdateDTO.getFinalScore() != null) {
+            scoreEntryUpdateDTO.setTotalScore(scoreEntryUpdateDTO.getFinalScore());
+        }
+
+        if (scoreEntryUpdateDTO.getTotalScore() != null) {
+            scoreEntryUpdateDTO.setScorePoint(calculateScorePoint(scoreEntryUpdateDTO.getTotalScore()));
+        }
+
         int result = scoreEntryMapper.updateScore(scoreEntryUpdateDTO);
         if (result <= 0) {
             throw new RuntimeException("成绩更新失败");
@@ -87,17 +121,55 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
      * @throws RuntimeException 录入失败时抛出
      */
     @Override
-    public boolean BatchScore(BatchScoreEntryDTO batchScoreEntryDTO) {
+    @org.springframework.transaction.annotation.Transactional
+    public boolean batchScore(BatchScoreEntryDTO batchScoreEntryDTO) {
         if (batchScoreEntryDTO == null || batchScoreEntryDTO.getScoreEntries() == null || batchScoreEntryDTO.getScoreEntries().isEmpty()) {
             throw new IllegalArgumentException("成绩录入参数不能为空");
         }
-        for (ScoreEntryCreateDTO scoreEntry : batchScoreEntryDTO.getScoreEntries()) {
-            int result = scoreEntryMapper.insertScore(scoreEntry);
-            if (result <= 0) {
-                throw new RuntimeException("成绩录入失败");
+
+        for (ScoreEntryCreateDTO entry : batchScoreEntryDTO.getScoreEntries()) {
+            validateScore(entry.getUsualScore(), "平时成绩");
+            validateScore(entry.getFinalScore(), "期末成绩");
+
+            if (entry.getUsualScore() != null && entry.getFinalScore() != null) {
+                BigDecimal totalScore = entry.getUsualScore()
+                        .multiply(new BigDecimal("0.3"))
+                        .add(entry.getFinalScore().multiply(new BigDecimal("0.7")))
+                        .setScale(2, RoundingMode.HALF_UP);
+                entry.setTotalScore(totalScore);
+            } else if (entry.getFinalScore() != null) {
+                entry.setTotalScore(entry.getFinalScore());
+            }
+
+            if (entry.getTotalScore() != null) {
+                entry.setScorePoint(calculateScorePoint(entry.getTotalScore()));
             }
         }
+
+        int result = scoreEntryMapper.batchInsertScore(batchScoreEntryDTO.getScoreEntries());
+        if (result <= 0) {
+            throw new RuntimeException("成绩录入失败");
+        }
         return true;
+    }
+
+    private void validateScore(BigDecimal score, String fieldName) {
+        if (score != null && (score.compareTo(BigDecimal.ZERO) < 0 || score.compareTo(new BigDecimal("100")) > 0)) {
+            throw new IllegalArgumentException(fieldName + "必须在0-100之间");
+        }
+    }
+
+    private BigDecimal calculateScorePoint(BigDecimal totalScore) {
+        if (totalScore.compareTo(new BigDecimal("90")) >= 0) return new BigDecimal("4.0");
+        if (totalScore.compareTo(new BigDecimal("85")) >= 0) return new BigDecimal("3.7");
+        if (totalScore.compareTo(new BigDecimal("82")) >= 0) return new BigDecimal("3.3");
+        if (totalScore.compareTo(new BigDecimal("78")) >= 0) return new BigDecimal("3.0");
+        if (totalScore.compareTo(new BigDecimal("75")) >= 0) return new BigDecimal("2.7");
+        if (totalScore.compareTo(new BigDecimal("72")) >= 0) return new BigDecimal("2.3");
+        if (totalScore.compareTo(new BigDecimal("68")) >= 0) return new BigDecimal("2.0");
+        if (totalScore.compareTo(new BigDecimal("64")) >= 0) return new BigDecimal("1.5");
+        if (totalScore.compareTo(new BigDecimal("60")) >= 0) return new BigDecimal("1.0");
+        return BigDecimal.ZERO;
     }
 
     /**
@@ -207,28 +279,52 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (studentId == null || semesterId == null) {
             throw new IllegalArgumentException("参数不能为空");
         }
-        List<ScoreEntryListVO> scoreEntryListVOList = getMyScoreList(studentId, null);
-        Map<String, List<ScoreEntryListVO>> scoreEntryListVOMap = scoreEntryListVOList.stream()
-                .collect(Collectors.groupingBy(ScoreEntryListVO::getSemesterName));
-        GpaVO gpaVO = new GpaVO();
-        gpaVO.setGpa(BigDecimal.ZERO);
-        gpaVO.setCourseCount(0);
-        gpaVO.setTotalCredits(BigDecimal.ZERO);
-        for (Map.Entry<String, List<ScoreEntryListVO>> entry : scoreEntryListVOMap.entrySet()) {
-            List<ScoreEntryListVO> scoreEntryListVOs = entry.getValue();
-            BigDecimal gpa = BigDecimal.ZERO;
-            Integer courseCount = 0;
-            BigDecimal totalCredits = BigDecimal.ZERO;
-            for (ScoreEntryListVO scoreEntryListVO : scoreEntryListVOs) {
-                gpa = gpa.add(scoreEntryListVO.getScorePoint());
-                courseCount++;
-                totalCredits = totalCredits.add(scoreEntryListVO.getTotalScore());
-            }
-            gpa = gpa.divide(new BigDecimal(courseCount), 2, RoundingMode.HALF_UP);
-            gpaVO.setGpa(gpa);
-            gpaVO.setCourseCount(courseCount);
-            gpaVO.setTotalCredits(totalCredits);
+
+        List<ScoreEntryListVO> scoreEntryListVOList = scoreEntryMapper.getScoreList(null, studentId, semesterId);
+
+        if (scoreEntryListVOList == null || scoreEntryListVOList.isEmpty()) {
+            GpaVO gpaVO = new GpaVO();
+            gpaVO.setStudentId(studentId);
+            gpaVO.setSemesterId(semesterId);
+            gpaVO.setGpa(BigDecimal.ZERO);
+            gpaVO.setCourseCount(0);
+            gpaVO.setTotalCredits(BigDecimal.ZERO);
+            gpaVO.setEarnedCredits(BigDecimal.ZERO);
+            return gpaVO;
         }
+
+        BigDecimal totalWeightedPoints = BigDecimal.ZERO;
+        BigDecimal totalCredits = BigDecimal.ZERO;
+        BigDecimal earnedCredits = BigDecimal.ZERO;
+        int courseCount = scoreEntryListVOList.size();
+
+        for (ScoreEntryListVO scoreEntryListVO : scoreEntryListVOList) {
+            BigDecimal credit = scoreEntryListVO.getCredit() != null ? scoreEntryListVO.getCredit() : BigDecimal.ZERO;
+            totalCredits = totalCredits.add(credit);
+
+            if (scoreEntryListVO.getScorePoint() != null && credit.compareTo(BigDecimal.ZERO) > 0) {
+                totalWeightedPoints = totalWeightedPoints.add(
+                        scoreEntryListVO.getScorePoint().multiply(credit));
+            }
+
+            if (scoreEntryListVO.getTotalScore() != null
+                    && scoreEntryListVO.getTotalScore().compareTo(new BigDecimal("60")) >= 0) {
+                earnedCredits = earnedCredits.add(credit);
+            }
+        }
+
+        BigDecimal averageGpa = totalCredits.compareTo(BigDecimal.ZERO) > 0
+                ? totalWeightedPoints.divide(totalCredits, 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        GpaVO gpaVO = new GpaVO();
+        gpaVO.setStudentId(studentId);
+        gpaVO.setSemesterId(semesterId);
+        gpaVO.setGpa(averageGpa);
+        gpaVO.setCourseCount(courseCount);
+        gpaVO.setTotalCredits(totalCredits);
+        gpaVO.setEarnedCredits(earnedCredits);
+
         return gpaVO;
     }
 

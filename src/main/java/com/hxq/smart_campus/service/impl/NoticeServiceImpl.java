@@ -39,6 +39,11 @@ public class NoticeServiceImpl implements NoticeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 发布通知
+     * @param noticeCreateDTO
+     * @return
+     */
     @Override
     public NoticeResponseDTO insertNotice(NoticeCreateDTO noticeCreateDTO) {
         if (noticeCreateDTO == null) {
@@ -68,6 +73,12 @@ public class NoticeServiceImpl implements NoticeService {
         return convertToResponseDTO(noticeDetailVO);
     }
 
+    /**
+     * 更新通知
+     * @param id
+     * @param noticeUpdateDTO
+     * @return
+     */
     @Override
     public NoticeResponseDTO updateNotice(Long id, NoticeUpdateDTO noticeUpdateDTO) {
         if (noticeUpdateDTO == null) {
@@ -101,6 +112,11 @@ public class NoticeServiceImpl implements NoticeService {
         return convertToResponseDTO(noticeDetailVO);
     }
 
+    /**
+     * 撤回通知
+     * @param id
+     * @return
+     */
     @Override
     public Boolean withdrawNotice(Long id) {
         if (id == null) {
@@ -126,6 +142,11 @@ public class NoticeServiceImpl implements NoticeService {
         return true;
     }
 
+    /**
+     * 删除通知
+     * @param id
+     * @return
+     */
     @Override
     public Boolean deleteNotice(Long id) {
         if (id == null) {
@@ -148,6 +169,15 @@ public class NoticeServiceImpl implements NoticeService {
         return true;
     }
 
+    /**
+     * 获取通知列表
+     * @param pageNum
+     * @param pageSize
+     * @param title
+     * @param targetType
+     * @param status
+     * @return
+     */
     @Override
     public PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String targetType, String status) {
         String cacheKey = NOTICE_KEY_PREFIX + "list:" + pageNum + ":" + pageSize + ":" +
@@ -182,6 +212,11 @@ public class NoticeServiceImpl implements NoticeService {
         return pageInfo;
     }
 
+    /**
+     * 获取通知详情
+     * @param id
+     * @return
+     */
     @Override
     public NoticeDetailVO getNoticeDetail(Long id) {
         if (id == null) {
@@ -194,6 +229,12 @@ public class NoticeServiceImpl implements NoticeService {
         return noticeDetailVO;
     }
 
+    /**
+     * 获取我的通知列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @Override
     public PageInfo<MyNoticeVO> getMyNoticeList(Integer pageNum, Integer pageSize) {
         String userType = SecurityUtils.getCurrentUserType();
@@ -264,6 +305,10 @@ public class NoticeServiceImpl implements NoticeService {
         return pageInfo;
     }
 
+    /**
+     * 解析发布范围名称
+     * @param dto
+     */
     private void resolveTargetName(NoticeCreateDTO dto) {
         String targetType = dto.getTargetType();
         Long targetId = dto.getTargetId();
@@ -305,6 +350,10 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+    /**
+     * 解析更新发布范围名称
+     * @param dto
+     */
     private void resolveTargetName(NoticeUpdateDTO dto) {
         String targetType = dto.getTargetType();
         Long targetId = dto.getTargetId();
@@ -350,6 +399,9 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+    /**
+     * 清除通知缓存
+     */
     private void evictNoticeCache() {
         Set<String> noticeKeys = redisTemplate.keys(NOTICE_KEY_PREFIX + "*");
         if (noticeKeys != null && !noticeKeys.isEmpty()) {
@@ -362,6 +414,11 @@ public class NoticeServiceImpl implements NoticeService {
         log.info("通知缓存已清除");
     }
 
+    /**
+     * 转换通知详情VO为通知响应DTO
+     * @param noticeDetailVO
+     * @return
+     */
     private NoticeResponseDTO convertToResponseDTO(NoticeDetailVO noticeDetailVO) {
         NoticeResponseDTO noticeResponseDTO = new NoticeResponseDTO();
         noticeResponseDTO.setId(noticeDetailVO.getId());

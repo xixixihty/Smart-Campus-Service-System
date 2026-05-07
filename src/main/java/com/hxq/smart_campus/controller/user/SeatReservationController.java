@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.user;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
@@ -6,6 +6,8 @@ import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.SeatReservationService;
+import com.hxq.smart_campus.utils.SecurityUtils;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/seat-reservations")
+@RequestMapping("/api/seat-reservations/user")
 @Tag(name = "座位预约管理")
 @RequiredArgsConstructor
 @Slf4j
@@ -120,17 +122,18 @@ public class SeatReservationController {
      * @param status
      * @return
      */
-    // TODO :从登陆信息中获取到用户ID
+    
     @GetMapping("/my")
     @Operation(summary = "获取我的座位预约列表")
     public Result<PageInfo<SeatReservationListVO>> getMySeatReservationList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) LocalDate date,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Long userId
+            @RequestParam(required = false) String status
     ) {
-        log.info("获取我的座位预约列表，参数：pageNum={}, pageSize={}, date={}, status={}", pageNum, pageSize, date, status, userId);
+        log.info("获取我的座位预约列表，参数：pageNum={}, pageSize={}, date={}, status={}", pageNum, pageSize, date, status );
+        // TODO :从登陆信息中获取到用户ID
+        Long userId = SecurityUtils.getCurrentUserId();
         PageInfo<SeatReservationListVO> seatReservationListVO = seatReservationService.getMySeatReservationList(pageNum, pageSize, date, status, userId);
         return Result.success(seatReservationListVO);
     }

@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.controller;
+package com.hxq.smart_campus.controller.admin;
 
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.CourseSelectionPeriodCreateDTO;
@@ -12,20 +12,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/course-selection-periods")
+@RequestMapping("/api/course-selection-periods/admin")
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "选课时间段管理模块")
 public class CourseSelectionPeriodController {
     private final CourseSelectionPeriodService courseSelectionPeriodService;
 
-    private final RedisTemplate redisTemplate;
     /**
      * 创建选课时间段
      * @param courseSelectionPeriodCreateDTO
