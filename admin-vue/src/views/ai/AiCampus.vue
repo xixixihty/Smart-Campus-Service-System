@@ -91,7 +91,7 @@ const statCards = reactive([
   { label: '在校学生', value: '3,240', icon: 'User', color: '#1890ff', bg: '#e6f7ff' },
   { label: '在职教师', value: '156', icon: 'Avatar', color: '#52c41a', bg: '#f6ffed' },
   { label: '图书总量', value: '12,580', icon: 'CollectionTag', color: '#fa8c16', bg: '#fff7e6' },
-  { label: '座位总数', value: '480', icon: 'Chair', color: '#eb2f96', bg: '#fff0f6' }
+  { label: '座位总数', value: '480', icon: 'Place', color: '#eb2f96', bg: '#fff0f6' }
 ])
 
 const fetchData = async () => {

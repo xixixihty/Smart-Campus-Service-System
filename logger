@@ -1,24 +1,141 @@
-前端日志：
-runtime-core.esm-bundler.js:51 [Vue warn]: Failed to resolve component: Chair
-If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
-  at <App>
-warn$1 @ runtime-core.esm-bundler.js:51
-runtime-core.esm-bundler.js:51 [Vue warn]: Failed to resolve component: Chair
-If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
-  at <Login onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
-  at <RouterView key=0 > 
-  at <App>
-warn$1 @ runtime-core.esm-bundler.js:51
-api/auth/login:1  Failed to load resource: the server responded with a status of 400 (Bad Request)
-后端日志：
-2026-05-08T13:54:08.668+08:00  INFO 17304 --- [nio-8080-exec-1] c.h.s.service.impl.AuthServiceImpl       : 用户登录尝试，用户名：T001T2021001，用户类型：teacher，密码：******
-2026-05-08T13:54:08.669+08:00 DEBUG 17304 --- [nio-8080-exec-1] c.h.s.service.impl.AuthServiceImpl       : 准备验证密码，用户输入长度：12
-2026-05-08T13:54:08.669+08:00 DEBUG 17304 --- [nio-8080-exec-1] c.h.s.service.impl.AuthServiceImpl       : 当前密码验证逻辑：直接使用明文密码与数据库哈希比对
+2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-1] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.c.admin.CollegeController          : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
+2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-4] c.h.s.c.admin.SemesterController         : 查询学期列表, pageNum: 1, pageSize: 100, name: null, status: null
+2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
 Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@54ae19b7] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@614620072 wrapping com.mysql.cj.jdbc.ConnectionImpl@4b20a8e4] will not be managed by Spring
-==>  Preparing: select t.id as teacherId, t.teacher_no, t.name, t.gender, t.college_id, c.college_name, t.title, t.phone, t.email , t.status, t.account_status, t.password, t.create_time, t.update_time from teacher t left join college c on t.college_id = c.id where t.teacher_no = ? and t.status = '在职'
-==> Parameters: T001T2021001(String)
-<==      Total: 0
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@54ae19b7]
-2026-05-08T13:54:08.684+08:00  WARN 17304 --- [nio-8080-exec-1] c.h.s.exception.GlobalExceptionHandler   : 参数异常: 教师不存在
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3f56a026] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b02aaba] was not registered for synchronization because synchronization is not active
+Cache Hit Ratio [SQL_CACHE]: 0.0
+Cache Hit Ratio [SQL_CACHE]: 0.0
+JDBC Connection [HikariProxyConnection@399638165 wrapping com.mysql.cj.jdbc.ConnectionImpl@51d41b97] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@428714475 wrapping com.mysql.cj.jdbc.ConnectionImpl@187c33f8] will not be managed by Spring
+==>  Preparing: SELECT count(0) FROM college
+==>  Preparing: SELECT count(0) FROM semester
+==> Parameters: 
+==> Parameters: 
+<==    Columns: count(0)
+<==    Columns: count(0)
+<==        Row: 2
+<==        Row: 3
+<==      Total: 1
+<==      Total: 1
+==>  Preparing: SELECT id, college_code, college_name, status, create_time FROM college ORDER BY create_time DESC LIMIT ?
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time from semester LIMIT ?
+==> Parameters: 100(Integer)
+==> Parameters: 100(Integer)
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time
+<==    Columns: id, college_code, college_name, status, create_time
+<==        Row: 1, CS, 计算机科学与技术学院, 启用, 2026-04-21 18:28:51
+<==        Row: 1, 2023-2024第一学期, 2023-09-01, 2024-01-15, 0, 已结束, 2026-04-21 18:28:51
+<==        Row: 2, MATH, 数学与统计学院, 启用, 2026-04-21 18:28:51
+<==        Row: 3, ENGL, 外国语学院, 启用, 2026-04-21 18:28:51
+<==      Total: 3
+<==        Row: 2, 2023-2024第二学期, 2024-02-25, 2024-07-10, 1, 进行中, 2026-04-21 18:28:51
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3f56a026]
+<==      Total: 2
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b02aaba]
+2026-05-08T19:42:12.704+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表成功，总记录数：3，总页数：1
+2026-05-08T19:42:12.725+08:00 DEBUG 23532 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-08T19:42:12.732+08:00  INFO 23532 --- [nio-8080-exec-3] c.h.s.controller.admin.CourseController  : Getting course list with pageNum: 1, pageSize: 10, courseCode: null, courseName: , type: , status: null
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39193ac2] was not registered for synchronization because synchronization is not active
+Cache Hit Ratio [SQL_CACHE]: 0.0
+JDBC Connection [HikariProxyConnection@1202298609 wrapping com.mysql.cj.jdbc.ConnectionImpl@51d41b97] will not be managed by Spring
+==>  Preparing: SELECT count(0) FROM course
+==> Parameters: 
+<==    Columns: count(0)
+<==        Row: 7
+<==      Total: 1
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, create_time,capacity from course order by create_time desc LIMIT ?
+==> Parameters: 10(Integer)
+<==    Columns: id, course_code, course_name, credit, hours, type, status, create_time, capacity
+<==        Row: 1, CS101, 计算机导论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 2, CS102, Java程序设计, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 3, CS201, 数据结构, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 4, SE101, 软件工程概论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 5, MATH101, 高等数学, 5.0, 80, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 6, CS301, 人工智能导论, 2.0, 32, 选修, 开课, 2026-04-21 18:28:51, 60
+<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 2026-04-21 18:28:51, 120
+<==      Total: 7
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39193ac2]
+2026-05-08T19:42:12.744+08:00 ERROR 23532 --- [nio-8080-exec-3] c.h.s.exception.GlobalExceptionHandler   : 系统异常
+
+org.springframework.data.redis.serializer.SerializationException: Cannot serialize
+	at org.springframework.data.redis.serializer.JdkSerializationRedisSerializer.serialize(JdkSerializationRedisSerializer.java:97) ~[spring-data-redis-3.5.10.jar:3.5.10]
+	at org.springframework.data.redis.core.AbstractOperations.rawValue(AbstractOperations.java:148) ~[spring-data-redis-3.5.10.jar:3.5.10]
+	at org.springframework.data.redis.core.DefaultValueOperations.set(DefaultValueOperations.java:207) ~[spring-data-redis-3.5.10.jar:3.5.10]
+	at com.hxq.smart_campus.service.impl.CourseServiceImpl.lambda$0(CourseServiceImpl.java:47) ~[classes/:na]
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625) ~[na:na]
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762) ~[na:na]
+	at com.hxq.smart_campus.service.impl.CourseServiceImpl.getCourseList(CourseServiceImpl.java:46) ~[classes/:na]
+	at com.hxq.smart_campus.controller.admin.CourseController.getCourseList(CourseController.java:50) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at com.hxq.smart_campus.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:61) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+Caused by: org.springframework.core.serializer.support.SerializationFailedException: Failed to serialize object using DefaultSerializer
+	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:64) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:33) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.data.redis.serializer.JdkSerializationRedisSerializer.serialize(JdkSerializationRedisSerializer.java:95) ~[spring-data-redis-3.5.10.jar:3.5.10]
+	... 63 common frames omitted
+Caused by: java.lang.IllegalArgumentException: DefaultSerializer requires a Serializable payload but received an object of type [com.hxq.smart_campus.entity.vo.CourseListVO]
+	at org.springframework.core.serializer.DefaultSerializer.serialize(DefaultSerializer.java:43) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.core.serializer.Serializer.serializeToByteArray(Serializer.java:56) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:60) ~[spring-core-6.2.17.jar:6.2.17]
+	... 65 common frames omitted
+

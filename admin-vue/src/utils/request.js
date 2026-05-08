@@ -21,12 +21,12 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     const res = response.data
-    if (res.code === '200') {
+    if (res.code === '200' || res.code === 200) {
       return res
     }
-    if (res.code === '401') {
+    if (res.code === '401' || res.code === 401) {
       localStorage.clear()
-      router.push('/login')
+      router.replace('/login')
       return Promise.reject(new Error(res.msg || '认证失败'))
     }
     ElMessage.error(res.msg || '请求失败')
@@ -35,7 +35,7 @@ request.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.clear()
-      router.push('/login')
+      router.replace('/login')
     }
     ElMessage.error(error.message || '网络错误')
     return Promise.reject(error)

@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <h2><el-icon><Chair /></el-icon> 座位管理</h2>
+      <h2><el-icon><Place /></el-icon> 座位管理</h2>
       <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增座位</el-button>
     </div>
 

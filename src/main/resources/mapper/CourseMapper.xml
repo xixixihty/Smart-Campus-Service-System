@@ -52,10 +52,10 @@
         select id, course_code, course_name, credit, hours, type, status, create_time,capacity
         from course
         <where>
-            <if test="courseCode != null">course_code like concat('%', #{courseCode}, '%')</if>
-            <if test="courseName != null">and course_name like concat('%', #{courseName}, '%')</if>
-            <if test="type != null">and type = #{type}</if>
-            <if test="status != null">and status = #{status}</if>
+            <if test="courseCode != null and courseCode != ''">course_code like concat('%', #{courseCode}, '%')</if>
+            <if test="courseName != null and courseName != ''">and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="type != null and type != ''">and type = #{type}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
         </where>
         order by create_time desc
     </select>

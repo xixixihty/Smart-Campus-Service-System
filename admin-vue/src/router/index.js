@@ -157,6 +157,9 @@ const router = createRouter({
 })
 
 function isTokenExpired(token) {
+  if (!token || token === 'undefined' || token === 'null') {
+    return true
+  }
   try {
     const parts = token.split('.')
     if (parts.length !== 3) return true
@@ -179,12 +182,20 @@ router.beforeEach((to, from, next) => {
       if (token) localStorage.removeItem('token')
       next()
     }
-  } else if (!token || isTokenExpired(token)) {
-    if (token) localStorage.removeItem('token')
-    next('/login')
-  } else {
-    next()
+    return
   }
+
+  if (!token || isTokenExpired(token)) {
+    if (token) localStorage.removeItem('token')
+    if (to.path !== '/login') {
+      next('/login')
+    } else {
+      next()
+    }
+    return
+  }
+
+  next()
 })
 
 export default router

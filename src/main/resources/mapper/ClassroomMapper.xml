@@ -47,9 +47,9 @@
         select id, building, room_number, capacity, type, status, create_time
         from classroom
         <where>
-            <if test="building != null">building like concat('%', #{building}, '%')</if>
-            <if test="type != null">type = #{type}</if>
-            <if test="status != null">status = #{status}</if>
+            <if test="building != null and building != ''">building like concat('%', #{building}, '%')</if>
+            <if test="type != null and type != ''">type = #{type}</if>
+            <if test="status != null and status != ''">status = #{status}</if>
         </where>
         order by create_time desc
     </select>

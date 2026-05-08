@@ -8,10 +8,10 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm" class="search-form">
         <el-form-item label="学院名称">
-          <el-input v-model="queryForm.collegeName" placeholder="请输入学院名称" clearable />
+          <el-input v-model="queryForm.collegeName" placeholder="请输入学院名称" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 120px">
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
             <el-option label="启用" value="启用" />
             <el-option label="禁用" value="禁用" />
           </el-select>
@@ -35,8 +35,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>查看</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -57,7 +58,7 @@
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" :disabled="isView">
         <el-form-item label="学院名称" prop="collegeName">
           <el-input v-model="form.collegeName" placeholder="请输入学院名称" />
         </el-form-item>
@@ -78,23 +79,24 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getCollegeList, createCollege, updateCollege, deleteCollege } from '@/api/college'
+import { getCollegeList, getCollegeDetail, createCollege, updateCollege, deleteCollege } from '@/api/college'
 
 const loading = ref(false)
 const submitLoading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增学院')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
@@ -144,15 +146,45 @@ const handleReset = () => {
 
 const handleAdd = () => {
   isEdit.value = false
+  isView.value = false
   dialogTitle.value = '新增学院'
   Object.assign(form, { id: null, collegeName: '', collegeCode: '', dean: '', contactPhone: '', status: '启用' })
   dialogVisible.value = true
 }
 
-const handleEdit = (row) => {
+const handleView = async (row) => {
+  isEdit.value = false
+  isView.value = true
+  dialogTitle.value = '查看学院详情'
+  const detail = await getCollegeDetail(row.id)
+  const data = detail.data
+  await nextTick()
+  Object.assign(form, {
+    id: data.id,
+    collegeName: data.collegeName,
+    collegeCode: data.collegeCode,
+    dean: data.dean || '',
+    contactPhone: data.contactPhone || '',
+    status: data.status
+  })
+  dialogVisible.value = true
+}
+
+const handleEdit = async (row) => {
   isEdit.value = true
+  isView.value = false
   dialogTitle.value = '编辑学院'
-  Object.assign(form, { ...row })
+  const detail = await getCollegeDetail(row.id)
+  const data = detail.data
+  await nextTick()
+  Object.assign(form, {
+    id: data.id,
+    collegeName: data.collegeName,
+    collegeCode: data.collegeCode,
+    dean: data.dean || '',
+    contactPhone: data.contactPhone || '',
+    status: data.status
+  })
   dialogVisible.value = true
 }
 

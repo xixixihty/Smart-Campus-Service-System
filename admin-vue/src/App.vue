@@ -142,7 +142,7 @@
                 <span>设施管理</span>
               </template>
               <el-menu-item index="/seat">
-                <el-icon><Chair /></el-icon>
+                <el-icon><Place /></el-icon>
                 <span>座位管理</span>
               </el-menu-item>
             </el-sub-menu>
@@ -195,8 +195,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { validateToken } from '@/api/auth'
 
 const router = useRouter()
 const route = useRoute()
@@ -208,10 +209,30 @@ const activeMenu = computed(() => route.path)
 const isLoginPage = computed(() => route.path === '/login')
 const defaultOpeneds = ref(['org', 'people', 'teaching', 'library', 'facility', 'campus', 'ai'])
 
+watch(() => route.path, () => {
+  username.value = localStorage.getItem('username') || '管理员'
+})
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (token && token !== 'undefined' && token !== 'null') {
+    try {
+      await validateToken()
+    } catch {
+      localStorage.clear()
+      username.value = '管理员'
+      if (route.path !== '/login') {
+        router.replace('/login')
+      }
+    }
+  }
+})
+
 const handleUserCommand = (command) => {
   if (command === 'logout') {
     localStorage.clear()
-    router.push('/login')
+    username.value = '管理员'
+    router.replace('/login')
   } else if (command === 'profile') {
     router.push('/profile')
   } else if (command === 'password') {

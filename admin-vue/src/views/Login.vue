@@ -33,7 +33,7 @@
             <span>图书借阅管理</span>
           </div>
           <div class="feature-item">
-            <el-icon :size="20"><Chair /></el-icon>
+            <el-icon :size="20"><Place /></el-icon>
             <span>座位预约管理</span>
           </div>
         </div>
@@ -46,13 +46,15 @@
             <p>请使用教师工号登录系统</p>
           </div>
 
-          <el-form ref="formRef" :model="form" :rules="rules" size="large" class="login-form">
+          <el-form ref="formRef" :model="form" :rules="rules" size="large" class="login-form" autocomplete="off">
             <el-form-item prop="username">
               <el-input
                 v-model="form.username"
                 placeholder="请输入教师工号"
                 :prefix-icon="User"
                 clearable
+                autocomplete="off"
+                name="username-field"
               />
             </el-form-item>
 
@@ -63,6 +65,8 @@
                 placeholder="请输入密码"
                 :prefix-icon="Lock"
                 show-password
+                autocomplete="new-password"
+                name="password-field"
                 @keyup.enter="handleLogin"
               />
             </el-form-item>
@@ -131,17 +135,25 @@ const handleLogin = async () => {
   loading.value = true
   try {
     const res = await login({
-      username: form.username,
+      username: form.username.trim(),
       password: form.password,
       userType: form.userType
     })
-    localStorage.setItem('token', res.data.token)
+    const token = res.data?.token
+    if (!token || token === 'undefined' || token === 'null') {
+      ElMessage.error('登录响应异常，未获取到有效令牌')
+      return
+    }
+    localStorage.setItem('token', token)
     localStorage.setItem('username', res.data.name || form.username)
     localStorage.setItem('userId', res.data.userId)
     localStorage.setItem('userType', res.data.userType)
     ElMessage.success(`欢迎回来，${res.data.name || form.username}！`)
-    router.push('/dashboard')
+    await router.replace('/dashboard')
   } catch (e) {
+    if (e?.message?.includes('Redirected')) {
+      return
+    }
     ElMessage.error(e?.message || '登录失败，请检查网络连接')
   } finally {
     loading.value = false

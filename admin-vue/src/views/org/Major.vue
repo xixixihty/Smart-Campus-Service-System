@@ -7,17 +7,17 @@
     </div>
 
     <el-card shadow="never">
-      <el-form :inline="true" :model="queryForm">
+      <el-form :inline="true" :model="queryForm" class="search-form">
         <el-form-item label="所属学院">
           <el-select v-model="queryForm.collegeId" placeholder="请选择学院" clearable style="width: 150px">
             <el-option v-for="c in collegeOptions" :key="c.id" :label="c.collegeName" :value="c.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="专业名称">
-          <el-input v-model="queryForm.majorName" placeholder="请输入专业名称" clearable />
+          <el-input v-model="queryForm.majorName" placeholder="请输入专业名称" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 120px">
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 150px">
             <el-option label="启用" value="启用" />
             <el-option label="禁用" value="禁用" />
           </el-select>
@@ -43,8 +43,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>查看</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -58,7 +59,7 @@
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" :disabled="isView">
         <el-form-item label="所属学院" prop="collegeId">
           <el-select v-model="form.collegeId" placeholder="请选择学院" style="width: 100%">
             <el-option v-for="c in collegeOptions" :key="c.id" :label="c.collegeName" :value="c.id" />
@@ -81,17 +82,17 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getMajorList, createMajor, updateMajor, deleteMajor } from '@/api/major'
+import { getMajorList, getMajorDetail, createMajor, updateMajor, deleteMajor } from '@/api/major'
 import { getCollegeList } from '@/api/college'
 
 const loading = ref(false)
@@ -99,6 +100,7 @@ const submitLoading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增专业')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
@@ -136,11 +138,40 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.collegeId = ''; queryForm.majorName = ''; queryForm.status = ''; handleSearch() }
 const handleAdd = () => {
-  isEdit.value = false; dialogTitle.value = '新增专业'
+  isEdit.value = false; isView.value = false; dialogTitle.value = '新增专业'
   Object.assign(form, { id: null, collegeId: '', majorName: '', majorCode: '', studyYears: 4, status: '启用' })
   dialogVisible.value = true
 }
-const handleEdit = (row) => { isEdit.value = true; dialogTitle.value = '编辑专业'; Object.assign(form, { ...row }); dialogVisible.value = true }
+const handleView = async (row) => {
+  isEdit.value = false; isView.value = true; dialogTitle.value = '查看专业详情'
+  const detail = await getMajorDetail(row.id)
+  const data = detail.data
+  await nextTick()
+  Object.assign(form, {
+    id: data.id,
+    collegeId: data.collegeId,
+    majorName: data.majorName,
+    majorCode: data.majorCode,
+    studyYears: data.studyYears,
+    status: data.status
+  })
+  dialogVisible.value = true
+}
+const handleEdit = async (row) => {
+  isEdit.value = true; isView.value = false; dialogTitle.value = '编辑专业'
+  const detail = await getMajorDetail(row.id)
+  const data = detail.data
+  await nextTick()
+  Object.assign(form, {
+    id: data.id,
+    collegeId: data.collegeId,
+    majorName: data.majorName,
+    majorCode: data.majorCode,
+    studyYears: data.studyYears,
+    status: data.status
+  })
+  dialogVisible.value = true
+}
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该专业吗？', '提示', { type: 'warning' }).then(async () => {
     await deleteMajor(row.id); ElMessage.success('删除成功'); fetchData()
@@ -164,5 +195,6 @@ onMounted(() => { loadColleges(); fetchData() })
 .page-container { padding: 0; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
+.search-form { margin-bottom: 0; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
 </style>

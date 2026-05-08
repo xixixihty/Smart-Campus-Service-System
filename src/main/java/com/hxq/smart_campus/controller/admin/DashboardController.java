@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,13 +25,22 @@ public class DashboardController {
 
     @GetMapping("/stats")
     @Operation(summary = "获取工作台统计数据")
-    public Result<Map<String, Long>> getStats() {
+    public Result<Map<String, Object>> getStats() {
         log.info("获取工作台统计数据");
-        Map<String, Long> stats = new HashMap<>();
+        Map<String, Object> stats = new HashMap<>();
         stats.put("collegeCount", dashboardMapper.countColleges());
         stats.put("teacherCount", dashboardMapper.countTeachers());
         stats.put("studentCount", dashboardMapper.countStudents());
         stats.put("courseCount", dashboardMapper.countCourses());
+        stats.put("borrowCount", dashboardMapper.countBorrowRecords());
+        stats.put("leaveCount", dashboardMapper.countLeaveRequests());
+        stats.put("noticeCount", dashboardMapper.countPublishedNotices());
+        stats.put("studentByCollege", dashboardMapper.studentByCollege());
+        stats.put("courseByType", dashboardMapper.courseByType());
+        stats.put("teacherByTitle", dashboardMapper.teacherByTitle());
+        stats.put("borrowTrend7Days", dashboardMapper.borrowTrend7Days());
+        stats.put("leaveByStatus", dashboardMapper.leaveByStatus());
+        stats.put("studentTrend7Days", dashboardMapper.studentTrend7Days());
         return Result.success(stats);
     }
 }
