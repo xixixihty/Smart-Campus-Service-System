@@ -20,4 +20,5 @@ public class SeatReservationResponseDTO {
     private LocalTime endTime;      // 结束时间
     private LocalDateTime leaveTime; // 签退/暂离时间
     private String status;          // 状态
+    private String reservationNo;   // 预约编号
 }

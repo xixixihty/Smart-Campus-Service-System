@@ -1,0 +1,1 @@
+import{r as a}from"./request-ivKRt5pC.js";const t=()=>a.get("/ai/admin/campus-overview"),s=e=>a.get("/ai/admin/teaching-quality",{params:e}),o=e=>a.get("/ai/admin/score-analysis",{params:e}),n=()=>a.get("/ai/admin/resource-optimization");export{s as a,o as b,n as c,t as g};

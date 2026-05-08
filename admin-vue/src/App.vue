@@ -1,0 +1,302 @@
+<template>
+  <router-view v-if="isLoginPage" />
+  <div class="common-layout" v-else>
+    <el-container>
+      <el-header>
+        <div class="header-left">
+          <el-icon :size="28"><School /></el-icon>
+          <span class="header-title">智慧校园管理系统</span>
+        </div>
+        <div class="header-right">
+          <el-badge :value="noticeCount" :hidden="noticeCount === 0">
+            <el-icon :size="22"><Bell /></el-icon>
+          </el-badge>
+          <el-dropdown @command="handleUserCommand">
+            <span class="user-info">
+              <el-icon><UserFilled /></el-icon>
+              <span>{{ username }}</span>
+              <el-icon><ArrowDown /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">
+                  <el-icon><User /></el-icon>个人信息
+                </el-dropdown-item>
+                <el-dropdown-item command="password">
+                  <el-icon><Lock /></el-icon>修改密码
+                </el-dropdown-item>
+                <el-dropdown-item divided command="logout">
+                  <el-icon><SwitchButton /></el-icon>退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </el-header>
+      <el-container>
+        <el-aside width="220px">
+          <el-menu
+            :default-active="activeMenu"
+            :default-openeds="defaultOpeneds"
+            router
+            background-color="#304156"
+            text-color="#bfcbd9"
+            active-text-color="#409EFF"
+          >
+            <el-menu-item index="/dashboard">
+              <el-icon><Odometer /></el-icon>
+              <span>工作台</span>
+            </el-menu-item>
+
+            <el-sub-menu index="org">
+              <template #title>
+                <el-icon><OfficeBuilding /></el-icon>
+                <span>组织架构</span>
+              </template>
+              <el-menu-item index="/college">
+                <el-icon><School /></el-icon>
+                <span>学院管理</span>
+              </el-menu-item>
+              <el-menu-item index="/major">
+                <el-icon><Collection /></el-icon>
+                <span>专业管理</span>
+              </el-menu-item>
+              <el-menu-item index="/class">
+                <el-icon><Grid /></el-icon>
+                <span>班级管理</span>
+              </el-menu-item>
+              <el-menu-item index="/classroom">
+                <el-icon><HomeFilled /></el-icon>
+                <span>教室管理</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="people">
+              <template #title>
+                <el-icon><UserFilled /></el-icon>
+                <span>人员管理</span>
+              </template>
+              <el-menu-item index="/teacher">
+                <el-icon><Avatar /></el-icon>
+                <span>教师管理</span>
+              </el-menu-item>
+              <el-menu-item index="/student">
+                <el-icon><User /></el-icon>
+                <span>学生管理</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="teaching">
+              <template #title>
+                <el-icon><Reading /></el-icon>
+                <span>教学管理</span>
+              </template>
+              <el-menu-item index="/semester">
+                <el-icon><Calendar /></el-icon>
+                <span>学期管理</span>
+              </el-menu-item>
+              <el-menu-item index="/course">
+                <el-icon><Notebook /></el-icon>
+                <span>课程管理</span>
+              </el-menu-item>
+              <el-menu-item index="/course-schedule">
+                <el-icon><Timer /></el-icon>
+                <span>排课管理</span>
+              </el-menu-item>
+              <el-menu-item index="/course-selection-period">
+                <el-icon><Clock /></el-icon>
+                <span>选课时段</span>
+              </el-menu-item>
+              <el-menu-item index="/score-entry">
+                <el-icon><Tickets /></el-icon>
+                <span>成绩管理</span>
+              </el-menu-item>
+              <el-menu-item index="/makeup-exam">
+                <el-icon><EditPen /></el-icon>
+                <span>补考管理</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="library">
+              <template #title>
+                <el-icon><Reading /></el-icon>
+                <span>图书管理</span>
+              </template>
+              <el-menu-item index="/book-category">
+                <el-icon><FolderOpened /></el-icon>
+                <span>图书分类</span>
+              </el-menu-item>
+              <el-menu-item index="/book">
+                <el-icon><CollectionTag /></el-icon>
+                <span>图书管理</span>
+              </el-menu-item>
+              <el-menu-item index="/borrow-record">
+                <el-icon><Document /></el-icon>
+                <span>借阅记录</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="facility">
+              <template #title>
+                <el-icon><Monitor /></el-icon>
+                <span>设施管理</span>
+              </template>
+              <el-menu-item index="/seat">
+                <el-icon><Chair /></el-icon>
+                <span>座位管理</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="campus">
+              <template #title>
+                <el-icon><Management /></el-icon>
+                <span>校园管理</span>
+              </template>
+              <el-menu-item index="/notice">
+                <el-icon><Bell /></el-icon>
+                <span>通知管理</span>
+              </el-menu-item>
+              <el-menu-item index="/leave-approval">
+                <el-icon><Checked /></el-icon>
+                <span>请假审批</span>
+              </el-menu-item>
+            </el-sub-menu>
+
+            <el-sub-menu index="ai">
+              <template #title>
+                <el-icon><Cpu /></el-icon>
+                <span>AI 智能分析</span>
+              </template>
+              <el-menu-item index="/ai-campus">
+                <el-icon><DataAnalysis /></el-icon>
+                <span>校园数据概览</span>
+              </el-menu-item>
+              <el-menu-item index="/ai-teaching">
+                <el-icon><TrendCharts /></el-icon>
+                <span>教学质量评估</span>
+              </el-menu-item>
+              <el-menu-item index="/ai-score">
+                <el-icon><PieChart /></el-icon>
+                <span>成绩数据分析</span>
+              </el-menu-item>
+              <el-menu-item index="/ai-resource">
+                <el-icon><Setting /></el-icon>
+                <span>资源优化建议</span>
+              </el-menu-item>
+            </el-sub-menu>
+          </el-menu>
+        </el-aside>
+        <el-main>
+          <router-view />
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+const username = ref(localStorage.getItem('username') || '管理员')
+const noticeCount = ref(0)
+
+const activeMenu = computed(() => route.path)
+const isLoginPage = computed(() => route.path === '/login')
+const defaultOpeneds = ref(['org', 'people', 'teaching', 'library', 'facility', 'campus', 'ai'])
+
+const handleUserCommand = (command) => {
+  if (command === 'logout') {
+    localStorage.clear()
+    router.push('/login')
+  } else if (command === 'profile') {
+    router.push('/profile')
+  } else if (command === 'password') {
+    router.push('/password')
+  }
+}
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+.common-layout {
+  height: 100%;
+}
+
+.common-layout > .el-container {
+  height: 100%;
+}
+
+.el-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d6aa0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: #fff;
+}
+
+.header-right .el-badge {
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.el-aside {
+  background-color: #304156;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.el-aside .el-menu {
+  border-right: none;
+}
+
+.el-main {
+  background-color: #f0f2f5;
+  padding: 20px;
+  min-height: 0;
+}
+</style>

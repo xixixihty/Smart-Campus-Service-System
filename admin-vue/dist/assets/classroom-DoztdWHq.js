@@ -1,0 +1,1 @@
+import{r as o}from"./request-ivKRt5pC.js";const t=s=>o.get("/classrooms/admin",{params:s}),e=s=>o.post("/classrooms/admin",s),m=s=>o.put("/classrooms/admin",s),r=s=>o.delete(`/classrooms/admin/${s}`);export{e as c,r as d,t as g,m as u};

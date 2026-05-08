@@ -7,6 +7,7 @@ import com.hxq.smart_campus.entity.vo.BookListVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -67,4 +68,23 @@ public interface BookMapper{
      * @return 更新结果
      */
     int updateBookStatus(@Param("id") Long id, @Param("status") String status);
+
+    /**
+     * 查询所有图书ID（用于布隆过滤器初始化）
+     * @return 所有图书ID列表
+     */
+    @Select("SELECT id FROM book")
+    List<Long> selectAllBookIds();
+
+    /**
+     * 扣减可借数量
+     */
+    @Update("UPDATE book SET available_copies = available_copies - 1 WHERE id = #{bookId} AND available_copies > 0")
+    int decrementAvailableCopies(@Param("bookId") Long bookId);
+
+    /**
+     * 增加可借数量
+     */
+    @Update("UPDATE book SET available_copies = available_copies + 1 WHERE id = #{bookId}")
+    int incrementAvailableCopies(@Param("bookId") Long bookId);
 }

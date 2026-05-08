@@ -54,4 +54,11 @@ public interface SeatMapper {
      * @return 座位列表
      */
     List<SeatListVO> getSeatList(@Param("roomId") Long roomId, @Param("status") String status);
+
+    /**
+     * 获取所有座位ID（用于布隆过滤器预热）
+     * @return 座位ID列表
+     */
+    @Select("select id from seat")
+    List<Long> selectAllSeatIds();
 }

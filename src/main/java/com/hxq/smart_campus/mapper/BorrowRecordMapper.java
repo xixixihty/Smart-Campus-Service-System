@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Insert;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -80,4 +81,17 @@ public interface BorrowRecordMapper {
     List<Map<String, Object>> getCategoryBorrowStatistics(@Param("userId") Long userId,
                                                             @Param("startDate") LocalDate startDate,
                                                             @Param("endDate") LocalDate endDate);
+
+    /**
+     * 直接插入借阅记录（MQ消费者使用，带borrow_no）
+     */
+    @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_no, borrow_date, due_date, status, create_time, update_time) " +
+            "VALUES (#{userId}, #{bookId}, #{borrowNo}, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), '借出中', now(), now())")
+    int insertBorrowRecordDirect(@Param("userId") Long userId, @Param("bookId") Long bookId, @Param("borrowNo") String borrowNo);
+
+    /**
+     * 根据borrow_no归还图书
+     */
+    @Update("UPDATE borrow_record SET status = '已归还', return_date = CURDATE(), update_time = now() WHERE borrow_no = #{borrowNo}")
+    int returnBookByBorrowNo(@Param("borrowNo") String borrowNo);
 }

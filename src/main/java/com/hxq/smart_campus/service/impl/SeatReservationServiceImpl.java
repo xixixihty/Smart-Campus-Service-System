@@ -3,11 +3,15 @@ package com.hxq.smart_campus.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
+import com.hxq.smart_campus.entity.dto.SeatReservationMessage;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
 import com.hxq.smart_campus.entity.vo.SeatReservationDetailVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
+import com.hxq.smart_campus.exception.BusinessException;
 import com.hxq.smart_campus.mapper.SeatReservationMapper;
 import com.hxq.smart_campus.service.SeatReservationService;
+import com.hxq.smart_campus.service.mq.SeatReservationProducer;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,83 +19,111 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SeatReservationServiceImpl implements SeatReservationService {
     private final SeatReservationMapper seatReservationMapper;
+    private final RedisSeatService redisSeatService;
+    private final SeatReservationProducer seatReservationProducer;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public SeatReservationResponseDTO insertSeatReservation(SeatReservationCreateDTO seatReservationCreateDTO) {
-        log.info("新增座位预约，参数：{}", seatReservationCreateDTO);
-        if (seatReservationCreateDTO == null) {
+    public SeatReservationResponseDTO insertSeatReservation(SeatReservationCreateDTO dto) {
+        log.info("新增座位预约，参数：{}", dto);
+        if (dto == null) {
             throw new IllegalArgumentException("参数不能为空");
         }
-        if (seatReservationCreateDTO.getSeatId() == null) {
+        if (dto.getSeatId() == null) {
             throw new IllegalArgumentException("座位ID不能为空");
         }
-        if (seatReservationCreateDTO.getDate() == null) {
+        if (dto.getDate() == null) {
             throw new IllegalArgumentException("预约日期不能为空");
         }
-        if (seatReservationCreateDTO.getStartTime() == null) {
+        if (dto.getStartTime() == null) {
             throw new IllegalArgumentException("开始时间不能为空");
         }
-        if (seatReservationCreateDTO.getEndTime() == null) {
+        if (dto.getEndTime() == null) {
             throw new IllegalArgumentException("结束时间不能为空");
         }
-        if (seatReservationCreateDTO.getStartTime().isAfter(seatReservationCreateDTO.getEndTime())) {
+        if (dto.getStartTime().isAfter(dto.getEndTime())) {
             throw new IllegalArgumentException("开始时间不能晚于结束时间");
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        int conflictCount = seatReservationMapper.checkSeatConflict(
-                seatReservationCreateDTO.getSeatId(),
-                seatReservationCreateDTO.getDate(),
-                seatReservationCreateDTO.getStartTime().format(formatter),
-                seatReservationCreateDTO.getEndTime().format(formatter)
-        );
-        if (conflictCount > 0) {
-            throw new IllegalArgumentException("该座位在该时间段已被预约");
+        Long userId = SecurityUtils.getCurrentUserId();
+        dto.setUserId(userId);
+
+        // 1. 布隆过滤器前置校验
+        if (!redisSeatService.checkSeatExists(dto.getSeatId())) {
+            throw new BusinessException("SEAT_NOT_EXIST", "座位不存在");
         }
 
-        int result = seatReservationMapper.insertSeatReservation(seatReservationCreateDTO);
-        if (result <= 0) {
-            throw new RuntimeException("新增座位预约失败");
+        // 2. 生成预约编号并执行 Lua 脚本原子预约
+        String reservationNo = generateReservationNo();
+        dto.setReservationNo(reservationNo);
+
+        Integer result = redisSeatService.reserveSeat(
+                dto.getSeatId(), userId, dto.getDate(),
+                dto.getStartTime(), dto.getEndTime(), reservationNo);
+        if (result == 0) {
+            throw new BusinessException("TIME_CONFLICT", "该座位在该时间段已被预约");
+        } else if (result != 1) {
+            throw new RuntimeException("预约失败，请稍后再试");
         }
-        Long id = seatReservationMapper.getLastInsertId();
-        SeatReservationDetailVO seatReservationDetailVO = seatReservationMapper.getSeatReservationDetail(id);
-        if (seatReservationDetailVO == null) {
-            throw new RuntimeException("获取座位预约详情失败");
-        }
-        log.info("新增座位预约成功，ID：{}", id);
-        return convertToSeatReservationResponseDTO(seatReservationDetailVO);
+
+        // 3. 发送 MQ 消息异步落库
+        SeatReservationMessage msg = new SeatReservationMessage(
+                dto.getSeatId(), userId, dto.getDate(),
+                dto.getStartTime(), dto.getEndTime(), reservationNo, "RESERVE");
+        seatReservationProducer.sendReserveMessage(msg);
+
+        // 4. 返回响应
+        SeatReservationResponseDTO response = new SeatReservationResponseDTO();
+        response.setReservationNo(reservationNo);
+        response.setSeatId(dto.getSeatId());
+        response.setUserId(userId);
+        response.setDate(dto.getDate());
+        response.setStartTime(dto.getStartTime());
+        response.setEndTime(dto.getEndTime());
+        response.setStatus("待签到");
+        return response;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean deleteSeatReservation(Long id) {
         log.info("取消预约，参数：id={}", id);
         if (id == null) {
             throw new IllegalArgumentException("预约ID不能为空");
         }
-        SeatReservationDetailVO existingReservation = seatReservationMapper.getSeatReservationDetail(id);
-        if (existingReservation == null) {
+
+        SeatReservationDetailVO existing = seatReservationMapper.getSeatReservationDetail(id);
+        if (existing == null) {
             throw new IllegalArgumentException("预约记录不存在");
         }
-        if ("使用中".equals(existingReservation.getStatus())) {
+        if ("使用中".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前正在使用中，无法取消预约");
         }
-        if ("已完成".equals(existingReservation.getStatus())) {
+        if ("已完成".equals(existing.getStatus())) {
             throw new IllegalArgumentException("该预约已结束，无法取消");
         }
-        int result = seatReservationMapper.deleteSeatReservation(id);
-        if (result <= 0) {
-            throw new RuntimeException("取消座位预约失败");
+
+        // 1. 执行 Redis Lua 取消预约
+        Integer result = redisSeatService.cancelReservation(
+                existing.getSeatId(), existing.getUserId(),
+                existing.getDate(), existing.getStartTime());
+        if (result == -1) {
+            log.warn("Redis取消预约未找到记录: reservationNo={}", existing.getReservationNo());
         }
+
+        // 2. 发送 MQ 消息更新 DB
+        SeatReservationMessage msg = new SeatReservationMessage(
+                existing.getSeatId(), existing.getUserId(), existing.getDate(),
+                existing.getStartTime(), existing.getEndTime(),
+                existing.getReservationNo(), "CANCEL");
+        seatReservationProducer.sendCancelMessage(msg);
+
         log.info("取消预约成功，ID：{}", id);
         return true;
     }
@@ -103,11 +135,11 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (id == null) {
             throw new IllegalArgumentException("预约ID不能为空");
         }
-        SeatReservationDetailVO existingReservation = seatReservationMapper.getSeatReservationDetail(id);
-        if (existingReservation == null) {
+        SeatReservationDetailVO existing = seatReservationMapper.getSeatReservationDetail(id);
+        if (existing == null) {
             throw new IllegalArgumentException("预约记录不存在");
         }
-        if (!"待签到".equals(existingReservation.getStatus())) {
+        if (!"待签到".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是待签到，无法签到");
         }
         int result = seatReservationMapper.checkInSeatReservation(id);
@@ -125,11 +157,11 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (id == null) {
             throw new IllegalArgumentException("预约ID不能为空");
         }
-        SeatReservationDetailVO existingReservation = seatReservationMapper.getSeatReservationDetail(id);
-        if (existingReservation == null) {
+        SeatReservationDetailVO existing = seatReservationMapper.getSeatReservationDetail(id);
+        if (existing == null) {
             throw new IllegalArgumentException("预约记录不存在");
         }
-        if (!"使用中".equals(existingReservation.getStatus()) && !"暂离".equals(existingReservation.getStatus())) {
+        if (!"使用中".equals(existing.getStatus()) && !"暂离".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是使用中或暂离，无法签退");
         }
         int result = seatReservationMapper.checkOutSeatReservation(id);
@@ -147,11 +179,11 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (id == null) {
             throw new IllegalArgumentException("预约ID不能为空");
         }
-        SeatReservationDetailVO existingReservation = seatReservationMapper.getSeatReservationDetail(id);
-        if (existingReservation == null) {
+        SeatReservationDetailVO existing = seatReservationMapper.getSeatReservationDetail(id);
+        if (existing == null) {
             throw new IllegalArgumentException("预约记录不存在");
         }
-        if (!"使用中".equals(existingReservation.getStatus())) {
+        if (!"使用中".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是使用中，无法暂离");
         }
         int result = seatReservationMapper.leaveSeatReservation(id);
@@ -185,23 +217,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         return new PageInfo<>(list);
     }
 
-    private SeatReservationResponseDTO convertToSeatReservationResponseDTO(SeatReservationDetailVO seatReservationDetailVO) {
-        if (seatReservationDetailVO == null) {
-            return null;
-        }
-        SeatReservationResponseDTO seatReservationResponseDTO = new SeatReservationResponseDTO();
-        seatReservationResponseDTO.setId(seatReservationDetailVO.getId());
-        seatReservationResponseDTO.setUserId(seatReservationDetailVO.getUserId());
-        seatReservationResponseDTO.setUserName(seatReservationDetailVO.getUserName());
-        seatReservationResponseDTO.setSeatId(seatReservationDetailVO.getSeatId());
-        seatReservationResponseDTO.setSeatNumber(seatReservationDetailVO.getSeatNumber());
-        seatReservationResponseDTO.setRoomId(seatReservationDetailVO.getRoomId());
-        seatReservationResponseDTO.setRoomName(seatReservationDetailVO.getRoomName());
-        seatReservationResponseDTO.setDate(seatReservationDetailVO.getDate());
-        seatReservationResponseDTO.setStartTime(seatReservationDetailVO.getStartTime());
-        seatReservationResponseDTO.setEndTime(seatReservationDetailVO.getEndTime());
-        seatReservationResponseDTO.setLeaveTime(seatReservationDetailVO.getLeaveTime());
-        seatReservationResponseDTO.setStatus(seatReservationDetailVO.getStatus());
-        return seatReservationResponseDTO;
+    private String generateReservationNo() {
+        return "SEAT" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 }

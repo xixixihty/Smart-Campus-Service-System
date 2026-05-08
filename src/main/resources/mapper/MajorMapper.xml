@@ -35,10 +35,10 @@
             <if test="collegeId != null">
                 and m.college_id = #{collegeId}
             </if>
-            <if test="majorName != null">
+            <if test="majorName != null and majorName != ''">
                 and m.major_name like CONCAT('%', #{majorName}, '%')
             </if>
-            <if test="status != null">
+            <if test="status != null and status != ''">
                 and m.status = #{status}
             </if>
         </where>

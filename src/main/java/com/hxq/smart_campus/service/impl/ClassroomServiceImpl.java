@@ -62,9 +62,13 @@ public class ClassroomServiceImpl implements ClassroomService {
             throw new IllegalArgumentException("教室ID不能为空");
         }
         for (Long id : ids) {
-            // 检查状态
-            if (CLASSROOM_STATUS_DISABLED.equals(classroomMapper.getClassroomDetail(id).getStatus())) {
-                throw new IllegalArgumentException("停用的教室不能删除");
+            // 检查状态：只有停用的教室才能删除
+            ClassroomDetailVO classroom = classroomMapper.getClassroomDetail(id);
+            if (classroom == null) {
+                throw new IllegalArgumentException("教室不存在, id=" + id);
+            }
+            if (!CLASSROOM_STATUS_DISABLED.equals(classroom.getStatus())) {
+                throw new IllegalArgumentException("只有停用的教室才能删除，当前状态: " + classroom.getStatus());
             }
         }
         int result = classroomMapper.deleteBatch(ids);

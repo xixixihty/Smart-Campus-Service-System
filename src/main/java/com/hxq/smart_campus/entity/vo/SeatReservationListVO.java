@@ -18,4 +18,5 @@ public class SeatReservationListVO {
     private LocalTime endTime;      // 结束时间
     private LocalDateTime leaveTime; // 暂离/签退时间
     private String status;          // 状态
+    private String reservationNo;   // 预约编号
 }

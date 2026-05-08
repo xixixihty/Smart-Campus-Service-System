@@ -500,7 +500,17 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         if (!Objects.equals(course1.getWeekDay(), course2.getWeekDay())) {
             return false;
         }
+        // 节次冲突检测：若任一值为null则无法判定冲突
+        if (course1.getClassEnd() == null || course2.getClassStart() == null ||
+            course1.getClassStart() == null || course2.getClassEnd() == null) {
+            return false;
+        }
         if (course1.getClassEnd() <= course2.getClassStart() || course1.getClassStart() >= course2.getClassEnd()) {
+            return false;
+        }
+        // 周次冲突检测：若任一值为null则无法判定冲突
+        if (course1.getWeekEnd() == null || course2.getWeekStart() == null ||
+            course1.getWeekStart() == null || course2.getWeekEnd() == null) {
             return false;
         }
         if (course1.getWeekEnd() <= course2.getWeekStart() || course1.getWeekStart() >= course2.getWeekEnd()) {

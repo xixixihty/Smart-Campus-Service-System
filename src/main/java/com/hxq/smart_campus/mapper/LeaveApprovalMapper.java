@@ -39,12 +39,12 @@ public interface LeaveApprovalMapper {
 
 
     /**
-     * 更新请假申请状态
+     * 更新请假申请状态（乐观锁：只在当前状态为'待审批'时更新）
      * @param id
      * @param leaveApplyStatusApproved
      * @return
      */
-    @Update("UPDATE leave_request SET status = #{leaveApplyStatusApproved} , update_time = now() WHERE id = #{id} AND status = #{status}")
+    @Update("UPDATE leave_request SET status = #{leaveApplyStatusApproved} , update_time = now() WHERE id = #{id} AND status = '待审批'")
     int updateLeaveRequestStatus(@Param("id") Long id,
                                  @Param("leaveApplyStatusApproved") String leaveApplyStatusApproved);
 

@@ -9,24 +9,28 @@
         insert into seat_reservation
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="seatId != null">seat_id</if>
+            <if test="userId != null">user_id</if>
             <if test="date != null">date</if>
             <if test="startTime != null">start_time</if>
             <if test="endTime != null">end_time</if>
+            <if test="reservationNo != null">reservation_no</if>
         </trim>
             values
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="seatId != null">#{seatId}</if>
+                <if test="userId != null">#{userId}</if>
                 <if test="date != null">#{date}</if>
                 <if test="startTime != null">#{startTime}</if>
                 <if test="endTime != null">#{endTime}</if>
+                <if test="reservationNo != null">#{reservationNo}</if>
         </trim>
     </insert>
 
     <!-- 获取座位预约详情 -->
     <select id="getSeatReservationDetail" resultType="com.hxq.smart_campus.entity.vo.SeatReservationDetailVO">
         select r.id, r.user_id, stu.name as userName, r.seat_id, s.seat_number,
-            r.date, r.start_time, r.end_time, r.leave_time, r.status, r.create_time, r.update_time,
-            s.room_id, r.room_name
+            r.date, r.start_time, r.end_time, r.leave_time, r.status, r.reservation_no as reservationNo,
+            r.create_time, r.update_time, s.room_id, r.room_name
         from seat_reservation r
         left join student stu on r.user_id = stu.id
         left join seat s on r.seat_id = s.id
@@ -36,8 +40,8 @@
     <!-- 获取座位预约列表 -->
     <select id="getSeatReservationList" resultType="com.hxq.smart_campus.entity.vo.SeatReservationListVO">
         select r.id, stu.name as userName, r.seat_id, s.seat_number,
-               r.date, r.start_time, r.end_time, r.leave_time, r.status, r.create_time, r.update_time,
-               s.room_id
+               r.date, r.start_time, r.end_time, r.leave_time, r.status, r.reservation_no as reservationNo,
+               r.create_time, r.update_time, s.room_id
         from seat_reservation r
         left join student stu on r.user_id = stu.id
         left join seat s on r.seat_id = s.id

@@ -20,6 +20,7 @@ public class SeatReservationDetailVO {
     private LocalTime endTime;      // 结束时间
     private LocalDateTime leaveTime; // 签退/暂离时间
     private String status;          // 状态
+    private String reservationNo;   // 预约编号
     private String createTime;      // 创建时间（格式化显示）
     private String updateTime;      // 修改时间（格式化显示）
 }

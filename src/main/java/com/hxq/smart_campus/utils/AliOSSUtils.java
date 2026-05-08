@@ -18,16 +18,16 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class AliOSSUtils {
-    @Value("${aliyun.oss.endpoint:https://oss-cn-hangzhou.aliyuncs.com}")
+    @Value("${aliyun.oss.endpoint}")
     private String endpoint;
-    
-    @Value("${aliyun.oss.access-key-id:REDACTED_ACCESS_KEY_ID}")
+
+    @Value("${aliyun.oss.access-key-id}")
     private String accessKeyId;
-    
-    @Value("${aliyun.oss.access-key-secret:REDACTED_ACCESS_KEY_SECRET}")
+
+    @Value("${aliyun.oss.access-key-secret}")
     private String accessKeySecret;
-    
-    @Value("${aliyun.oss.bucket-name:hexiongqi}")
+
+    @Value("${aliyun.oss.bucket-name}")
     private String bucketName;
     
     private OSS ossClient;

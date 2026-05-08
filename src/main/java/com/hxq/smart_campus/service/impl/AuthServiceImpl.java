@@ -46,7 +46,6 @@ public class AuthServiceImpl implements AuthService {
         log.debug("当前密码验证逻辑：直接使用明文密码与数据库哈希比对");
 
         if (USER_TYPE_STUDENT.equals(loginDTO.getUserType())) {
-            // 学生登录
             StudentDetailVO student = studentMapper.getStudentByStudentNo(loginDTO.getUsername());
             if (student == null) {
                 throw new IllegalArgumentException("学生不存在");
@@ -63,7 +62,6 @@ public class AuthServiceImpl implements AuthService {
             responseDTO.setStatus(student.getStatus());
             responseDTO.setAccountStatus(student.getAccountStatus());
         } else if (USER_TYPE_TEACHER.equals(loginDTO.getUserType())) {
-            // 教师登录
             TeacherDetailVO teacher = teacherMapper.getTeacherByTeacherNo(loginDTO.getUsername());
             if (teacher == null) {
                 throw new IllegalArgumentException("教师不存在");

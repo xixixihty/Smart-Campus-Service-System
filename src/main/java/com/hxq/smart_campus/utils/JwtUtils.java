@@ -2,7 +2,10 @@ package com.hxq.smart_campus.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -16,10 +19,24 @@ import java.util.Map;
  */
 
 @Slf4j
+@Component
 public class JwtUtils {
 
-    private static final String SECRET = "hxq-smart-campus-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256";
-    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000L;
+    private static String secretStatic;
+    private static long expirationTimeStatic;
+
+    @Value("${jwt.secret:hxq-smart-campus-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}")
+    private String secret;
+
+    @Value("${jwt.expiration:86400000}")
+    private long expirationTime;
+
+    @PostConstruct
+    public void init() {
+        secretStatic = this.secret;
+        expirationTimeStatic = this.expirationTime;
+    }
+
     private static final String USER_ID_CLAIM = "userId";
     private static final String USERNAME_CLAIM = "username";
     private static final String NAME_CLAIM = "name";
@@ -28,7 +45,7 @@ public class JwtUtils {
     private JwtUtils() {}
 
     private static SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secretStatic.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String generateToken(Long userId, String username, String name, String userType) {
@@ -39,7 +56,7 @@ public class JwtUtils {
         claims.put(USER_TYPE_CLAIM, userType);
 
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
+        Date expiration = new Date(now.getTime() + expirationTimeStatic);
 
         return Jwts.builder()
                 .claims(claims)

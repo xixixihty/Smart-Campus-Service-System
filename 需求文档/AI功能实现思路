@@ -1,0 +1,578 @@
+版本声明：以下方案基于 Spring AI Alibaba 1.0 GA 及 阿里云百炼平台 2026年5月最新功能 编写，文中所有“最新”均指该时间点。
+
+AI模块设计方案
+一、总体架构与模块划分
+AI模块架构总览：
+
+text
+┌─────────────────────────────────────────────────────────────┐
+│                      客户端（Web / 小程序 / App）              │
+├─────────────────────────────────────────────────────────────┤
+│              Spring Boot 3.5.x + Spring AI Alibaba           │
+├─────────────────────────────────────────────────────────────┤
+│  ┌───────────────┐  ┌──────────────────┐  ┌───────────────┐ │
+│  │  ChatClient   │  │  AI Service 层   │  │ Agent 引擎    │ │
+│  │  (对话接口)    │  │  (业务逻辑封装)   │  │ (智能体编排)  │ │
+│  └───────┬───────┘  └────────┬─────────┘  └───────┬───────┘ │
+│          │                   │                    │          │
+│  ┌───────┴───────────────────┴────────────────────┴───────┐ │
+│  │                    能力层                                │ │
+│  │  RAG检索 │ Function Calling │ ETL管道 │ 多模态 │ 记忆  │ │
+│  └───────────────────────────┬────────────────────────────┘ │
+│                              │                               │
+│  ┌───────────────────────────┴────────────────────────────┐  │
+│  │                    数据层                               │  │
+│  │  Elasticsearch(向量存储) │ Redis │ MySQL │ OSS          │  │
+│  └────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │     阿里云百炼平台              │
+              │  DashScope ChatModel           │
+              │  Qwen3.6 / DeepSeek 等模型     │
+              │  百炼智能体(Agent) + 知识库     │
+              └───────────────────────────────┘
+二、用户端AI模块实现
+2.1 图书推荐系统
+实现思路：
+
+图书推荐是RAG技术与推荐算法的结合。核心思路是：将图书信息（书名、简介、分类、借阅热度）生成向量存入Elasticsearch，当用户查询或系统主动推荐时，通过语义匹配找到最相似的图书。
+
+核心流程：
+
+text
+用户借阅/浏览行为 → 构建用户画像 → Embedding向量化 → ES向量检索 → LLM精排+推荐理由生成 → 返回推荐结果
+关键代码骨架：
+
+java
+// 1. 图书推荐Service
+@Service
+public class BookRecommendService {
+
+    @Resource
+    private ChatClient chatClient;           // Spring AI Alibaba 对话客户端
+    @Resource
+    private VectorStore vectorStore;          // Elasticsearch 向量存储
+    @Resource
+    private BookMapper bookMapper;
+
+    /**
+     * 基于用户画像的图书推荐
+     */
+    public List<BookRecommendVO> recommend(Long userId) {
+        // Step1: 构建用户画像文本（从 borrow_record 聚合）
+        UserProfile profile = buildUserProfile(userId);
+
+        // Step2: 将画像文本向量化并进行语义检索
+        List<Document> similarDocs = vectorStore.similaritySearch(
+            SearchRequest.query(profile.toText()).withTopK(10)
+        );
+
+        // Step3: 调用LLM生成推荐理由
+        String prompt = """
+            你是图书推荐专家。用户画像：{profile}
+            候选图书：{candidateBooks}
+            请推荐5本最适合的图书，为每本生成个性化推荐理由。
+            """;
+
+        return chatClient.prompt()
+            .user(u -> u.text(prompt)
+                .param("profile", profile.toText())
+                .param("candidateBooks", formatBooks(similarDocs)))
+            .call()
+            .entity(new ParameterizedTypeReference<List<BookRecommendVO>>() {});
+    }
+}
+用到的技术点：
+
+ETL管道：从MySQL抽取图书数据，经Embedding后加载到ES向量存储
+
+RAG检索增强：用户画像 → 向量检索 → LLM精排，实现“检索-过滤-生成”三段式流程
+
+ChatClient结构化输出：用 @Format 注解约束LLM输出为指定JSON格式
+
+2.2 图书借阅行为分析
+实现思路：
+
+聚合用户在 borrow_record 和 reading_report 中的历史数据，通过LLM的文本理解能力生成个性化的阅读分析报告。
+
+核心流程：
+
+text
+查询借阅历史 → 聚合统计数据 → 构造Prompt → LLM生成分析报告 → 返回/缓存
+关键代码骨架：
+
+java
+@Service
+public class ReadingAnalysisService {
+
+    @Resource
+    private ChatClient chatClient;
+    @Resource
+    private ReadingReportMapper reportMapper;
+
+    public ReadingReportVO analyze(Long userId) {
+        // 从 reading_report 获取用户阅读数据
+        ReadingReport report = reportMapper.selectByUserId(userId);
+
+        String prompt = """
+            你是一位阅读分析专家。根据以下用户的借阅数据，生成一份个性化阅读分析报告：
+            - 总借阅量：{totalBorrow}本
+            - 偏好分类：{favCategory}
+            - 历史分析：{analysisText}
+
+            请从以下维度输出报告：
+            1. 阅读偏好总结
+            2. 阅读量趋势分析
+            3. 阅读广度与深度评价
+            4. 改进建议（推荐具体领域）
+            """;
+
+        return chatClient.prompt()
+            .user(u -> u.text(prompt)
+                .param("totalBorrow", report.getTotalBorrow())
+                .param("favCategory", report.getFavCategory())
+                .param("analysisText", report.getAnalysisText()))
+            .call()
+            .entity(ReadingReportVO.class);
+    }
+}
+2.3 学习成绩分析
+实现思路：
+
+从 score_entry 和 course_selection 表提取学生成绩数据，结合专业培养方案，利用LLM生成个性化的学习诊断报告。
+
+关键代码骨架：
+
+java
+@Service
+public class ScoreAnalysisService {
+
+    @Resource
+    private ChatClient chatClient;
+    @Resource
+    private ScoreEntryMapper scoreMapper;
+
+    public ScoreAnalysisVO analyze(Long studentId, Long semesterId) {
+        // 从数据库获取该学生本学期的所有成绩
+        List<ScoreEntry> scores = scoreMapper.selectByStudentAndSemester(studentId, semesterId);
+
+        // 构造结构化数据给LLM
+        StringBuilder data = new StringBuilder();
+        for (ScoreEntry s : scores) {
+            data.append(String.format("课程：%s | 总评：%.1f | 绩点：%.1f | 考试状态：%s\n",
+                s.getCourseName(), s.getTotalScore(), s.getScorePoint(), s.getExamStatus()));
+        }
+
+        return chatClient.prompt()
+            .user("""
+                你是学习诊断专家。根据学生各科成绩，请分析：
+                {scoreData}
+                输出内容：
+                1. 各科成绩趋势（上升/下降/稳定）
+                2. 优势学科与薄弱学科
+                3. 知识薄弱点推断
+                4. 具体的学习改进建议（分科目）
+                """)
+            .param("scoreData", data.toString())
+            .call()
+            .entity(ScoreAnalysisVO.class);
+    }
+}
+用到的技术点：
+
+Prompt工程：采用结构化Prompt模板（角色设定 + 数据注入 + 输出要求），这是充分发挥大模型能力最重要的一步
+
+结构化输出：利用 @Format 注解让LLM输出可直接反序列化的JSON对象
+
+2.4 选修课程推荐
+实现思路：
+
+结合学生专业、已修课程、成绩表现和职业规划，采用 NL2SQL（自然语言转SQL） 技术从数据库中智能查询合适的选修课，再由LLM进行精排和推荐理由生成。
+
+核心流程：
+
+text
+用户画像输入 → LLM生成查询意图 → NL2SQL查询候选课程 → LLM精排+推荐理由 → 返回
+关键代码骨架：
+
+java
+@Service
+public class CourseRecommendService {
+
+    @Resource
+    private ChatClient chatClient;
+    @Resource
+    private DataSource dataSource;
+
+    public List<CourseRecommendVO> recommend(Long studentId) {
+        // 收集用户画像
+        StudentProfile profile = buildStudentProfile(studentId);
+
+        // NL2SQL：让LLM生成SQL查询候选课程
+        String nlQuery = String.format(
+            "学生专业是%s，已修课程：%s，绩点：%.1f，请推荐适合的选修课",
+            profile.getMajor(), profile.getCompletedCourses(), profile.getGpa()
+        );
+
+        // 使用DataAgent执行NL2SQL
+        String sqlResult = executeNL2SQL(nlQuery);
+
+        // LLM精排
+        return chatClient.prompt()
+            .user("""
+                根据学生画像和数据库查询结果，推荐5门选修课：
+                学生画像：{profile}
+                候选课程：{candidates}
+                为每门课生成推荐理由。
+                """)
+            .param("profile", profile)
+            .param("candidates", sqlResult)
+            .call()
+            .entity(new ParameterizedTypeReference<List<CourseRecommendVO>>() {});
+    }
+}
+用到的技术点：
+
+NL2SQL（自然语言转SQL） ：Spring AI Alibaba DataAgent 模块的核心能力，让用户用自然语言查询数据库
+
+Function Calling：让LLM在需要查询数据库时自动调用工具函数获取数据
+
+三、管理端AI模块实现
+3.1 校园数据统计分析
+实现思路：
+
+管理端AI的核心模式是 Function Calling + 数据分析 + ECharts可视化。
+LLM理解管理员的分析需求，调用对应的统计函数查询数据库，将结果生成分析报告和图表配置。
+
+核心流程：
+
+text
+管理员输入分析需求 → ChatClient.Functions(统计工具) → LLM规划调用链 → 执行SQL统计 → LLM生成报告 + 图表配置 → 前端ECharts渲染
+关键代码骨架：
+
+java
+@Service
+public class CampusStatisticsService {
+
+    @Resource
+    private ChatClient chatClient;
+
+    /**
+     * 智能统计分析入口
+     */
+    public StatisticsResult analyze(String userQuery) {
+        return chatClient.prompt()
+            .user(userQuery)
+            .functions(
+                "countStudents", "countTeachers", "countCourses",
+                "queryStudentDistribution", "queryTeacherDistribution"
+            )
+            .call()
+            .entity(StatisticsResult.class);
+    }
+
+    // 注册为 Function Calling 工具
+    @Component
+    public static class StatisticsTools {
+
+        @Resource
+        private StudentMapper studentMapper;
+
+        @org.springframework.ai.tool.annotation.Tool(description = "统计各学院学生数量")
+        public List<Map<String, Object>> queryStudentDistribution() {
+            return studentMapper.countByCollege();
+        }
+
+        @org.springframework.ai.tool.annotation.Tool(description = "统计各学院教师数量")
+        public List<Map<String, Object>> queryTeacherDistribution() {
+            // 类似实现
+        }
+
+        @org.springframework.ai.tool.annotation.Tool(description = "统计学生总数")
+        public Long countStudents() {
+            return studentMapper.countAll();
+        }
+    }
+}
+ECharts可视化响应格式：
+
+LLM生成的报告结构示例：
+
+json
+{
+  "analysisText": "我校现有在读学生15200人，教师850人...",
+  "charts": [
+    {
+      "type": "pie",
+      "title": "各学院学生分布",
+      "data": [{"name": "计算机学院", "value": 3200}, ...]
+    },
+    {
+      "type": "bar",
+      "title": "各专业招生趋势",
+      "data": [{"name": "2024年", "series": [...]}, ...]
+    }
+  ]
+}
+3.2 教学质量评估
+实现思路：
+
+从 score_entry 和 course 表提取多维评估数据（平均分、挂科率、绩点分布、成绩波动），LLM综合分析后生成评估报告和教学建议。
+
+关键代码骨架：
+
+java
+@Service
+public class TeachingQualityService {
+
+    @Resource
+    private ChatClient chatClient;
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询某课程的成绩分布数据")
+    public Map<String, Object> queryCourseScoreData(Long courseId, Long semesterId) {
+        // 从 score_entry 表中聚合：平均分、挂科率、各分数段人数、绩点分布
+        // 返回结构化数据供LLM分析
+    }
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询某教师所授课程的成绩汇总")
+    public List<Map<String, Object>> queryTeacherScoreSummary(Long teacherId) {
+        // 聚合该教师所有课程的成绩数据
+    }
+
+    public QualityReportVO evaluateCourse(Long courseId) {
+        return chatClient.prompt()
+            .user("请对该课程的教学质量进行全面评估，包含：成绩分析、挂科率趋势、教学建议")
+            .functions("queryCourseScoreData")
+            .call()
+            .entity(QualityReportVO.class);
+    }
+}
+3.3 资源利用优化
+实现思路：
+
+分析图书馆座位预约数据（seat_reservation）、图书借阅数据（borrow_record）、教室使用数据（classroom），通过LLM识别资源使用的高峰低谷，生成优化建议。阿里云百炼平台支持多模态分析能力，可结合座位预约数据生成使用热力图描述。
+
+关键代码骨架：
+
+java
+@Service
+public class ResourceOptimizationService {
+
+    @Resource
+    private ChatClient chatClient;
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询各阅览室座位利用率")
+    public List<Map<String, Object>> querySeatUtilization(LocalDate startDate, LocalDate endDate) {
+        // 从 seat_reservation 聚合各阅览室、各时段的使用率
+    }
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询各教室排课利用率")
+    public List<Map<String, Object>> queryClassroomUtilization(Long semesterId) {
+        // 从 course_schedule 聚合各教室的使用率
+    }
+
+    public OptimizationReportVO analyze() {
+        return chatClient.prompt()
+            .user("""
+                请分析校园资源利用情况，包含：
+                1. 图书馆座位利用热力分析（高峰时段、热门区域）
+                2. 教室资源利用率分析
+                3. 资源优化配置建议（如调整开放时间、错峰安排）
+                """)
+            .functions("querySeatUtilization", "queryClassroomUtilization")
+            .call()
+            .entity(OptimizationReportVO.class);
+    }
+}
+四、关键技术实现细节
+4.1 阿里百炼平台集成配置
+yaml
+# application-ai.yml
+spring:
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY}       # 阿里云百炼API Key
+      chat:
+        options:
+          model: qwen3.6-plus               # 使用最新千问模型
+          temperature: 0.7
+java
+@Configuration
+public class AIConfig {
+
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder builder) {
+        return builder
+            .defaultSystem("你是智慧校园AI助手，提供图书推荐、学习分析、教学评估等服务。")
+            .build();
+    }
+}
+注意：Spring AI Alibaba 已经为阿里云百炼平台提供了原生适配，DashScopeApi 会自动读取 spring.ai.dashscope.api-key 配置，无需额外配置即可使用。
+
+4.2 Prompt 工程（模板设计）
+采用结构化Prompt模板，将固定结构与动态变量分离，实现统一管理和复用：
+
+java
+@Component
+public class PromptTemplates {
+
+    // 图书推荐System Prompt
+    public static final String BOOK_RECOMMEND_SYSTEM = """
+        你是智慧校园的图书推荐专家。你的职责是：
+        1. 根据用户的阅读历史和偏好，推荐合适的图书
+        2. 为每本推荐图书生成个性化的推荐理由
+        3. 推荐时考虑用户的专业背景和年级
+        4. 推荐理由需包含：为什么适合、该书的核心价值、阅读难度评估
+        请以JSON格式返回推荐结果。
+        """;
+
+    // 学习分析System Prompt
+    public static final String SCORE_ANALYSIS_SYSTEM = """
+        你是学习诊断专家。分析学生成绩时，请遵循以下准则：
+        1. 横向对比：将该生成绩与班级/专业平均分对比
+        2. 纵向对比：分析该生各学期成绩变化趋势
+        3. 知识点分析：根据课程内容推断薄弱知识点
+        4. 建议具体可行：给出按科目分类的具体行动建议
+        """;
+
+    // 数据统计分析System Prompt
+    public static final String STATISTICS_SYSTEM = """
+        你是校园数据分析师。分析数据时请：
+        1. 先描述整体概况（总量、增长率等关键指标）
+        2. 再指出异常值或值得关注的趋势
+        3. 最后给出可落地的优化建议
+        同时返回ECharts图表配置，供前端直接渲染。
+        """;
+}
+4.3 Function Calling 工具注册
+java
+@Component
+public class AITools {
+
+    @Resource
+    private BookMapper bookMapper;
+    @Resource
+    private BorrowRecordMapper borrowMapper;
+    @Resource
+    private ScoreEntryMapper scoreMapper;
+    @Resource
+    private StudentMapper studentMapper;
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询用户的借阅历史")
+    public List<BorrowRecord> getUserBorrowHistory(Long userId) {
+        return borrowMapper.selectByUserId(userId);
+    }
+
+    @org.springframework.ai.tool.annotation.Tool(description = "查询某学生的各科成绩")
+    public List<ScoreEntry> getStudentScores(Long studentId, Long semesterId) {
+        return scoreMapper.selectByStudentAndSemester(studentId, semesterId);
+    }
+
+    @org.springframework.ai.tool.annotation.Tool(description = "搜索图书，支持按书名、作者、分类搜索")
+    public List<Book> searchBooks(String keyword, String category) {
+        return bookMapper.search(keyword, category);
+    }
+
+    @org.springframework.ai.tool.annotation.Tool(description = "按条件统计学生数量")
+    public Long countStudents(String collegeName, String majorName, String grade) {
+        return studentMapper.countByCondition(collegeName, majorName, grade);
+    }
+}
+4.4 RAG（检索增强生成）图书知识库
+ETL管道流程：
+
+text
+MySQL(book表) → DocumentReader(读取) → TextSplitter(分块) → Embedding(向量化) → Elasticsearch(存储)
+java
+@Configuration
+public class RAGConfig {
+
+    @Bean
+    public VectorStore vectorStore(ElasticsearchVectorStoreOptions options,
+                                    RestClient restClient) {
+        return new ElasticsearchVectorStore(options, restClient);
+    }
+
+    /**
+     * 项目启动时执行ETL：将图书数据加载到向量库
+     */
+    @Component
+    public static class BookETLInitializer implements ApplicationRunner {
+
+        @Resource
+        private BookMapper bookMapper;
+        @Resource
+        private VectorStore vectorStore;
+
+        @Override
+        public void run(ApplicationArguments args) {
+            List<Book> books = bookMapper.selectAll();
+
+            List<Document> documents = books.stream()
+                .map(book -> new Document(
+                    String.format("%s %s %s", book.getTitle(), book.getAuthor(), book.getDescription()),
+                    Map.of("bookId", book.getId(), "categoryId", book.getCategoryId())
+                ))
+                .toList();
+
+            vectorStore.add(documents);
+        }
+    }
+}
+4.5 对话记忆与多轮分析
+java
+@Service
+public class AIAssistantService {
+
+    @Resource
+    private ChatClient chatClient;
+
+    /**
+     * 多轮对话式分析（支持追问）
+     * @param conversationId 对话ID，用于保持上下文
+     */
+    public String chat(String conversationId, String userMessage) {
+        return chatClient.prompt()
+            .user(userMessage)
+            .advisors(a -> a
+                // 使用阿里百炼智能体提供的记忆能力
+                .param("conversationId", conversationId)
+            )
+            .functions("getUserBorrowHistory", "getStudentScores",
+                       "searchBooks", "countStudents", "querySeatUtilization")
+            .call()
+            .content();
+    }
+}
+五、实施计划与优先级
+阶段	任务	优先级	预计耗时
+Phase 1	Spring AI Alibaba 环境搭建（依赖、配置、HelloWorld验证）	P0	2天
+Phase 2	ChatClient 封装 + Prompt模板体系建立	P0	3天
+Phase 3	Function Calling 工具注册（图书、成绩、统计等查询函数）	P0	3天
+Phase 4	用户端AI：图书推荐 + 学习分析 + 课表AI问答	P1	5天
+Phase 5	图书知识库ETL（ES向量存储） + RAG推荐	P1	3天
+Phase 6	管理端AI：数据统计 + 教学质量评估 + 资源优化	P2	5天
+Phase 7	多轮对话记忆 + ECharts图表生成	P2	2天
+Phase 8	性能优化 + LLM调用缓存（Redis） + 压力测试	P3	3天
+六、关键依赖补充
+xml
+<!-- Spring AI Alibaba（已包含 DashScope 适配） -->
+<dependency>
+    <groupId>com.alibaba.cloud.ai</groupId>
+    <artifactId>spring-ai-alibaba-starter</artifactId>
+</dependency>
+
+<!-- Elasticsearch 向量存储 -->
+<dependency>
+    <groupId>co.elastic.clients</groupId>
+    <artifactId>elasticsearch-java</artifactId>
+</dependency>
+
+<!-- Spring AI Elasticsearch Vector Store -->
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-elasticsearch-store</artifactId>
+</dependency>
+以上方案将你项目中所有AI需求（图书推荐、阅读分析、学习分析、课程推荐、数据统计、质量评估、资源优化）均通过 Spring AI Alibaba + 阿里云百炼 统一实现，核心模式为：Function Calling（执行数据查询） + Prompt工程（标准化提示） + RAG（语义检索） + 结构化输出（前端可消费的JSON/图表配置），可逐阶段落地。

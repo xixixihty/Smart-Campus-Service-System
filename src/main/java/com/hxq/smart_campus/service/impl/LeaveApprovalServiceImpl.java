@@ -62,7 +62,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         }
         // 获取最新插入的请假申请ID
         Long id = leaveApprovalMapper.getLastInsertId();
-        if (id <= 0) {
+        if (id == null || id <= 0) {
             throw new BusinessException("请假申请失败");
         }
         LeaveRequestDetailVO leaveRequestDetailVO = leaveApprovalMapper.getLeaveRequestDetail(id);

@@ -3,12 +3,15 @@ package com.hxq.smart_campus.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.BorrowCreateDTO;
+import com.hxq.smart_campus.entity.dto.BorrowMessage;
 import com.hxq.smart_campus.entity.dto.BorrowResponseDTO;
 import com.hxq.smart_campus.entity.dto.BorrowStatisticsDTO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordListVO;
+import com.hxq.smart_campus.exception.BusinessException;
 import com.hxq.smart_campus.mapper.BorrowRecordMapper;
 import com.hxq.smart_campus.service.BorrowRecordService;
+import com.hxq.smart_campus.service.mq.BorrowRecordProducer;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +23,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BorrowRecordMapper borrowRecordMapper;
+    private final RedisBorrowService redisBorrowService;
+    private final BorrowRecordProducer borrowRecordProducer;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -40,17 +46,40 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         if (borrowCreateDTO.getBookId() == null) {
             throw new IllegalArgumentException("图书ID不能为空！");
         }
-        if (borrowCreateDTO.getDueDate() == null) {
-            throw new IllegalArgumentException("应还日期不能为空！");
+
+        // 1. 布隆过滤器前置校验
+        if (!redisBorrowService.checkBookExists(borrowCreateDTO.getBookId())) {
+            throw new BusinessException("BOOK_NOT_EXIST", "图书不存在");
         }
-        int result = borrowRecordMapper.insertBorrowRecord(borrowCreateDTO);
-        if (result <= 0) {
-            throw new RuntimeException("创建借阅记录失败！");
+        if (!redisBorrowService.checkUserExists(borrowCreateDTO.getUserId())) {
+            throw new BusinessException("USER_NOT_EXIST", "用户不存在");
         }
-        Long id = borrowRecordMapper.getLastInsertId();
-        BorrowRecordDetailVO borrowRecordDetailVO = borrowRecordMapper.getBorrowRecordDetail(id);
-        log.info("创建借阅记录成功，ID：{}", id);
-        return convertToResponseDTO(borrowRecordDetailVO);
+
+        // 2. Lua脚本原子借阅（防重借 + 库存扣减 + 排队）
+        Integer result = redisBorrowService.executeBorrow(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId());
+        if (result == -2) {
+            throw new BusinessException("ALREADY_BORROWED", "已借未还，不可重复借阅");
+        } else if (result == -1) {
+            throw new BusinessException("STOCK_EMPTY", "库存不足，已加入预约排队");
+        } else if (result != 1) {
+            throw new RuntimeException("借阅失败，请稍后再试");
+        }
+
+        // 3. 构建响应并发送MQ消息异步落库
+        String borrowNo = generateBorrowNo();
+        BorrowMessage message = new BorrowMessage(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId(), borrowNo, "BORROW");
+        borrowRecordProducer.sendBorrowMessage(message);
+
+        BorrowResponseDTO response = new BorrowResponseDTO();
+        response.setBorrowNo(borrowNo);
+        response.setUserId(borrowCreateDTO.getUserId());
+        response.setBookId(borrowCreateDTO.getBookId());
+        response.setStatus("借出中");
+        return response;
+    }
+
+    private String generateBorrowNo() {
+        return "BOR" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 
     @Override
@@ -60,6 +89,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         if (id == null) {
             throw new IllegalArgumentException("参数不能为空！");
         }
+        // 查询借阅记录获取 bookId 和 userId
         BorrowRecordDetailVO record = borrowRecordMapper.getBorrowRecordDetail(id);
         if (record == null) {
             throw new IllegalArgumentException("借阅记录不存在！");
@@ -67,11 +97,27 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         if ("已归还".equals(record.getStatus())) {
             throw new IllegalArgumentException("该图书已归还！");
         }
-        int result = borrowRecordMapper.returnBook(id);
-        if (result <= 0) {
-            throw new RuntimeException("归还图书失败！");
+
+        // 1. Lua脚本原子归还（释放库存 + 检查候补）
+        String luaResult = redisBorrowService.executeReturn(record.getBookId(), record.getUserId());
+        if ("-1".equals(luaResult)) {
+            throw new BusinessException("NOT_BORROWED", "未借阅该书");
         }
-        borrowRecordMapper.updateBookAvailableOnReturn(record.getBookId());
+
+        // 2. 如果有候补用户，发送通知
+        if (!"1".equals(luaResult)) {
+            log.info("图书归还候补通知: 图书ID={}, 候补用户ID={}", record.getBookId(), luaResult);
+            // TODO: 发送候补成功通知给用户
+        }
+
+        // 3. 发送MQ消息异步落库
+        String borrowNo = record.getBorrowNo();
+        if (borrowNo == null) {
+            borrowNo = generateBorrowNo();
+        }
+        BorrowMessage message = new BorrowMessage(record.getBookId(), record.getUserId(), borrowNo, "RETURN");
+        borrowRecordProducer.sendReturnMessage(message);
+
         log.info("归还图书成功，ID：{}", id);
         return true;
     }

@@ -69,31 +69,32 @@ spring:
     
     
 
-    # RabbitMQ配置
-    rabbitmq:
-      host: localhost
-      port: 5672
-      username: guest
-      password: guest
-      listener:
-        simple:
-          acknowledge-mode: manual
-          concurrency: 10
-          max-concurrency: 50
 
-    # Sentinel配置
-    cloud:
-      sentinel:
-        transport:
-          dashboard: localhost:8080
+  # RabbitMQ配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 10
+        max-concurrency: 50
+
+  # Sentinel配置
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8080
 
 
 # 阿里云OSS配置
 aliyun:
   oss:
     endpoint: https://oss-cn-hangzhou.aliyuncs.com
-    access-key-id: REDACTED_ACCESS_KEY_ID
-    access-key-secret: REDACTED_ACCESS_KEY_SECRET
+    access-key-id: ${ALIBABA_CLOUD_ACCESS_KEY_ID}
+    access-key-secret: ${ALIBABA_CLOUD_ACCESS_KEY_SECRET}
     bucket-name: hexiongqi
 
 # MyBatis ??

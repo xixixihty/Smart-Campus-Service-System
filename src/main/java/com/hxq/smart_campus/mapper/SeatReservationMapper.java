@@ -6,6 +6,8 @@ import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Mapper
@@ -89,4 +91,31 @@ public interface SeatReservationMapper {
                           @Param("date") LocalDate date,
                           @Param("startTime") String startTime,
                           @Param("endTime") String endTime);
+
+    /**
+     * MQ消费者直接插入预约记录（幂等）
+     * @param userId 用户ID
+     * @param seatId 座位ID
+     * @param date 日期
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param reservationNo 预约编号
+     * @return 影响行数
+     */
+    @Insert("insert into seat_reservation(user_id, seat_id, date, start_time, end_time, reservation_no, status) " +
+            "values (#{userId}, #{seatId}, #{date}, #{startTime}, #{endTime}, #{reservationNo}, '待签到')")
+    int insertReservationDirect(@Param("userId") Long userId, @Param("seatId") Long seatId,
+                                @Param("date") LocalDate date,
+                                @Param("startTime") LocalTime startTime,
+                                @Param("endTime") LocalTime endTime,
+                                @Param("reservationNo") String reservationNo);
+
+    /**
+     * 根据预约编号更新预约状态（取消）
+     * @param reservationNo 预约编号
+     * @param status 新状态
+     * @return 影响行数
+     */
+    @Update("update seat_reservation set status = #{status} where reservation_no = #{reservationNo}")
+    int updateStatusByReservationNo(@Param("reservationNo") String reservationNo, @Param("status") String status);
 }

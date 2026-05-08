@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class BorrowResponseDTO {
     private Long id;                // 借阅记录ID
+    private String borrowNo;        // 借阅流水号（幂等键）
     private Long userId;            // 借阅人ID
     private String userName;        // 借阅人姓名
     private Long bookId;            // 图书ID

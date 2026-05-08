@@ -1,0 +1,125 @@
+<template>
+  <div class="page-container">
+    <div class="page-header">
+      <h2><el-icon><List /></el-icon> 我的预约</h2>
+    </div>
+
+    <el-card shadow="never">
+      <el-form :inline="true" :model="queryForm">
+        <el-form-item label="状态">
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable>
+            <el-option label="已预约" value="RESERVED" />
+            <el-option label="已签到" value="CHECKED_IN" />
+            <el-option label="已签退" value="CHECKED_OUT" />
+            <el-option label="已取消" value="CANCELLED" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch"><el-icon><Search /></el-icon>搜索</el-button>
+          <el-button @click="handleReset"><el-icon><Refresh /></el-icon>重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <el-card shadow="never" style="margin-top: 16px" v-loading="loading">
+      <el-table :data="tableData" stripe border>
+        <el-table-column prop="id" label="ID" width="70" align="center" />
+        <el-table-column prop="seatNumber" label="座位编号" width="100" />
+        <el-table-column prop="areaName" label="区域" width="100" />
+        <el-table-column prop="date" label="日期" width="120" />
+        <el-table-column prop="startTime" label="开始时间" width="100" />
+        <el-table-column prop="endTime" label="结束时间" width="100" />
+        <el-table-column prop="status" label="状态" width="100" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 'RESERVED' ? 'warning' : row.status === 'CHECKED_IN' ? 'success' : row.status === 'CHECKED_OUT' ? 'info' : 'danger'" size="small">
+              {{ row.status === 'RESERVED' ? '已预约' : row.status === 'CHECKED_IN' ? '已签到' : row.status === 'CHECKED_OUT' ? '已签退' : '已取消' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" align="center" fixed="right">
+          <template #default="{ row }">
+            <el-button v-if="row.status === 'RESERVED'" type="success" size="small" @click="handleCheckIn(row)">
+              签到
+            </el-button>
+            <el-button v-if="row.status === 'CHECKED_IN'" type="warning" size="small" @click="handleLeave(row)">
+              暂离
+            </el-button>
+            <el-button v-if="row.status === 'CHECKED_IN'" type="danger" size="small" @click="handleCheckOut(row)">
+              签退
+            </el-button>
+            <el-button v-if="row.status === 'RESERVED'" type="danger" size="small" @click="handleCancel(row)">
+              取消
+            </el-button>
+            <el-text v-if="row.status === 'CHECKED_OUT' || row.status === 'CANCELLED'" type="info" size="small">已完成</el-text>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
+          :page-sizes="[10, 20, 50]" :total="total" layout="total, sizes, prev, pager, next"
+          @size-change="fetchData" @current-change="fetchData" />
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getReservationList, checkIn, checkOut, cancelReservation, leaveSeat } from '@/api/seatReservation'
+
+const loading = ref(false)
+const tableData = ref([])
+const total = ref(0)
+
+const queryForm = reactive({ pageNum: 1, pageSize: 10, status: '' })
+
+const fetchData = async () => {
+  loading.value = true
+  try {
+    const res = await getReservationList(queryForm)
+    tableData.value = res.data.list || res.data || []
+    total.value = res.data.total || 0
+  } finally { loading.value = false }
+}
+
+const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
+const handleReset = () => { queryForm.status = ''; handleSearch() }
+
+const handleCheckIn = async (row) => {
+  await checkIn(row.id)
+  ElMessage.success('签到成功')
+  fetchData()
+}
+
+const handleCheckOut = (row) => {
+  ElMessageBox.confirm('确定要签退吗？', '提示', { type: 'warning' }).then(async () => {
+    await checkOut(row.id)
+    ElMessage.success('签退成功')
+    fetchData()
+  }).catch(() => {})
+}
+
+const handleLeave = async (row) => {
+  await leaveSeat(row.id)
+  ElMessage.success('已暂离')
+  fetchData()
+}
+
+const handleCancel = (row) => {
+  ElMessageBox.confirm('确定要取消预约吗？', '提示', { type: 'warning' }).then(async () => {
+    await cancelReservation(row.id)
+    ElMessage.success('已取消')
+    fetchData()
+  }).catch(() => {})
+}
+
+onMounted(fetchData)
+</script>
+
+<style scoped>
+.page-container { padding: 0; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
+.pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
+</style>

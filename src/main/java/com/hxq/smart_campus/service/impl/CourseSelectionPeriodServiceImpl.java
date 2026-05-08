@@ -67,6 +67,9 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
      */
     @Override
     public CourseSelectionPeriodResponseDTO updateCourseSelectionPeriod(CourseSelectionPeriodUpdateDTO courseSelectionPeriodUpdateDTO) {
+        if (courseSelectionPeriodUpdateDTO == null) {
+            throw new IllegalArgumentException("参数不能为空");
+        }
         SemesterDetailVO semesterDetailVO = semesterService.getCurrentSemester();
         if (semesterDetailVO == null) {
             throw new IllegalArgumentException("当前学期不存在");
@@ -77,13 +80,10 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
             throw new IllegalArgumentException("当前学期的选课时间段不存在");
         }
         // 判断修改的选课时间是不是当前学期的选课时间
-        if (courseSelectionPeriodUpdateDTO.getId() == currentSemesterCourseSelectionPeriod.getId()) {
+        if (courseSelectionPeriodUpdateDTO.getId().equals(currentSemesterCourseSelectionPeriod.getId())) {
             log.info("修改的选课时间是当前学期的选课时间");
             // 需要删除Redis缓存
             redisTemplate.delete(COURSE_SELECTION_KEY_PERIOD + semesterDetailVO.getId());
-        }
-        if (courseSelectionPeriodUpdateDTO == null) {
-            throw new IllegalArgumentException("参数不能为空");
         }
         int result = courseSelectionPeriodMapper.updateCourseSelectionPeriod(courseSelectionPeriodUpdateDTO);
         if (result <= 0) {
