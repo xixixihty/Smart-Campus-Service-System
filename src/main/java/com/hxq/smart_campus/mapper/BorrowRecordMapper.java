@@ -83,6 +83,13 @@ public interface BorrowRecordMapper {
                                                             @Param("endDate") LocalDate endDate);
 
     /**
+     * 获取近7天借阅趋势
+     * @param userId 用户ID
+     * @return 趋势统计列表
+     */
+    List<Map<String, Object>> getBorrowTrend7Days(@Param("userId") Long userId);
+
+    /**
      * 直接插入借阅记录（MQ消费者使用，带borrow_no）
      */
     @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_no, borrow_date, due_date, status, create_time, update_time) " +

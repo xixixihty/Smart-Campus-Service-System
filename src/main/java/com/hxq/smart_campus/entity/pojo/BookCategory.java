@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class BookCategory {
     private Integer id;
     private String categoryName;
+    private String categoryCode;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

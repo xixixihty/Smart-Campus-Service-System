@@ -20,8 +20,8 @@
     </insert>
     <!-- 获取借阅记录详情 -->
     <select id="getBorrowRecordDetail" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO">
-        select r.id, r.user_id, s.name as userName, r.book_id, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
-               r.due_date as dueDate, r.return_date as returnDate, r.status, r.create_time, r.update_time
+        select r.id, r.borrow_no as borrowNo, r.user_id as userId, s.name as userName, r.book_id as bookId, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
+               r.due_date as dueDate, r.return_date as returnDate, r.status, r.create_time as createTime, r.update_time as updateTime
         from borrow_record r
         left join student s on r.user_id = s.id
         left join book b on r.book_id = b.id
@@ -29,14 +29,14 @@
     </select>
     <!-- 获取借阅记录列表 -->
     <select id="getBorrowRecordList" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordListVO">
-        select r.id, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
+        select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
         from borrow_record r
         left join student s on r.user_id = s.id
         left join book b on r.book_id = b.id
         <where>
             <if test="userId != null">and r.user_id = #{userId}</if>
             <if test="bookId != null">and r.book_id = #{bookId}</if>
-            <if test="status != null">and r.status = #{status}</if>
+            <if test="status != null and status != ''">and r.status = #{status}</if>
         </where>
         order by r.id desc
     </select>
@@ -85,5 +85,26 @@
         <if test="endDate != null">AND r.borrow_date &lt;= #{endDate}</if>
         GROUP BY bc.category_name
         ORDER BY borrowCount DESC
+    </select>
+
+    <!-- 获取近7天借阅趋势 -->
+    <select id="getBorrowTrend7Days" resultType="map">
+        SELECT
+            DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL seq DAY), '%m-%d') as name,
+            COALESCE(cnt, 0) as value
+        FROM (
+            SELECT 0 as seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL
+            SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+        ) days
+        LEFT JOIN (
+            SELECT
+                DATEDIFF(CURDATE(), borrow_date) as diff_days,
+                COUNT(*) as cnt
+            FROM borrow_record
+            WHERE borrow_date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+            <if test="userId != null">AND user_id = #{userId}</if>
+            GROUP BY DATEDIFF(CURDATE(), borrow_date)
+        ) t ON days.seq = t.diff_days
+        ORDER BY days.seq DESC
     </select>
 </mapper>

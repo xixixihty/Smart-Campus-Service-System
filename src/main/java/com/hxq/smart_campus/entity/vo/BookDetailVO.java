@@ -12,7 +12,9 @@ public class BookDetailVO {
     private String author;          // 作者
     private String publisher;       // 出版社
     private LocalDate publishDate;  // 出版日期
+    private Integer categoryId;     // 分类ID
     private String categoryName;    // 分类名称
+    private String categoryCode;     // 分类代码
     private Integer totalCopies;    // 总册数
     private Integer availableCopies; // 可借册数
     private String status;          // 状态

@@ -58,23 +58,23 @@
 
     <!-- 获取图书列表 -->
     <select id="getBookList" resultType="com.hxq.smart_campus.entity.vo.BookListVO">
-        select id, isbn, title, author, category_name, available_copies, status
-        from book
+        select b.id, b.isbn, b.title, b.author, bc.category_name, b.publisher, b.available_copies, b.status, b.cover_image, b.description
+        from book b
+        left join book_category bc on b.category_id = bc.id
         <where>
-            <if test="categoryName != null">category_name like concat('%', #{categoryName}, '%') and</if>
-            <if test="title != null">title like concat('%', #{title}, '%') and</if>
-            <if test="author != null">author like concat('%', #{author}, '%') and</if>
-            <if test="categoryId != null">category_id = #{categoryId} and</if>
-            <if test="status != null">status = #{status}</if>
+            <if test="categoryName != null and categoryName != ''">bc.category_name like concat('%', #{categoryName}, '%') and</if>
+            <if test="title != null and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="author != null and author != ''">and author like concat('%', #{author}, '%')</if>
+            <if test="categoryId != null">and category_id = #{categoryId}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
         </where>
-        order by id desc
     </select>
     <!-- 获取图书详情 -->
     <select id="getBookDetail" resultType="com.hxq.smart_campus.entity.vo.BookDetailVO">
-        select b.id, b.isbn, b.title, b.author, b.publisher, b.publish_date, c.category_name, b.total_copies, b.available_copies,
-               b.status, b.cover_image, b.description, b.create_time, b.update_time
+        select b.id, b.isbn, b.title, b.author, b.publisher, b.publish_date, b.category_id, bc.category_name, bc.category_code, b.total_copies, b.available_copies,
+               b.status, b.cover_image, b.description
         from book b
-        left join book_category c on b.category_id = c.id
+        left join book_category bc on b.category_id = bc.id
         where b.id = #{id}
     </select>
     <!-- 更新图书状态 -->

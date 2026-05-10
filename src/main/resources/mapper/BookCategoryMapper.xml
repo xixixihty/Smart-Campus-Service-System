@@ -14,7 +14,7 @@
 
     <!-- 获取分类列表 -->
     <select id="getCategoryList" resultType="com.hxq.smart_campus.entity.vo.BookCategoryListVO">
-        select id, category_name, create_time
+        select id, category_name, category_code, create_time
         from book_category
         <where>
             <if test="categoryName != null and categoryName != ''">category_name like CONCAT('%', #{categoryName}, '%')</if>
@@ -22,7 +22,7 @@
     </select>
     <!-- 获取分类详情 -->
     <select id="getCategoryDetail" resultType="com.hxq.smart_campus.entity.vo.BookCategoryDetailVO">
-        select id, category_name, create_time, update_time
+        select id, category_name, category_code, create_time, update_time
         from book_category
         where id = #{id}
     </select>

@@ -5,3 +5,10 @@ export const getBookDetail = (id) => request.get(`/books/admin/${id}`)
 export const createBook = (data) => request.post('/books/admin', data)
 export const updateBook = (data) => request.put('/books/admin', data)
 export const deleteBook = (ids) => request.delete(`/books/admin/${ids}`)
+export const uploadImage = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/file/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}

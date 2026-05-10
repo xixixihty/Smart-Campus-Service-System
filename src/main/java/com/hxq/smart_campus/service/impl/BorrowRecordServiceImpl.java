@@ -194,6 +194,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         log.info("获取借阅统计信息，参数：userId={}, startDate={}, endDate={}", userId, startDate, endDate);
         Map<String, Object> stats = borrowRecordMapper.getBorrowStatistics(userId, startDate, endDate);
         List<Map<String, Object>> categoryStats = borrowRecordMapper.getCategoryBorrowStatistics(userId, startDate, endDate);
+        List<Map<String, Object>> trendStats = borrowRecordMapper.getBorrowTrend7Days(userId);
 
         BorrowStatisticsDTO dto = new BorrowStatisticsDTO();
         dto.setTotalBorrows(getIntValue(stats.get("totalBorrows")));
@@ -211,6 +212,17 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
             }
         }
         dto.setCategoryBorrows(categoryList);
+
+        List<BorrowStatisticsDTO.TrendDTO> trendList = new ArrayList<>();
+        if (trendStats != null) {
+            for (Map<String, Object> trendStat : trendStats) {
+                BorrowStatisticsDTO.TrendDTO trendDTO = new BorrowStatisticsDTO.TrendDTO();
+                trendDTO.setName((String) trendStat.get("name"));
+                trendDTO.setValue(getIntValue(trendStat.get("value")));
+                trendList.add(trendDTO);
+            }
+        }
+        dto.setBorrowTrend7Days(trendList);
 
         log.info("获取借阅统计信息成功，总借阅：{}，当前借阅：{}，逾期：{}，平均借阅天数：{}",
                 dto.getTotalBorrows(), dto.getCurrentBorrows(), dto.getOverdueBorrows(), dto.getAverageBorrowDays());

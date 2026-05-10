@@ -15,6 +15,7 @@ public class BorrowStatisticsDTO {
     private Integer overdueBorrows;
     private Double averageBorrowDays;
     private List<CategoryBorrowDTO> categoryBorrows;
+    private List<TrendDTO> borrowTrend7Days;
 
     @Data
     @NoArgsConstructor
@@ -22,5 +23,13 @@ public class BorrowStatisticsDTO {
     public static class CategoryBorrowDTO {
         private String categoryName;
         private Integer borrowCount;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TrendDTO {
+        private String name;
+        private Integer value;
     }
 }
