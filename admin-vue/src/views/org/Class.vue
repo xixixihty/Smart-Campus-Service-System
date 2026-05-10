@@ -43,7 +43,7 @@
         <el-table-column prop="createTime" label="创建时间" width="170" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>查看</el-button>
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>

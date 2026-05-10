@@ -17,5 +17,4 @@ public class ScoreEntryListVO {
     private BigDecimal scorePoint;  // 绩点
     private BigDecimal credit;      // 学分
     private String examStatus;      // 考试状态
-    private String createTime;      // 创建时间（格式化显示）
 }

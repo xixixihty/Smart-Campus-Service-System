@@ -39,7 +39,7 @@
         <el-table-column prop="status" label="状态" width="100" align="center">
         
           <template #default="{ row }">
-            <el-tag :type="row.status === '正常' ? 'success' : row.status === '停用' ? 'danger' : 'warning'" size="small">
+            <el-tag :type="row.status === '正常' || row.status === '可用' ? 'success' : row.status === '停用' ? 'danger' : 'warning'" size="small">
               {{ row.status }}
             </el-tag>
           </template>
@@ -47,7 +47,7 @@
         <el-table-column prop="createTime" label="创建时间" width="170" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>查看</el-button>
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -69,7 +69,7 @@
         <el-descriptions-item label="教室类型">{{ detailData.type }}</el-descriptions-item>
         <el-descriptions-item label="座位容量">{{ detailData.capacity }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '正常' ? 'success' : detailData.status === '停用' ? 'danger' : 'warning'" size="small">{{ detailData.status }}</el-tag>
+          <el-tag :type="detailData.status === '正常' || detailData.status === '可用' ? 'success' : detailData.status === '停用' ? 'danger' : 'warning'" size="small">{{ detailData.status }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>

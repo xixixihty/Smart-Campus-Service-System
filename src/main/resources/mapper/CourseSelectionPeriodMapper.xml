@@ -41,12 +41,11 @@
     <!-- 获取选课时间段列表 -->
     <select id="getCourseSelectionPeriodList"
             resultType="com.hxq.smart_campus.entity.vo.CourseSelectionPeriodListVO">
-        select id, s.semester_name, start_time, end_time, create_time
-        from course_selection_period
-        left join semester s on semester_id = s.id
+        select csp.id, s.name as semester_name, csp.start_time, csp.end_time, csp.create_time
+        from course_selection_period csp
+        left join semester s on csp.semester_id = s.id
         <where>
-            <if test="semesterId != null">semester_id = #{semesterId}</if>
+            <if test="semesterId != null">csp.semester_id = #{semesterId}</if>
         </where>
-        order by start_time
     </select>
 </mapper>

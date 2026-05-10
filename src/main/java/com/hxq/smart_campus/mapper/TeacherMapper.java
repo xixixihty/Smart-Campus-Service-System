@@ -2,6 +2,7 @@ package com.hxq.smart_campus.mapper;
 
 import com.hxq.smart_campus.entity.dto.TeacherCreateDTO;
 import com.hxq.smart_campus.entity.dto.TeacherUpdateDTO;
+import com.hxq.smart_campus.entity.info.MyInfo;
 import com.hxq.smart_campus.entity.vo.TeacherDetailVO;
 import com.hxq.smart_campus.entity.vo.TeacherListVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -83,4 +84,11 @@ public interface TeacherMapper {
      * @return 教师详情列表
      */
     List<TeacherDetailVO> getTeacherDetailsByIds(@Param("ids") List<Long> ids);
+
+    /**
+     * 获取教师信息
+     * @param userId
+     * @return
+     */
+    MyInfo getTeacherInfo(Long userId);
 }

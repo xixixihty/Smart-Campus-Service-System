@@ -11,17 +11,17 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
-          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable>
+          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 180px">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="课程">
-          <el-select v-model="queryForm.courseId" placeholder="请选择课程" clearable filterable>
+          <el-select v-model="queryForm.courseId" placeholder="请选择课程" clearable filterable style="width: 180px">
             <el-option v-for="c in courseOptions" :key="c.id" :label="c.courseName" :value="c.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="学生">
-          <el-select v-model="queryForm.studentId" placeholder="请选择学生" clearable filterable>
+          <el-select v-model="queryForm.studentId" placeholder="请选择学生" clearable filterable style="width: 180px">
             <el-option v-for="s in studentOptions" :key="s.id" :label="s.name + ' (' + s.studentNo + ')'" :value="s.id" />
           </el-select>
         </el-form-item>
@@ -35,20 +35,26 @@
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="studentName" label="学生姓名" width="100" />
-        <el-table-column prop="studentNo" label="学号" width="120" />
-        <el-table-column prop="courseName" label="课程名称" min-width="150" />
-        <el-table-column prop="semesterName" label="学期" width="180" />
-        <el-table-column prop="score" label="成绩" width="100" align="center">
+        <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
+        <el-table-column prop="studentNo" label="学号" width="120" align="center" />
+        <el-table-column prop="studentNo" label="学号" width="120" align="center" />
+        <el-table-column prop="courseName" label="课程名称" min-width="120" align="center" />
+        <el-table-column prop="semesterName" label="学期名称" width="120" align="center" />
+        <el-table-column prop="usualScore" label="平时成绩" width="80" align="center" />
+        <el-table-column prop="finalScore" label="期末成绩" width="80" align="center" />
+        <el-table-column prop="totalScore" label="总评成绩" width="80" align="center" />
+        <el-table-column prop="scorePoint" label="绩点" width="80" align="center" />
+        <el-table-column prop="credit" label="学分" width="80" align="center" />
+        <el-table-column prop="examStatus" label="考试状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.score >= 90 ? 'success' : row.score >= 60 ? '' : 'danger'" size="small">
-              {{ row.score }}
+            <el-tag :type="row.examStatus === '正常' ? 'success' : row.examStatus === '缺考' ? 'danger' : 'warning'" size="small">
+              {{ row.examStatus }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="gradePoint" label="绩点" width="80" align="center" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -61,8 +67,31 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+
+    
+
+    
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="640px" destroy-on-close @close="isView = false">
+      <!-- 查看详情：描述列表 -->
+      <el-descriptions v-if="isView" :column="2" border size="default">
+        <el-descriptions-item label="成绩ID">{{ detailData.id }}</el-descriptions-item>
+        <el-descriptions-item label="学生姓名">{{ detailData.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="学号">{{ detailData.studentNo }}</el-descriptions-item>
+        <el-descriptions-item label="课程名称">{{ detailData.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="学期名称">{{ detailData.semesterName }}</el-descriptions-item>
+        <el-descriptions-item label="学分">{{ detailData.credit }}</el-descriptions-item>
+        <el-descriptions-item label="平时成绩">{{ detailData.usualScore }}</el-descriptions-item>
+        <el-descriptions-item label="期末成绩">{{ detailData.finalScore }}</el-descriptions-item>
+        <el-descriptions-item label="总评成绩">{{ detailData.totalScore }}</el-descriptions-item>
+        <el-descriptions-item label="绩点">{{ detailData.scorePoint }}</el-descriptions-item>
+        <el-descriptions-item label="考试状态">
+          <el-tag :type="detailData.examStatus === '正常' ? 'success' : detailData.examStatus === '缺考' ? 'danger' : 'warning'" size="small">
+            {{ detailData.examStatus }}
+          </el-tag>
+        </el-descriptions-item>
+      </el-descriptions>
+      <!-- 新增/编辑：表单 -->
+      <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="学期" prop="semesterId">
           <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
@@ -84,7 +113,7 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
 
@@ -107,7 +136,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getScoreList, createScore, updateScore, batchScore } from '@/api/scoreEntry'
+import { getScoreList, createScore, updateScore, deleteScore, batchScore, getScoreDetail } from '@/api/scoreEntry'
 import { getSemesterList } from '@/api/semester'
 import { getCourseList } from '@/api/course'
 import { getStudentList } from '@/api/student'
@@ -119,6 +148,7 @@ const dialogVisible = ref(false)
 const batchVisible = ref(false)
 const dialogTitle = ref('录入成绩')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
@@ -126,6 +156,11 @@ const semesterOptions = ref([])
 const courseOptions = ref([])
 const studentOptions = ref([])
 const uploadFile = ref(null)
+const detailData = reactive({
+  id: null, studentName: '', studentNo: '', courseName: '', semesterName: '',
+  credit: 0, usualScore: 0, finalScore: 0, totalScore: 0, scorePoint: 0,
+  examStatus: '', createTime: '', updateTime: ''
+})
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', courseId: '', studentId: '' })
 const form = reactive({ id: null, semesterId: '', courseId: '', studentId: '', score: 0 })
@@ -159,11 +194,40 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.semesterId = ''; queryForm.courseId = ''; queryForm.studentId = ''; handleSearch() }
 const handleAdd = () => {
-  isEdit.value = false; dialogTitle.value = '录入成绩'
+  isEdit.value = false; isView.value = false; dialogTitle.value = '录入成绩'
   Object.assign(form, { id: null, semesterId: '', courseId: '', studentId: '', score: 0 })
   dialogVisible.value = true
 }
-const handleEdit = (row) => { isEdit.value = true; dialogTitle.value = '编辑成绩'; Object.assign(form, { ...row }); dialogVisible.value = true }
+const handleEdit = (row) => { isEdit.value = true; isView.value = false; dialogTitle.value = '编辑成绩'; Object.assign(form, { ...row }); dialogVisible.value = true }
+
+const handleView = async (row) => {
+  isEdit.value = false; isView.value = true; dialogTitle.value = '成绩详情'
+  try {
+    const detail = await getScoreDetail(row.id)
+    const data = detail.data
+    Object.assign(detailData, {
+      id: data.id || null,
+      studentName: data.studentName || '',
+      studentNo: data.studentNo || '',
+      courseName: data.courseName || '',
+      semesterName: data.semesterName || '',
+      credit: data.credit || 0,
+      usualScore: data.usualScore || 0,
+      finalScore: data.finalScore || 0,
+      totalScore: data.totalScore || 0,
+      scorePoint: data.scorePoint || 0,
+      examStatus: data.examStatus || '',
+      createTime: data.createTime || '',
+      updateTime: data.updateTime || ''
+    })
+    dialogVisible.value = true
+  } catch (err) {
+    console.error('获取成绩详情失败:', err)
+    ElMessage.error('获取成绩详情失败')
+    dialogVisible.value = false
+  }
+}
+
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该成绩记录吗？', '提示', { type: 'warning' }).then(async () => {
     await deleteScore(row.id); ElMessage.success('删除成功'); fetchData()

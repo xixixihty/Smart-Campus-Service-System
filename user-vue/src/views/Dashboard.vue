@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="welcome-section">
       <h2><el-icon><Sunny /></el-icon> {{ greeting }}，{{ username }}同学！</h2>
-      <p>今天是 {{ today }}，祝你学习愉快！</p>
+      <p>今天是 {{ today }}，祝你生活愉快！</p>
     </div>
 
     <el-row :gutter="20" class="stats-row">

@@ -26,7 +26,7 @@
           </div>
           <div class="illu-card card-4">
             <el-icon :size="32" color="#F56C6C"><Cpu /></el-icon>
-            <span>AI 助手</span>
+            <span>AI 校园智慧助手</span>
           </div>
           <div class="illu-center">
             <div class="center-icon">

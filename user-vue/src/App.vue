@@ -4,7 +4,7 @@
       <el-header>
         <div class="header-left">
           <el-icon :size="28"><School /></el-icon>
-          <span class="header-title">智慧服务系统校园</span>
+          <span class="header-title">智慧校园服务系统-用户端</span>
         </div>
         <div class="header-right">
           <el-badge :value="unreadNoticeCount" :hidden="unreadNoticeCount === 0">
@@ -125,7 +125,7 @@
             <el-sub-menu index="ai">
               <template #title>
                 <el-icon><Cpu /></el-icon>
-                <span>AI 智能助手</span>
+                <span>AI 校园智慧助手</span>
               </template>
               <el-menu-item index="/ai-book-recommend">
                 <el-icon><Star /></el-icon>

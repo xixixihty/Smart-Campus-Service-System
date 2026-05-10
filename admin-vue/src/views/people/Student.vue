@@ -48,18 +48,18 @@
         <el-table-column prop="className" label="所属班级" min-width="160" align="center" />
         <el-table-column prop="status" label="状态" width="90" align="center"> 
           <template #default="{ row }">
-            <el-tag :type="row.status === '正常' ? '' : 'danger'" size="small">{{ row.status }}</el-tag>
+            <el-tag :type="row.status === '正常' || row.status === '在读' ? 'success' : 'danger'" size="small">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="accountStatus" label="账号状态" width="100" align="center"> 
           <template #default="{ row }">
-            <el-tag :type="row.accountStatus === '正常' ? '' : 'danger'" size="small">{{ row.accountStatus }}</el-tag>
+            <el-tag :type="row.accountStatus === '正常' ? 'success' : 'danger'" size="small">{{ row.accountStatus }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>查看</el-button>
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -84,7 +84,7 @@
         <el-descriptions-item label="所属班级">{{ detailData.className }}</el-descriptions-item>
         <el-descriptions-item label="入学日期">{{ detailData.enrollmentDate }}</el-descriptions-item>
         <el-descriptions-item label="学籍状态">
-          <el-tag :type="detailData.status === '正常' ? 'success' : 'danger'" size="small">{{ detailData.status }}</el-tag>
+          <el-tag :type="detailData.status === '正常' || detailData.status === '在读' ? 'success' : 'danger'" size="small">{{ detailData.status }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="身份证号">{{ detailData.idCard || '-' }}</el-descriptions-item>
         <el-descriptions-item label="手机号">{{ detailData.phone || '-' }}</el-descriptions-item>

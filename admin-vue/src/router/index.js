@@ -148,6 +148,18 @@ const routes = [
     name: 'AiResource',
     component: () => import('@/views/ai/AiResource.vue'),
     meta: { title: '资源优化建议' }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/profile/MyInfo.vue'),
+    meta: { title: '个人信息' }
+  },
+  {
+    path: '/password',
+    name: 'ChangePassword',
+    component: () => import('@/views/profile/ChangePassword.vue'),
+    meta: { title: '修改密码' }
   }
 ]
 

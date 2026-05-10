@@ -2,6 +2,7 @@ package com.hxq.smart_campus.mapper;
 
 import com.hxq.smart_campus.entity.dto.StudentCreateDTO;
 import com.hxq.smart_campus.entity.dto.StudentUpdateDTO;
+import com.hxq.smart_campus.entity.info.MyInfo;
 import com.hxq.smart_campus.entity.vo.StudentDetailVO;
 import com.hxq.smart_campus.entity.vo.StudentListVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -93,4 +94,11 @@ public interface StudentMapper {
      * @return
      */
     StudentDetailVO getStudentDetailByName(String studentName);
+
+    /**
+     * 获取学生信息
+     * @param userId
+     * @return
+     */
+    MyInfo getStudentInfo(Long userId);
 }

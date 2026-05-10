@@ -8,12 +8,12 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
-          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable>
+          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 200px">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="课程">
-          <el-select v-model="queryForm.courseId" placeholder="请选择课程" clearable filterable>
+          <el-select v-model="queryForm.courseId" placeholder="请选择课程" clearable filterable style="width: 200px">
             <el-option v-for="c in courseOptions" :key="c.id" :label="c.courseName" :value="c.id" />
           </el-select>
         </el-form-item>
@@ -27,14 +27,23 @@
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="courseName" label="课程名称" min-width="150" />
-        <el-table-column prop="semesterName" label="学期" width="180" />
-        <el-table-column prop="examDate" label="考试日期" width="120" />
-        <el-table-column prop="examTime" label="考试时间" width="120" />
-        <el-table-column prop="classroomName" label="考试地点" width="130" />
-        <el-table-column prop="maxStudents" label="人数上限" width="100" align="center" />
+        <el-table-column prop="studentName" label="学生姓名" min-width="120" align="center" />
+        <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
+        <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
+        <el-table-column prop="examDate" label="补考日期" width="120" align="center" />
+        <el-table-column prop="startTime" label="开始时间" width="120" align="center" />
+        <el-table-column prop="endTime" label="结束时间" width="120" align="center" />
+        <el-table-column prop="status" label="状态" width="100" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.status === '已考' ? 'success' : row.status === '待考' ? 'warning' : 'info'" size="small">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" width="160" align="center" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -47,8 +56,25 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="640px" destroy-on-close @close="isView = false">
+      <!-- 查看详情：描述列表 -->
+      <el-descriptions v-if="isView" :column="2" border size="default">
+        <el-descriptions-item label="补考ID">{{ detailData.id }}</el-descriptions-item>
+        <el-descriptions-item label="学生姓名">{{ detailData.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="课程名称">{{ detailData.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="补考日期">{{ detailData.examDate }}</el-descriptions-item>
+        <el-descriptions-item label="开始时间">{{ detailData.startTime }}</el-descriptions-item>
+        <el-descriptions-item label="结束时间">{{ detailData.endTime }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="detailData.status === '已考' ? 'success' : detailData.status === '待考' ? 'warning' : 'info'" size="small">
+            {{ detailData.status }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
+      </el-descriptions>
+      <!-- 新增/编辑：表单 -->
+      <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="学期" prop="semesterId">
           <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
@@ -76,7 +102,7 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -85,7 +111,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getMakeupExamList, createMakeupExam, updateMakeupExam, deleteMakeupExam } from '@/api/makeupExam'
+import { getMakeupExamList, createMakeupExam, updateMakeupExam, deleteMakeupExam, getMakeupExamDetail } from '@/api/makeupExam'
 import { getSemesterList } from '@/api/semester'
 import { getCourseList } from '@/api/course'
 import { getClassroomList } from '@/api/classroom'
@@ -95,12 +121,18 @@ const submitLoading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增补考')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
 const semesterOptions = ref([])
 const courseOptions = ref([])
 const classroomOptions = ref([])
+const detailData = reactive({
+  id: null, studentName: '', courseName: '', semesterName: '',
+  examDate: '', startTime: '', endTime: '', status: '',
+  createTime: '', updateTime: ''
+})
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', courseId: '' })
 const form = reactive({ id: null, semesterId: '', courseId: '', examDate: '', examTime: '', classroomId: '', maxStudents: 60 })
@@ -135,11 +167,36 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.semesterId = ''; queryForm.courseId = ''; handleSearch() }
 const handleAdd = () => {
-  isEdit.value = false; dialogTitle.value = '新增补考'
+  isEdit.value = false; isView.value = false; dialogTitle.value = '新增补考'
   Object.assign(form, { id: null, semesterId: '', courseId: '', examDate: '', examTime: '', classroomId: '', maxStudents: 60 })
   dialogVisible.value = true
 }
-const handleEdit = (row) => { isEdit.value = true; dialogTitle.value = '编辑补考'; Object.assign(form, { ...row }); dialogVisible.value = true }
+
+const handleView = async (row) => {
+  isEdit.value = false; isView.value = true; dialogTitle.value = '补考详情'
+  try {
+    const detail = await getMakeupExamDetail(row.id)
+    const data = detail.data
+    Object.assign(detailData, {
+      id: data.id || null,
+      studentName: data.studentName || '',
+      courseName: data.courseName || '',
+      examDate: data.examDate || '',
+      startTime: data.startTime || '',
+      endTime: data.endTime || '',
+      status: data.status || '',
+      createTime: data.createTime || '',
+      updateTime: data.updateTime || ''
+    })
+    dialogVisible.value = true
+  } catch (err) {
+    console.error('获取补考详情失败:', err)
+    ElMessage.error('获取补考详情失败')
+    dialogVisible.value = false
+  }
+}
+
+const handleEdit = (row) => { isEdit.value = true; isView.value = false; dialogTitle.value = '编辑补考'; Object.assign(form, { ...row }); dialogVisible.value = true }
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该补考记录吗？', '提示', { type: 'warning' }).then(async () => {
     await deleteMakeupExam(row.id); ElMessage.success('删除成功'); fetchData()

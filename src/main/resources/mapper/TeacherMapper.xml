@@ -96,4 +96,13 @@
             #{id}
         </foreach>
     </select>
+    <!-- 获取教师信息 -->
+    <select id="getTeacherInfo" resultType="com.hxq.smart_campus.entity.info.MyInfo">
+        select t.id, t.teacher_no as userNo, t.name, t.gender, c.college_name as collegeName, t.phone, t.email
+        , t.status, t.account_status as accountStatus, t.create_time as createTime
+        from teacher t
+        left join college c on t.college_id = c.id
+        where t.id = #{id}
+        and t.status = '在职'
+    </select>
 </mapper>

@@ -6,9 +6,9 @@
     <!-- 插入课程安排 -->
     <insert id="insertCourseSchedule">
         insert into course_schedule
-        (semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range, create_time, update_time)
+        (semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range)
         values
-        (#{semesterId}, #{courseId}, #{teacherId}, #{classroomId}, #{classIds}, #{weekDay}, #{startSection}, #{endSection}, #{weekRange}, now(), now())
+        (#{semesterId}, #{courseId}, #{teacherId}, #{classroomId}, #{classIds}, #{weekDay}, #{startSection}, #{endSection}, #{weekRange})
     </insert>
     <!-- 更新课程安排 -->
     <update id="updateCourseSchedule">
@@ -21,7 +21,6 @@
             <if test="startSection != null">start_section = #{startSection},</if>
             <if test="endSection != null">end_section = #{endSection},</if>
             <if test="weekRange != null">week_range = #{weekRange},</if>
-            update_time = now()
         </set>
         where id = #{id}
     </update>
@@ -34,9 +33,11 @@
     </delete>
     <!-- 根据id查询课程安排 -->
     <select id="getCourseScheduleDetail" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
-        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
-               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time, cs.update_time
+        select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               CAST((select GROUP_CONCAT(cl.class_name separator '、')
+                from class cl
+                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) AS CHAR) as classNames
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -46,9 +47,12 @@
     </select>
     <!-- 获取课程安排列表 -->
     <select id="getCourseScheduleList" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleListVO">
-        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
-               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time, cs.update_time
+        select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name,
+               (select GROUP_CONCAT(cl.class_name separator '、')
+                from class cl
+                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames,
+               cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -61,11 +65,10 @@
             <if test="classroomId != null">and cs.classroom_id = #{classroomId}</if>
             <if test="weekDay != null">and cs.week_day = #{weekDay}</if>
         </where>
-        order by cs.create_time desc
     </select>
     <!-- 查询课表 -->
     <select id="queryTimetable" resultType="com.hxq.smart_campus.entity.vo.TimetableVO">
-        select cs.id as course_schedule_id, c.course_name, t.teacher_name, cr.classroom_name,
+        select cs.id as course_schedule_id, c.course_name, t.name as teacher_name, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name,
                cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join course c on cs.course_id = c.id
@@ -87,9 +90,8 @@
 
     <!-- 检测教师时间冲突 -->
     <select id="checkTeacherConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
-        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
-               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time, cs.update_time
+        select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
+               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -104,9 +106,8 @@
 
     <!-- 检测教室时间冲突 -->
     <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
-        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
-               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time, cs.update_time
+        select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
+               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -121,9 +122,8 @@
 
     <!-- 检测班级时间冲突 -->
     <select id="checkClassConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
-        select cs.id, cs.semester_id, s.semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.teacher_name,
-               cr.id as classroom_id, cr.classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time, cs.update_time
+        select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
+               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id

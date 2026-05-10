@@ -8,15 +8,15 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="所属学院">
-          <el-select v-model="queryForm.collegeId" placeholder="请选择学院" clearable>
+          <el-select v-model="queryForm.collegeId" placeholder="请选择学院" clearable style="width: 180px">
             <el-option v-for="c in collegeOptions" :key="c.id" :label="c.collegeName" :value="c.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="课程名称">
-          <el-input v-model="queryForm.courseName" placeholder="请输入课程名称" clearable />
+          <el-input v-model="queryForm.courseName" placeholder="请输入课程名称" clearable style="width: 180px" />
         </el-form-item>
         <el-form-item label="课程类型">
-          <el-select v-model="queryForm.type" placeholder="请选择类型" clearable>
+          <el-select v-model="queryForm.type" placeholder="请选择类型" clearable style="width: 180px">
             <el-option label="必修" value="必修" />
             <el-option label="选修" value="选修" />
             <el-option label="公选" value="公选" />
@@ -31,13 +31,14 @@
 
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
-        <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="courseName" label="课程名称" min-width="180" />
-        <el-table-column prop="courseCode" label="课程代码" width="120" />
-        <el-table-column prop="collegeName" label="开课学院" width="130" />
+        <el-table-column prop="id" label="ID" width="80" align="center"/>
+        <el-table-column prop="courseName" label="课程名称" min-width="180" align="center" />
+        <el-table-column prop="courseCode" label="课程代码" width="120" align="center" />
+        <el-table-column prop="status" label="状态" width="80" align="center"/>
+        <el-table-column prop="status" label="状态" width="80" align="center" />
         <el-table-column prop="type" label="课程类型" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.type === '必修' ? 'danger' : row.type === '选修' ? 'warning' : ''" size="small">
+            <el-tag :type="row.type === '必修' ? 'success' : row.type === '选修' ? 'warning' : 'info'" size="small">
               {{ row.type }}
             </el-tag>
           </template>
@@ -47,6 +48,7 @@
         <el-table-column prop="capacity" label="容量上限" width="100" align="center" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -59,8 +61,28 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="640px" destroy-on-close>
+      <el-descriptions v-if="isView" :column="2" border size="default">
+        <el-descriptions-item label="课程ID">{{ detailData.id }}</el-descriptions-item>
+        <el-descriptions-item label="课程名称">{{ detailData.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="课程代码">{{ detailData.courseCode }}</el-descriptions-item>
+        <el-descriptions-item label="课程类型">
+          <el-tag :type="detailData.type === '必修' ? 'success' : detailData.type === '选修' ? 'warning' : 'info'" size="small">
+            {{ detailData.type }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="学分">{{ detailData.credit }}</el-descriptions-item>
+        <el-descriptions-item label="总学时">{{ detailData.hours }}</el-descriptions-item>
+        <el-descriptions-item label="容量上限">{{ detailData.capacity }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="detailData.status === '开课' ? 'success' : 'info'" size="small">
+            {{ detailData.status }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
+      </el-descriptions>
+      <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="课程名称" prop="courseName">
@@ -75,13 +97,6 @@
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="开课学院" prop="collegeId">
-              <el-select v-model="form.collegeId" placeholder="请选择学院" style="width: 100%">
-                <el-option v-for="c in collegeOptions" :key="c.id" :label="c.collegeName" :value="c.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="课程类型" prop="type">
               <el-select v-model="form.type" style="width: 100%">
                 <el-option label="必修" value="必修" />
@@ -90,40 +105,28 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="学分" prop="credit">
               <el-input-number v-model="form.credit" :min="0.5" :max="10" :step="0.5" :precision="1" style="width: 100%" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="总学时" prop="hours">
               <el-input-number v-model="form.hours" :min="1" :max="200" style="width: 100%" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="容量上限" prop="capacity">
               <el-input-number v-model="form.capacity" :min="1" :max="500" style="width: 100%" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="所属学期" prop="semesterId">
-              <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
-                <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
         </el-row>
-        <el-form-item label="课程描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入课程描述" />
-        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -132,36 +135,32 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getCourseList, createCourse, updateCourse, deleteCourse } from '@/api/course'
+import { Notebook, Plus, Search, Refresh, View, Edit, Delete } from '@element-plus/icons-vue'
+import { getCourseList, createCourse, updateCourse, deleteCourse, getCourseDetail } from '@/api/course'
 import { getCollegeList } from '@/api/college'
-import { getSemesterList } from '@/api/semester'
 
 const loading = ref(false)
 const submitLoading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增课程')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
 const collegeOptions = ref([])
-const semesterOptions = ref([])
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, collegeId: '', courseName: '', type: '' })
-const form = reactive({ id: null, courseName: '', courseCode: '', collegeId: '', type: '必修', credit: 3, hours: 48, capacity: 60, semesterId: '', description: '' })
+const form = reactive({ id: null, courseName: '', courseCode: '', type: '必修', credit: 3, hours: 48, capacity: 60 })
+const detailData = reactive({ id: null, courseName: '', courseCode: '', type: '', credit: null, hours: null, capacity: null, status: '', createTime: '', updateTime: '' })
 const rules = {
   courseName: [{ required: true, message: '请输入课程名称', trigger: 'blur' }],
-  courseCode: [{ required: true, message: '请输入课程代码', trigger: 'blur' }],
-  collegeId: [{ required: true, message: '请选择学院', trigger: 'change' }]
+  courseCode: [{ required: true, message: '请输入课程代码', trigger: 'blur' }]
 }
 
 const loadOptions = async () => {
-  const [collegeRes, semesterRes] = await Promise.all([
-    getCollegeList({ pageNum: 1, pageSize: 100 }),
-    getSemesterList({ pageNum: 1, pageSize: 100 })
-  ])
+  const collegeRes = await getCollegeList({ pageNum: 1, pageSize: 100 })
   collegeOptions.value = collegeRes.data.list || []
-  semesterOptions.value = semesterRes.data.list || []
 }
 
 const fetchData = async () => {
@@ -176,16 +175,46 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.collegeId = ''; queryForm.courseName = ''; queryForm.type = ''; handleSearch() }
 const handleAdd = () => {
-  isEdit.value = false; dialogTitle.value = '新增课程'
-  Object.assign(form, { id: null, courseName: '', courseCode: '', collegeId: '', type: '必修', credit: 3, hours: 48, capacity: 60, semesterId: '', description: '' })
+  isEdit.value = false; isView.value = false; dialogTitle.value = '新增课程'
+  Object.assign(form, { id: null, courseName: '', courseCode: '', type: '必修', credit: 3, hours: 48, capacity: 60 })
   dialogVisible.value = true
 }
-const handleEdit = (row) => { isEdit.value = true; dialogTitle.value = '编辑课程'; Object.assign(form, { ...row }); dialogVisible.value = true }
+
+const handleView = async (row) => {
+  isEdit.value = false; isView.value = true; dialogTitle.value = '查看课程详情'
+  dialogVisible.value = true
+  try {
+    const detail = await getCourseDetail(row.id)
+    const data = detail.data
+    Object.assign(detailData, {
+      id: data.id,
+      courseName: data.courseName || '',
+      courseCode: data.courseCode || '',
+      type: data.type || '',
+      credit: data.credit,
+      hours: data.hours,
+      capacity: data.capacity,
+      status: data.status || '',
+      createTime: data.createTime || '',
+      updateTime: data.updateTime || ''
+    })
+  } catch {
+    ElMessage.error('获取课程详情失败')
+    dialogVisible.value = false
+  }
+}
+
+const handleEdit = (row) => {
+  isEdit.value = true; isView.value = false; dialogTitle.value = '编辑课程'
+  Object.assign(form, { ...row }); dialogVisible.value = true
+}
+
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该课程吗？', '提示', { type: 'warning' }).then(async () => {
     await deleteCourse(row.id); ElMessage.success('删除成功'); fetchData()
   }).catch(() => {})
 }
+
 const handleSubmit = async () => {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return

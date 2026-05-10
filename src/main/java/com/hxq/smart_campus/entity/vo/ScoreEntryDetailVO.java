@@ -19,6 +19,7 @@ public class ScoreEntryDetailVO {
     private BigDecimal totalScore;  // 总评成绩
     private BigDecimal makeupScore; // 补考成绩
     private BigDecimal scorePoint;  // 绩点
+    private BigDecimal credit;      // 学分
     private String examStatus;      // 考试状态
     private Long makeupExamId;      // 补考安排ID
     private String createTime;      // 创建时间（格式化显示）

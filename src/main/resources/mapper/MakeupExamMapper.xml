@@ -41,7 +41,7 @@
     </update>
     <!-- 获取补考安排详情 -->
     <select id="getMakeupExamDetail" resultType="com.hxq.smart_campus.entity.vo.MakeupExamDetailVO">
-        select m.id, m.score_entry_id, se.student_id, s.student_name, s.student_no, se.course_id, c.course_name,
+        select m.id, m.score_entry_id,se.student_id, s.name as student_name, s.student_no, se.course_id, c.course_name,
                m.exam_date, m.start_time, m.end_time, m.status, m.create_time, m.update_time
         from makeup_exam m
         join score_entry se on m.score_entry_id = se.id
@@ -51,7 +51,7 @@
     </select>
     <!-- 获取补考安排列表 -->
     <select id="getMakeupExamList" resultType="com.hxq.smart_campus.entity.vo.MakeupExamListVO">
-        select m.id, s.student_name, c.course_name, m.exam_date, m.start_time, m.end_time, m.status, m.create_time
+        select m.id, s.name as student_name, c.course_name, m.exam_date, m.start_time, m.end_time, m.status, m.create_time
         from makeup_exam m
         join score_entry se on m.score_entry_id = se.id
         join student s on se.student_id = s.id

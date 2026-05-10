@@ -1,77 +1,51 @@
-2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
-2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-1] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
-2026-05-08T19:42:12.580+08:00 DEBUG 23532 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
-2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.c.admin.CollegeController          : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
-2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-4] c.h.s.c.admin.SemesterController         : 查询学期列表, pageNum: 1, pageSize: 100, name: null, status: null
-2026-05-08T19:42:12.614+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
-Creating a new SqlSession
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3f56a026] was not registered for synchronization because synchronization is not active
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b02aaba] was not registered for synchronization because synchronization is not active
-Cache Hit Ratio [SQL_CACHE]: 0.0
-Cache Hit Ratio [SQL_CACHE]: 0.0
-JDBC Connection [HikariProxyConnection@399638165 wrapping com.mysql.cj.jdbc.ConnectionImpl@51d41b97] will not be managed by Spring
-JDBC Connection [HikariProxyConnection@428714475 wrapping com.mysql.cj.jdbc.ConnectionImpl@187c33f8] will not be managed by Spring
-==>  Preparing: SELECT count(0) FROM college
-==>  Preparing: SELECT count(0) FROM semester
-==> Parameters: 
-==> Parameters: 
-<==    Columns: count(0)
-<==    Columns: count(0)
-<==        Row: 2
-<==        Row: 3
-<==      Total: 1
-<==      Total: 1
-==>  Preparing: SELECT id, college_code, college_name, status, create_time FROM college ORDER BY create_time DESC LIMIT ?
-==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time from semester LIMIT ?
-==> Parameters: 100(Integer)
-==> Parameters: 100(Integer)
-<==    Columns: id, name, start_date, end_date, is_current, status, create_time
-<==    Columns: id, college_code, college_name, status, create_time
-<==        Row: 1, CS, 计算机科学与技术学院, 启用, 2026-04-21 18:28:51
-<==        Row: 1, 2023-2024第一学期, 2023-09-01, 2024-01-15, 0, 已结束, 2026-04-21 18:28:51
-<==        Row: 2, MATH, 数学与统计学院, 启用, 2026-04-21 18:28:51
-<==        Row: 3, ENGL, 外国语学院, 启用, 2026-04-21 18:28:51
-<==      Total: 3
-<==        Row: 2, 2023-2024第二学期, 2024-02-25, 2024-07-10, 1, 进行中, 2026-04-21 18:28:51
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3f56a026]
-<==      Total: 2
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b02aaba]
-2026-05-08T19:42:12.704+08:00  INFO 23532 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表成功，总记录数：3，总页数：1
-2026-05-08T19:42:12.725+08:00 DEBUG 23532 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
-2026-05-08T19:42:12.732+08:00  INFO 23532 --- [nio-8080-exec-3] c.h.s.controller.admin.CourseController  : Getting course list with pageNum: 1, pageSize: 10, courseCode: null, courseName: , type: , status: null
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39193ac2] was not registered for synchronization because synchronization is not active
-Cache Hit Ratio [SQL_CACHE]: 0.0
-JDBC Connection [HikariProxyConnection@1202298609 wrapping com.mysql.cj.jdbc.ConnectionImpl@51d41b97] will not be managed by Spring
-==>  Preparing: SELECT count(0) FROM course
-==> Parameters: 
-<==    Columns: count(0)
-<==        Row: 7
-<==      Total: 1
-==>  Preparing: select id, course_code, course_name, credit, hours, type, status, create_time,capacity from course order by create_time desc LIMIT ?
-==> Parameters: 10(Integer)
-<==    Columns: id, course_code, course_name, credit, hours, type, status, create_time, capacity
-<==        Row: 1, CS101, 计算机导论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 2, CS102, Java程序设计, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 3, CS201, 数据结构, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 4, SE101, 软件工程概论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 5, MATH101, 高等数学, 5.0, 80, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 6, CS301, 人工智能导论, 2.0, 32, 选修, 开课, 2026-04-21 18:28:51, 60
-<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 2026-04-21 18:28:51, 120
-<==      Total: 7
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39193ac2]
-2026-05-08T19:42:12.744+08:00 ERROR 23532 --- [nio-8080-exec-3] c.h.s.exception.GlobalExceptionHandler   : 系统异常
+AI服务暂时不可用，请检查阿里云百炼API Key是否正确配置。错误信息：chatOptions cannot be null
 
-org.springframework.data.redis.serializer.SerializationException: Cannot serialize
-	at org.springframework.data.redis.serializer.JdkSerializationRedisSerializer.serialize(JdkSerializationRedisSerializer.java:97) ~[spring-data-redis-3.5.10.jar:3.5.10]
-	at org.springframework.data.redis.core.AbstractOperations.rawValue(AbstractOperations.java:148) ~[spring-data-redis-3.5.10.jar:3.5.10]
-	at org.springframework.data.redis.core.DefaultValueOperations.set(DefaultValueOperations.java:207) ~[spring-data-redis-3.5.10.jar:3.5.10]
-	at com.hxq.smart_campus.service.impl.CourseServiceImpl.lambda$0(CourseServiceImpl.java:47) ~[classes/:na]
-	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625) ~[na:na]
-	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762) ~[na:na]
-	at com.hxq.smart_campus.service.impl.CourseServiceImpl.getCourseList(CourseServiceImpl.java:46) ~[classes/:na]
-	at com.hxq.smart_campus.controller.admin.CourseController.getCourseList(CourseController.java:50) ~[classes/:na]
+
+
+
+
+2026-05-10T18:25:04.179+08:00 DEBUG 5548 --- [nio-8080-exec-8] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:04.207+08:00 DEBUG 5548 --- [nio-8080-exec-5] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:04.210+08:00  INFO 5548 --- [nio-8080-exec-5] c.h.s.c.admin.AdminAiController          : AI校园数据统计分析
+2026-05-10T18:25:04.211+08:00  INFO 5548 --- [nio-8080-exec-5] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=请基于智慧校园系统的整体数据，生成一份校园数据统计分析报告，描述当前校园运营概况。
+2026-05-10T18:25:04.212+08:00 ERROR 5548 --- [nio-8080-exec-5] c.hxq.smart_campus.service.ai.AiService  : AI分析失败: chatOptions cannot be null
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.internalCall(AlibabaOpenAiChatModel.java:96) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.call(AlibabaOpenAiChatModel.java:92) ~[classes/:na]
+	at org.springframework.ai.chat.client.advisor.ChatModelCallAdvisor.adviseCall(ChatModelCallAdvisor.java:56) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor.adviseCall(SimpleLoggerAdvisor.java:74) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.api.BaseAdvisor.adviseCall(BaseAdvisor.java:52) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.lambda$doGetObservableChatClientResponse$1(DefaultChatClient.java:539) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.doGetObservableChatClientResponse(DefaultChatClient.java:537) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.content(DefaultChatClient.java:517) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.service.ai.AiService.analyze(AiService.java:46) ~[classes/:na]
+	at com.hxq.smart_campus.service.ai.CampusStatisticsService.analyzeCampusOverview(CampusStatisticsService.java:32) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380) ~[spring-tx-6.2.17.jar:6.2.17]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728) ~[spring-aop-6.2.17.jar:6.2.17]
+	at com.hxq.smart_campus.service.ai.CampusStatisticsService$$SpringCGLIB$$0.analyzeCampusOverview(<generated>) ~[classes/:na]
+	at com.hxq.smart_campus.controller.admin.AdminAiController.campusOverview(AdminAiController.java:33) ~[classes/:na]
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
@@ -128,14 +102,717 @@ org.springframework.data.redis.serializer.SerializationException: Cannot seriali
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
 	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
-Caused by: org.springframework.core.serializer.support.SerializationFailedException: Failed to serialize object using DefaultSerializer
-	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:64) ~[spring-core-6.2.17.jar:6.2.17]
-	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:33) ~[spring-core-6.2.17.jar:6.2.17]
-	at org.springframework.data.redis.serializer.JdkSerializationRedisSerializer.serialize(JdkSerializationRedisSerializer.java:95) ~[spring-data-redis-3.5.10.jar:3.5.10]
-	... 63 common frames omitted
-Caused by: java.lang.IllegalArgumentException: DefaultSerializer requires a Serializable payload but received an object of type [com.hxq.smart_campus.entity.vo.CourseListVO]
-	at org.springframework.core.serializer.DefaultSerializer.serialize(DefaultSerializer.java:43) ~[spring-core-6.2.17.jar:6.2.17]
-	at org.springframework.core.serializer.Serializer.serializeToByteArray(Serializer.java:56) ~[spring-core-6.2.17.jar:6.2.17]
-	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:60) ~[spring-core-6.2.17.jar:6.2.17]
-	... 65 common frames omitted
 
+2026-05-10T18:25:07.809+08:00 DEBUG 5548 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:07.809+08:00 DEBUG 5548 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:07.817+08:00  INFO 5548 --- [nio-8080-exec-3] c.h.s.c.admin.SemesterController         : 查询学期列表, pageNum: 1, pageSize: 100, name: null, status: null
+2026-05-10T18:25:07.817+08:00  INFO 5548 --- [nio-8080-exec-2] c.h.s.c.admin.CollegeController          : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
+2026-05-10T18:25:07.818+08:00  INFO 5548 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表，页码：1，每页数量：100，学院名称：null，状态：null
+Creating a new SqlSession
+Creating a new SqlSession
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b21544d]
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48b4a89a]
+Cache Hit Ratio [SQL_CACHE]: 0.0
+Cache Hit Ratio [SQL_CACHE]: 0.0
+JDBC Connection [HikariProxyConnection@1929353244 wrapping com.mysql.cj.jdbc.ConnectionImpl@5696eeb7] will be managed by Spring
+JDBC Connection [HikariProxyConnection@40745718 wrapping com.mysql.cj.jdbc.ConnectionImpl@3ed3e66d] will be managed by Spring
+==>  Preparing: SELECT count(0) FROM college
+==>  Preparing: SELECT count(0) FROM semester
+==> Parameters:
+==> Parameters:
+<==    Columns: count(0)
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id, college_code, college_name, status, create_time FROM college ORDER BY create_time DESC LIMIT ?
+==> Parameters: 100(Integer)
+<==    Columns: id, college_code, college_name, status, create_time
+<==        Row: 1, CS, 计算机科学与技术学院, 启用, 2026-04-21 18:28:51
+<==        Row: 2, MATH, 数学与统计学院, 启用, 2026-04-21 18:28:51
+<==        Row: 3, ENGL, 外国语学院, 启用, 2026-04-21 18:28:51
+<==      Total: 3
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b21544d]
+<==    Columns: count(0)
+<==        Row: 2
+<==      Total: 1
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time from semester LIMIT ?
+==> Parameters: 100(Integer)
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time
+<==        Row: 1, 2023-2024第一学期, 2023-09-01, 2024-01-15, 0, 已结束, 2026-04-21 18:28:51
+<==        Row: 2, 2023-2024第二学期, 2024-02-25, 2024-07-10, 1, 进行中, 2026-04-21 18:28:51
+<==      Total: 2
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48b4a89a]
+Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48b4a89a]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48b4a89a]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48b4a89a]
+2026-05-10T18:25:08.000+08:00  INFO 5548 --- [nio-8080-exec-2] c.h.s.service.impl.CollegeServiceImpl    : 获取学院列表成功，总记录数：3，总页数：1，已缓存
+Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b21544d]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b21544d]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b21544d]
+2026-05-10T18:25:11.778+08:00 DEBUG 5548 --- [nio-8080-exec-7] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:11.790+08:00  INFO 5548 --- [nio-8080-exec-7] c.h.s.c.admin.AdminAiController          : AI对话请求: context=teaching, message=你好
+2026-05-10T18:25:11.790+08:00  INFO 5548 --- [nio-8080-exec-7] c.hxq.smart_campus.service.ai.AiService  : AI流式分析请求: userMessage=你好
+2026-05-10T18:25:11.821+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.821+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.823+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.823+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.823+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.823+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:11.833+08:00  WARN 5548 --- [nio-8080-exec-9] c.h.s.exception.GlobalExceptionHandler   : 参数异常: chatOptions cannot be null
+2026-05-10T18:25:17.040+08:00 DEBUG 5548 --- [io-8080-exec-10] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:17.041+08:00  INFO 5548 --- [io-8080-exec-10] c.h.s.c.admin.AdminAiController          : AI对话请求: context=score, message=你好
+2026-05-10T18:25:17.041+08:00  INFO 5548 --- [io-8080-exec-10] c.hxq.smart_campus.service.ai.AiService  : AI流式分析请求: userMessage=你好
+2026-05-10T18:25:17.044+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.045+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.045+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.045+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.045+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.045+08:00 ERROR 5548 --- [oundedElastic-1] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:17.048+08:00  WARN 5548 --- [nio-8080-exec-1] c.h.s.exception.GlobalExceptionHandler   : 参数异常: chatOptions cannot be null
+2026-05-10T18:25:19.064+08:00 DEBUG 5548 --- [nio-8080-exec-6] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:19.065+08:00  INFO 5548 --- [nio-8080-exec-6] c.h.s.c.admin.AdminAiController          : AI资源利用优化建议
+2026-05-10T18:25:19.066+08:00  INFO 5548 --- [nio-8080-exec-6] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=请分析当前校园资源利用情况，给出优化建议。
+2026-05-10T18:25:19.068+08:00 ERROR 5548 --- [nio-8080-exec-6] c.hxq.smart_campus.service.ai.AiService  : AI分析失败: chatOptions cannot be null
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.internalCall(AlibabaOpenAiChatModel.java:96) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.call(AlibabaOpenAiChatModel.java:92) ~[classes/:na]
+	at org.springframework.ai.chat.client.advisor.ChatModelCallAdvisor.adviseCall(ChatModelCallAdvisor.java:56) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor.adviseCall(SimpleLoggerAdvisor.java:74) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.api.BaseAdvisor.adviseCall(BaseAdvisor.java:52) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.lambda$nextCall$1(DefaultAroundAdvisorChain.java:115) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain.nextCall(DefaultAroundAdvisorChain.java:114) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.lambda$doGetObservableChatClientResponse$1(DefaultChatClient.java:539) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at io.micrometer.observation.Observation.observe(Observation.java:564) ~[micrometer-observation-1.15.10.jar:1.15.10]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.doGetObservableChatClientResponse(DefaultChatClient.java:537) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at org.springframework.ai.chat.client.DefaultChatClient$DefaultCallResponseSpec.content(DefaultChatClient.java:517) ~[spring-ai-client-chat-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.service.ai.AiService.analyze(AiService.java:46) ~[classes/:na]
+	at com.hxq.smart_campus.service.ai.CampusStatisticsService.analyzeResourceUtilization(CampusStatisticsService.java:61) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380) ~[spring-tx-6.2.17.jar:6.2.17]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728) ~[spring-aop-6.2.17.jar:6.2.17]
+	at com.hxq.smart_campus.service.ai.CampusStatisticsService$$SpringCGLIB$$0.analyzeResourceUtilization(<generated>) ~[classes/:na]
+	at com.hxq.smart_campus.controller.admin.AdminAiController.resourceOptimization(AdminAiController.java:59) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at com.hxq.smart_campus.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:61) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.741+08:00 DEBUG 5548 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: T2021001
+2026-05-10T18:25:22.742+08:00  INFO 5548 --- [nio-8080-exec-4] c.h.s.c.admin.AdminAiController          : AI对话请求: context=resource, message=你好
+2026-05-10T18:25:22.743+08:00  INFO 5548 --- [nio-8080-exec-4] c.hxq.smart_campus.service.ai.AiService  : AI流式分析请求: userMessage=你好
+2026-05-10T18:25:22.746+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.746+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.746+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.746+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.746+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.747+08:00 ERROR 5548 --- [oundedElastic-2] o.s.ai.chat.model.MessageAggregator      : Aggregation Error
+
+java.lang.IllegalArgumentException: chatOptions cannot be null
+	at org.springframework.util.Assert.notNull(Assert.java:181) ~[spring-core-6.2.17.jar:6.2.17]
+	at org.springframework.ai.model.tool.DefaultToolCallingManager.resolveToolDefinitions(DefaultToolCallingManager.java:102) ~[spring-ai-model-1.1.4.jar:1.1.4]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.addToolDefinitions(AlibabaOpenAiChatModel.java:625) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.createRequest(AlibabaOpenAiChatModel.java:537) ~[classes/:na]
+	at com.hxq.smart_campus.model.AlibabaOpenAiChatModel.lambda$internalStream$11(AlibabaOpenAiChatModel.java:201) ~[classes/:na]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:49) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxPublishOn.subscribeOrReturn(FluxPublishOn.java:92) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:55) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDefer.subscribe(FluxDefer.java:54) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.InternalFluxOperator.subscribe(InternalFluxOperator.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxDeferContextual.subscribe(FluxDeferContextual.java:57) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.Flux.subscribe(Flux.java:8891) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onNext(MonoFlatMapMany.java:196) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.publisher.FluxSubscribeOnValue$ScheduledScalar.run(FluxSubscribeOnValue.java:181) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68) ~[reactor-core-3.7.17.jar:3.7.17]
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28) ~[reactor-core-3.7.17.jar:3.7.17]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-05-10T18:25:22.749+08:00  WARN 5548 --- [nio-8080-exec-8] c.h.s.exception.GlobalExceptionHandler   : 参数异常: chatOptions cannot be null

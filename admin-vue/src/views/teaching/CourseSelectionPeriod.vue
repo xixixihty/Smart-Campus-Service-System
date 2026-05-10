@@ -8,12 +8,12 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
-          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable>
+          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 200px">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="时段名称">
-          <el-input v-model="queryForm.periodName" placeholder="请输入时段名称" clearable />
+          <el-input v-model="queryForm.periodName" placeholder="请输入时段名称" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch"><el-icon><Search /></el-icon>搜索</el-button>
@@ -25,13 +25,13 @@
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="periodName" label="时段名称" min-width="150" />
-        <el-table-column prop="semesterName" label="所属学期" width="180" />
-        <el-table-column prop="startTime" label="开始时间" width="170" />
-        <el-table-column prop="endTime" label="结束时间" width="170" />
-        <el-table-column prop="maxSelections" label="最大选课数" width="110" align="center" />
+        <el-table-column prop="semesterName" label="学期名称" width="180"  align="center" />
+        <el-table-column prop="startTime" label="选课开始时间" width="170" align="center" />
+        <el-table-column prop="endTime" label="选课结束时间" width="170" align="center" />
+        <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
@@ -44,8 +44,18 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="110px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="640px" destroy-on-close @close="isView = false">
+      <!-- 查看详情：描述列表 -->
+      <el-descriptions v-if="isView" :column="2" border size="default">
+        <el-descriptions-item label="时段ID">{{ detailData.id }}</el-descriptions-item>
+        <el-descriptions-item label="所属学期">{{ detailData.semesterName }}</el-descriptions-item>
+        <el-descriptions-item label="选课开始时间">{{ detailData.startTime }}</el-descriptions-item>
+        <el-descriptions-item label="选课结束时间">{{ detailData.endTime }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
+      </el-descriptions>
+      <!-- 新增/编辑：表单 -->
+      <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="所属学期" prop="semesterId">
           <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
@@ -66,7 +76,7 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button v-if="!isView" type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -75,7 +85,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getPeriodList, createPeriod, updatePeriod, deletePeriod } from '@/api/courseSelectionPeriod'
+import { Clock, Plus, Search, Refresh, View, Edit, Delete } from '@element-plus/icons-vue'
+import { getPeriodList, createPeriod, updatePeriod, deletePeriod, getPeriodDetail } from '@/api/courseSelectionPeriod'
 import { getSemesterList } from '@/api/semester'
 
 const loading = ref(false)
@@ -83,10 +94,15 @@ const submitLoading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增时段')
 const isEdit = ref(false)
+const isView = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
 const semesterOptions = ref([])
+const detailData = reactive({
+  id: null, semesterId: '', semesterName: '', periodName: '',
+  startTime: '', endTime: '', maxSelections: 0, createTime: '', updateTime: ''
+})
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', periodName: '' })
 const form = reactive({ id: null, semesterId: '', periodName: '', startTime: '', endTime: '', maxSelections: 3 })
@@ -114,11 +130,29 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.semesterId = ''; queryForm.periodName = ''; handleSearch() }
 const handleAdd = () => {
-  isEdit.value = false; dialogTitle.value = '新增时段'
-  Object.assign(form, { id: null, semesterId: '', periodName: '', startTime: '', endTime: '', maxSelections: 3 })
+  isEdit.value = false; isView.value = false; dialogTitle.value = '新增时段'
+  Object.assign(form, { id: null, semesterId: '', periodName: '', startTime: '', endTime: ''})
   dialogVisible.value = true
 }
-const handleEdit = (row) => { isEdit.value = true; dialogTitle.value = '编辑时段'; Object.assign(form, { ...row }); dialogVisible.value = true }
+const handleEdit = (row) => { isEdit.value = true; isView.value = false; dialogTitle.value = '编辑时段'; Object.assign(form, { ...row }); dialogVisible.value = true }
+
+
+const handleView = async (row) => {
+  isEdit.value = false; isView.value = true; dialogTitle.value = '查看选课时间详情'
+  const detail = await getPeriodDetail(row.id)
+  const data = detail.data
+  Object.assign(detailData, {
+    id: data.id || null,
+    semesterId: data.semesterId || '',
+    semesterName: data.semesterName || '',
+    startTime: data.startTime || '',
+    endTime: data.endTime || '',
+    createTime: data.createTime || '',
+    updateTime: data.updateTime || ''
+  })
+  dialogVisible.value = true
+}
+
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该时段吗？', '提示', { type: 'warning' }).then(async () => {
     await deletePeriod(row.id); ElMessage.success('删除成功'); fetchData()

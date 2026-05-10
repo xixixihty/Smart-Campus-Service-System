@@ -5,7 +5,7 @@
       <el-header>
         <div class="header-left">
           <el-icon :size="28"><School /></el-icon>
-          <span class="header-title">智慧校园管理系统</span>
+          <span class="header-title">智慧校园服务系统-管理端</span>
         </div>
         <div class="header-right">
           <el-badge :value="noticeCount" :hidden="noticeCount === 0">
@@ -165,7 +165,7 @@
             <el-sub-menu index="ai">
               <template #title>
                 <el-icon><Cpu /></el-icon>
-                <span>AI 智能分析</span>
+                <span>AI 校园智慧助手</span>
               </template>
               <el-menu-item index="/ai-campus">
                 <el-icon><DataAnalysis /></el-icon>
@@ -227,6 +227,9 @@ onMounted(async () => {
     }
   }
 })
+
+
+
 
 const handleUserCommand = (command) => {
   if (command === 'logout') {

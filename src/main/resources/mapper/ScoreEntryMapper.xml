@@ -40,8 +40,6 @@
             exam_status,
             total_score,
             score_point,
-            create_time,
-            update_time
         ) values
         <foreach collection="scoreEntries" item="entry" separator=",">
             (
@@ -53,8 +51,6 @@
                 #{entry.examStatus},
                 #{entry.totalScore},
                 #{entry.scorePoint},
-                NOW(),
-                NOW()
             )
         </foreach>
     </insert>
@@ -75,11 +71,12 @@
 
     <!-- 查询成绩详情-->
     <select id="getScoreDetail" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryDetailVO">
-        select se.id, se.course_id, se.student_id, s.name as studentName, s.student_no as studentNo,
+        select se.id, se.course_id, c.course_name, se.student_id, s.name as studentName, s.student_no as studentNo,
                se.semester_id, sm.name as semesterName, se.usual_score,
-               se.final_score, se.total_score, se.makeup_score, se.score_point, se.exam_status,
-               me.id as makeup_exam_id, se.create_time, se.update_time
+               se.final_score, se.total_score, se.makeup_score, se.score_point, c.credit, se.exam_status,
+               me.id as makeup_exam_id
         from score_entry se
+        left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id
         left join semester sm on se.semester_id = sm.id
         left join makeup_exam me on se.makeup_exam_id = me.id
@@ -90,7 +87,7 @@
     <select id="getScoreList" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryListVO">
         select se.id, c.course_name, s.name as studentName, s.student_no as studentNo,
                sm.name as semesterName, se.usual_score, se.final_score, se.total_score,
-               se.score_point, c.credit, se.exam_status, se.create_time
+               se.score_point, c.credit, se.exam_status
         from score_entry se
         left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id
