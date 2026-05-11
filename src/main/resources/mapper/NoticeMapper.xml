@@ -60,7 +60,6 @@
             <if test="targetType != null and targetType != ''">and n.target_type = #{targetType}</if>
             <if test="status != null and status != ''">and n.status = #{status}</if>
         </where>
-        order by n.create_time desc
     </select>
     <!-- 获取我的通知列表 -->
     <select id="getMyNoticeList" resultType="com.hxq.smart_campus.entity.vo.MyNoticeVO">

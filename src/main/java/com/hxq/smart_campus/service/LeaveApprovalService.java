@@ -32,11 +32,12 @@ public interface LeaveApprovalService {
      * 获取请假申请列表
      * @param pageNum
      * @param pageSize
-     * @param studentId
+     * @param studentName
+     * @param leaveType
      * @param status
      * @return
      */
-    PageInfo<LeaveRequestListVO> getLeaveRequestList(Integer pageNum, Integer pageSize, Long studentId, String status);
+    PageInfo<LeaveRequestListVO> getLeaveRequestList(Integer pageNum, Integer pageSize, String studentName, String leaveType, String status);
 
     /**
      * 获取请假申请详情

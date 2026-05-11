@@ -53,25 +53,11 @@
     </insert>
     <!-- 审批请假申请 -->
     <insert id="approveLeaveRequest">
-        insert into leave_approval_log
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">leave_request_id</if>
-            <if test="approverId != null">approver_id</if>
-            <if test="result != null">result</if>
-            <if test="comment != null">comment</if>
-            approve_time
-        </trim>
-            values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">#{id}</if>
-            <if test="approverId != null">#{approverId}</if>
-            <if test="result != null">#{result}</if>
-            <if test="comment != null">#{comment}</if>
-            now()
-        </trim>
+        insert into leave_approval_log (leave_request_id, approver_id, result, comment, approve_time)
+        values (#{id}, #{approverId}, #{result}, #{comment}, now())
     </insert>
 
-
+    <!-- 获取请假申请详情 -->
     <select id="getLeaveRequestDetail" resultMap="LeaveRequestDetailMap">
         select l.id, l.student_id, s.name as student_name, l.leave_type,
                l.start_time, l.end_time, l.reason, l.status,
@@ -85,14 +71,15 @@
                  left join teacher t on log.approver_id = t.id
         where l.id = #{id}
     </select>
-    <!-- 获取请假申请详情 -->
+    <!-- 获取请假申请列表 -->
     <select id="getLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.LeaveRequestListVO">
         select l.id, s.name as student_name, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
         <where>
-            <if test="studentId != null">l.student_id = #{studentId}</if>
-            <if test="status != null">l.status = #{status}</if>
+            <if test="studentName != null and studentName != ''">and s.name like concat('%', #{studentName}, '%')</if>
+            <if test="leaveType != null and leaveType != ''">and l.leave_type = #{leaveType}</if>
+            <if test="status != null and status != ''">and l.status = #{status}</if>
         </where>
         order by l.id desc
     </select>
@@ -102,10 +89,9 @@
         from leave_request l
         left join student s on l.student_id = s.id
         <where>
-            <if test="status != null">l.status = #{status}</if>
-            l.student_id = #{studentId}
+            <if test="status != null and status != ''">and l.status = #{status}</if>
+            and l.student_id = #{studentId}
         </where>
-        order by l.id desc
     </select>
     <!-- 获取待审批请假申请列表 -->
     <select id="getPendingApprovalList" resultType="com.hxq.smart_campus.entity.vo.PendingLeaveRequestVO">
@@ -113,7 +99,7 @@
         from leave_request l
         left join student s on l.student_id = s.id
         <where>
-            l.status = #{leaveApplyStatusWaiting}
+            <if test="status != null and status != ''">and l.status = #{status}</if>
         </where>
         order by l.id desc
     </select>

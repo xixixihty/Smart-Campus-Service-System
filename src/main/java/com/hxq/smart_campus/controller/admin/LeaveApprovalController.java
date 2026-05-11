@@ -67,11 +67,12 @@ public class LeaveApprovalController {
     public Result<PageInfo<LeaveRequestListVO>> getLeaveRequestList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) String studentName,
+            @RequestParam(required = false) String leaveType,
             @RequestParam(required = false) String status
     ) {
-        log.info("查询请假列表：{}", pageNum, pageSize, studentId, status);
-        PageInfo<LeaveRequestListVO> leaveRequestList = leaveApprovalService.getLeaveRequestList(pageNum, pageSize, studentId, status);
+        log.info("查询请假列表：pageNum={}, pageSize={}, studentName={}, leaveType={}, status={}", pageNum, pageSize, studentName, leaveType, status);
+        PageInfo<LeaveRequestListVO> leaveRequestList = leaveApprovalService.getLeaveRequestList(pageNum, pageSize, studentName, leaveType, status);
         return Result.success(leaveRequestList);
     }
 

@@ -5,14 +5,19 @@
     </div>
 
     <el-card shadow="never">
-      <el-form :inline="true" :model="queryForm">
-        <el-form-item label="学生">
-          <el-select v-model="queryForm.studentId" placeholder="请选择学生" clearable filterable>
-            <el-option v-for="s in studentOptions" :key="s.id" :label="s.name + ' (' + s.studentNo + ')'" :value="s.id" />
+      <el-form :inline="true" :model="queryForm" class="search-form">
+        <el-form-item label="学生姓名">
+          <el-input v-model="queryForm.studentName" placeholder="请输入学生姓名" clearable class="search-input" />
+        </el-form-item>
+        <el-form-item label="请假类型">
+          <el-select v-model="queryForm.leaveType" placeholder="请选择类型" clearable class="search-input">
+            <el-option label="事假" value="事假" />
+            <el-option label="病假" value="病假" />
+            <el-option label="公假" value="公假" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 120px">
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable class="search-input">
             <el-option label="待审批" value="待审批" />
             <el-option label="已批准" value="已批准" />
             <el-option label="已驳回" value="已驳回" />
@@ -29,16 +34,14 @@
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="studentName" label="学生姓名" width="100" />
-        <el-table-column prop="studentNo" label="学号" width="120" />
+        <el-table-column prop="studentName" label="学生姓名" width="120" />
         <el-table-column prop="leaveType" label="请假类型" width="100" align="center">
           <template #default="{ row }">
-            <el-tag size="small">{{ row.leaveType }}</el-tag>
+            <el-tag :type="getLeaveTypeColor(row.leaveType)" size="small">{{ row.leaveType }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="reason" label="请假原因" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="startDate" label="开始日期" width="120" />
-        <el-table-column prop="endDate" label="结束日期" width="120" />
+        <el-table-column prop="startTime" label="开始时间" width="170" />
+        <el-table-column prop="endTime" label="结束时间" width="170" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status === '已批准' ? 'success' : row.status === '已驳回' ? 'danger' : row.status === '待审批' ? 'warning' : 'info'" size="small">
@@ -46,8 +49,10 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="createTime" label="申请时间" width="170" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <template v-if="row.status === '待审批'">
               <el-button type="success" link @click="handleApprove(row, '已批准')">
                 <el-icon><Select /></el-icon>通过
@@ -67,6 +72,7 @@
       </div>
     </el-card>
 
+    <!-- 审批意见弹窗 -->
     <el-dialog v-model="approveVisible" title="审批意见" width="500px">
       <el-form :model="approveForm" label-width="100px">
         <el-form-item label="审批结果">
@@ -83,29 +89,91 @@
         <el-button type="primary" :loading="approveLoading" @click="handleApproveSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 请假详情弹窗 -->
+    <el-dialog v-model="detailVisible" title="请假详情" width="700px" destroy-on-close>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="学生姓名">{{ detailForm.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="请假类型">
+          <el-tag :type="getLeaveTypeColor(detailForm.leaveType)" size="small">{{ detailForm.leaveType }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="开始时间">{{ formatDateTime(detailForm.startTime) }}</el-descriptions-item>
+        <el-descriptions-item label="结束时间">{{ formatDateTime(detailForm.endTime) }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="detailForm.status === '已批准' ? 'success' : detailForm.status === '已驳回' ? 'danger' : detailForm.status === '待审批' ? 'warning' : 'info'" size="small">
+            {{ detailForm.status }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="申请时间">{{ formatDateTime(detailForm.createTime) }}</el-descriptions-item>
+        <el-descriptions-item label="请假原因" :span="2">
+          <div class="detail-reason">{{ detailForm.reason }}</div>
+        </el-descriptions-item>
+      </el-descriptions>
+
+      <!-- 审批记录 -->
+      <div v-if="detailForm.approvalLogs && detailForm.approvalLogs.length > 0" class="approval-logs">
+        <h4 class="logs-title">审批记录</h4>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(log, index) in detailForm.approvalLogs"
+            :key="index"
+            :type="log.result === '批准' ? 'success' : 'danger'"
+            :timestamp="formatDateTime(log.approveTime)"
+            placement="top"
+          >
+            <el-card shadow="hover">
+              <p><strong>审批人：</strong>{{ log.approverName }}</p>
+              <p><strong>审批结果：</strong>
+                <span :class="log.result === '批准' ? 'result-approved' : 'result-rejected'">{{ log.result }}</span>
+              </p>
+              <p v-if="log.comment"><strong>审批意见：</strong>{{ log.comment }}</p>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+
+      <template #footer>
+        <el-button @click="detailVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getLeaveRequestList, approveLeaveRequest } from '@/api/leaveApproval'
-import { getStudentList } from '@/api/student'
+import { getLeaveRequestList, approveLeaveRequest, getLeaveRequestDetail } from '@/api/leaveApproval'
 
 const loading = ref(false)
 const approveLoading = ref(false)
 const approveVisible = ref(false)
+const detailVisible = ref(false)
 const tableData = ref([])
 const total = ref(0)
-const studentOptions = ref([])
 const currentRow = ref(null)
+const detailForm = reactive({
+  id: null,
+  studentName: '',
+  leaveType: '',
+  startTime: '',
+  endTime: '',
+  reason: '',
+  status: '',
+  createTime: '',
+  approvalLogs: []
+})
 
-const queryForm = reactive({ pageNum: 1, pageSize: 10, studentId: '', status: '' })
+const queryForm = reactive({ pageNum: 1, pageSize: 10, studentName: '', leaveType: '', status: '' })
 const approveForm = reactive({ status: '', comment: '' })
 
-const loadStudents = async () => {
-  const res = await getStudentList({ pageNum: 1, pageSize: 500 })
-  studentOptions.value = res.data.list || []
+const getLeaveTypeColor = (type) => {
+  const colorMap = { '事假': 'warning', '病假': 'danger', '公假': 'success' }
+  return colorMap[type] || ''
+}
+
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return '-'
+  return dateTime.replace('T', ' ')
 }
 
 const fetchData = async () => {
@@ -118,7 +186,29 @@ const fetchData = async () => {
 }
 
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
-const handleReset = () => { queryForm.studentId = ''; queryForm.status = ''; handleSearch() }
+const handleReset = () => { queryForm.studentName = ''; queryForm.leaveType = ''; queryForm.status = ''; handleSearch() }
+
+const handleView = async (row) => {
+  try {
+    const res = await getLeaveRequestDetail(row.id)
+    const data = res.data
+    Object.assign(detailForm, {
+      id: data.id,
+      studentName: data.studentName,
+      leaveType: data.leaveType,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      reason: data.reason,
+      status: data.status,
+      createTime: data.createTime,
+      approvalLogs: data.approvalLogs || []
+    })
+    detailVisible.value = true
+  } catch (err) {
+    console.error('获取请假详情失败:', err)
+    ElMessage.error('获取请假详情失败')
+  }
+}
 
 const handleApprove = (row, status) => {
   currentRow.value = row
@@ -130,13 +220,15 @@ const handleApprove = (row, status) => {
 const handleApproveSubmit = async () => {
   approveLoading.value = true
   try {
-    await approveLeaveRequest(currentRow.value.id, { status: approveForm.status, comment: approveForm.comment })
+    const result = approveForm.status === '已批准' ? '批准' : '驳回'
+    await approveLeaveRequest(currentRow.value.id, { result: result, comment: approveForm.comment })
     ElMessage.success('审批完成')
-    approveVisible.value = false; fetchData()
+    approveVisible.value = false
+    fetchData()
   } finally { approveLoading.value = false }
 }
 
-onMounted(async () => { await loadStudents(); fetchData() })
+onMounted(fetchData)
 </script>
 
 <style scoped>
@@ -144,4 +236,17 @@ onMounted(async () => { await loadStudents(); fetchData() })
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
+.search-form { display: flex; flex-wrap: wrap; gap: 0; }
+.search-form :deep(.el-form-item) { margin-bottom: 16px; }
+.search-input { width: 200px; }
+.detail-reason {
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
+  color: #606266;
+}
+.approval-logs { margin-top: 24px; }
+.logs-title { font-size: 16px; font-weight: 600; color: #303133; margin-bottom: 16px; }
+.result-approved { color: #67c23a; font-weight: 600; }
+.result-rejected { color: #f56c6c; font-weight: 600; }
 </style>

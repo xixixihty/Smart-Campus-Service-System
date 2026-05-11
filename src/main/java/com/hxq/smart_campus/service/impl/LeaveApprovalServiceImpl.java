@@ -85,7 +85,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         if (leaveApprovalDTO == null) {
             throw new IllegalArgumentException("审批参数不能为空");
         }
-        if (leaveApprovalDTO.getId() <= 0) {
+        if (id == null) {
             throw new IllegalArgumentException("请假申请ID不能为空");
         }
         if (leaveApprovalDTO.getResult() == null || leaveApprovalDTO.getResult().isEmpty()) {
@@ -98,13 +98,13 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         leaveApprovalDTO.setId(id);
         leaveApprovalDTO.setApproverId(SecurityUtils.getCurrentUserId());
         // 查询请假申请
-        LeaveRequestDetailVO leaveRequestDetailVO = leaveApprovalMapper.getLeaveRequestDetail(leaveApprovalDTO.getId());
+        LeaveRequestDetailVO leaveRequestDetailVO = leaveApprovalMapper.getLeaveRequestDetail(id);
         if (leaveRequestDetailVO == null) {
             throw new BusinessException("请假申请不存在");
         }
         // 判断请假的状态是否是待审批状态
         if (!LEAVE_APPLY_STATUS_WAITING.equals(leaveRequestDetailVO.getStatus())) {
-            throw new BusinessException("该申请以处理");
+            throw new BusinessException("该申请已处理");
         }
         int result = leaveApprovalMapper.approveLeaveRequest(leaveApprovalDTO);
         if (result <= 0) {
@@ -112,7 +112,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         }
         // 更新请假申请状态为已批准或已拒绝
         String targetStatus = "批准".equals(leaveApprovalDTO.getResult()) ? LEAVE_APPLY_STATUS_APPROVED : LEAVE_APPLY_STATUS_REJECTED;
-        int row = leaveApprovalMapper.updateLeaveRequestStatus(leaveApprovalDTO.getId(), targetStatus);
+        int row = leaveApprovalMapper.updateLeaveRequestStatus(id, targetStatus);
         if (row <= 0) {
             throw new BusinessException("该申请已被处理，无法重复审批");
         }
@@ -147,14 +147,15 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
      * 获取请假申请列表
      * @param pageNum
      * @param pageSize
-     * @param studentId
+     * @param studentName
+     * @param leaveType
      * @param status
      * @return
      */
     @Override
-    public PageInfo<LeaveRequestListVO> getLeaveRequestList(Integer pageNum, Integer pageSize, Long studentId, String status) {
+    public PageInfo<LeaveRequestListVO> getLeaveRequestList(Integer pageNum, Integer pageSize, String studentName, String leaveType, String status) {
         PageHelper.startPage(pageNum, pageSize);
-        List<LeaveRequestListVO> leaveRequestListVOList = leaveApprovalMapper.getLeaveRequestList(studentId, status);
+        List<LeaveRequestListVO> leaveRequestListVOList = leaveApprovalMapper.getLeaveRequestList(studentName, leaveType, status);
         return PageInfo.of(leaveRequestListVOList);
     }
 

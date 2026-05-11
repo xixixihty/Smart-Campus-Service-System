@@ -50,11 +50,13 @@ public interface LeaveApprovalMapper {
 
     /**
      * 获取请假申请列表
-     * @param studentId
+     * @param studentName
+     * @param leaveType
      * @param status
      * @return
      */
-    List<LeaveRequestListVO> getLeaveRequestList(@Param("studentId") Long studentId,
+    List<LeaveRequestListVO> getLeaveRequestList(@Param("studentName") String studentName,
+                                                 @Param("leaveType") String leaveType,
                                                  @Param("status") String status);
 
     /**

@@ -29,8 +29,7 @@
 
     <!-- 获取座位详情 -->
     <select id="getSeatDetail" resultType="com.hxq.smart_campus.entity.vo.SeatDetailVO">
-        select id, room_id as roomId, seat_number as seatNumber, status,
-               create_time as createTime, update_time as updateTime
+        select id, room_id as roomId, seat_number as seatNumber, status
         from seat
         where id = #{id}
     </select>
@@ -43,7 +42,6 @@
             <if test="roomId != null">and room_id = #{roomId}</if>
             <if test="status != null and status != ''">and status = #{status}</if>
         </where>
-        order by id desc
     </select>
 
 </mapper>
