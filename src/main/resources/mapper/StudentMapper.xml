@@ -109,7 +109,7 @@
         from student s
         left join class c on s.class_id = c.id
         left join major m on c.major_id = m.id
-        left join college college on c.college_id = college.id
+        left join college college on m.college_id = college.id
         where s.id = #{userId}
         and s.status = '在读'
     </select>

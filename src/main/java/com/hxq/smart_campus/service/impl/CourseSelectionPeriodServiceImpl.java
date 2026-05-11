@@ -116,14 +116,12 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
             throw new IllegalArgumentException("当前学期不存在");
         }
         for (Long id : ids) {
-            // 判断删除的选课时间段是不是当前学期的选课时间段
             CourseSelectionPeriodDetailVO courseSelectionPeriodDetailVO = courseSelectionPeriodMapper.getCourseSelectionPeriodById(id);
             if (courseSelectionPeriodDetailVO == null) {
-                throw new IllegalArgumentException("当前学期的选课时间段不存在");
+                throw new IllegalArgumentException("选课时间段不存在，ID=" + id);
             }
-            if (id == courseSelectionPeriodDetailVO.getId()) {
-                log.info("删除的选课时间是当前学期的选课时间");
-                // 不可以删除
+            if (courseSelectionPeriodDetailVO.getSemesterId().equals(semesterDetailVO.getId())) {
+                log.info("删除的选课时间是当前学期的选课时间，ID={}", id);
                 throw new RuntimeException("当前学期的选课时间段不能删除");
             }
         }
@@ -163,24 +161,24 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
      */
     @Override
     public SelectionTimeRedisVO getCurrentSemesterCourseSelectionPeriod() {
-        // 先从Redis中获取当前选课时间段
-        SelectionTimeRedisVO selectionTimeRedisVO = (SelectionTimeRedisVO) redisTemplate.opsForValue().get(COURSE_SELECTION_KEY_PERIOD + semesterService.getCurrentSemester().getId());
-        if (selectionTimeRedisVO != null) {
-            return selectionTimeRedisVO;
-        }
         SemesterDetailVO semesterDetailVO = semesterService.getCurrentSemester();
         if (semesterDetailVO == null) {
             throw new IllegalArgumentException("当前学期不存在");
         }
-        // 获取当前学期的选课时间段
+
+        String cacheKey = COURSE_SELECTION_KEY_PERIOD + semesterDetailVO.getId();
+        SelectionTimeRedisVO selectionTimeRedisVO = (SelectionTimeRedisVO) redisTemplate.opsForValue().get(cacheKey);
+        if (selectionTimeRedisVO != null) {
+            return selectionTimeRedisVO;
+        }
+
         CourseSelectionPeriodDetailVO currentSemesterCourseSelectionPeriod = courseSelectionPeriodMapper.getCourseSelectionPeriodBySemesterId(semesterDetailVO.getId());
         if (currentSemesterCourseSelectionPeriod == null) {
             throw new IllegalArgumentException("当前学期的选课时间段不存在");
         }
-        // 转换为RedisVO
+
         selectionTimeRedisVO = convertToSelectionTimeRedisVO(currentSemesterCourseSelectionPeriod);
-        // 将当前选课开始时间和结束时间存储到Redis中
-        redisTemplate.opsForValue().set(COURSE_SELECTION_KEY_PERIOD + semesterDetailVO.getId(), selectionTimeRedisVO, 1, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(cacheKey, selectionTimeRedisVO, 30, TimeUnit.DAYS);
         return selectionTimeRedisVO;
     }
 

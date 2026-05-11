@@ -8,19 +8,17 @@
       <el-table :data="tableData" stripe border>
         <el-table-column prop="id" label="ID" width="70" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="160" />
-        <el-table-column prop="courseCode" label="课程代码" width="110" />
-        <el-table-column prop="courseType" label="类型" width="80" align="center">
+        <el-table-column prop="credit" label="学分" width="70" align="center" />
+        <el-table-column prop="semesterName" label="学期名称" width="180" align ="center" />
+        <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.courseType === '必修' ? 'danger' : row.courseType === '选修' ? 'warning' : ''" size="small">
-              {{ row.courseType }}
+            <el-tag :type="row.status === '已选' ? 'success' : row.status === '退选' ? 'info' : 'warning'" size="small">
+              {{ row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="teacherName" label="授课教师" width="100" />
-        <el-table-column prop="credit" label="学分" width="70" align="center" />
-        <el-table-column prop="schedule" label="上课时间" width="180" show-overflow-tooltip />
-        <el-table-column prop="classroomName" label="上课地点" width="130" />
-        <el-table-column prop="semesterName" label="学期" width="180" />
+        <el-table-column prop="score" label="成绩" width="80" align="center" />
+        <el-table-column prop="scorePoint" label="绩点" width="80" align="center" />
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" @click="handleDrop(row)">

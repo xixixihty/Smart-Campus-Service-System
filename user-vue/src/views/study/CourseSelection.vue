@@ -12,17 +12,17 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="课程名称">
-          <el-input v-model="queryForm.courseName" placeholder="请输入课程名称" clearable />
+          <el-input v-model="queryForm.courseName" placeholder="请输入课程名称" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="课程类型">
-          <el-select v-model="queryForm.courseType" placeholder="请选择类型" clearable>
+          <el-select v-model="queryForm.courseType" placeholder="请选择类型" clearable style="width: 200px">
             <el-option label="必修" value="必修" />
             <el-option label="选修" value="选修" />
             <el-option label="公选" value="公选" />
           </el-select>
         </el-form-item>
         <el-form-item label="开课学院">
-          <el-select v-model="queryForm.collegeId" placeholder="请选择学院" clearable>
+          <el-select v-model="queryForm.collegeId" placeholder="请选择学院" clearable style="width: 200px">
             <el-option v-for="c in collegeOptions" :key="c.id" :label="c.collegeName" :value="c.id" />
           </el-select>
         </el-form-item>

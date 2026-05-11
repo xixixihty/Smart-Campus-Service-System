@@ -93,9 +93,9 @@
         left join student s on se.student_id = s.id
         left join semester sm on se.semester_id = sm.id
         <where>
-            <if test="courseId != null">se.course_id = #{courseId}</if>
-            <if test="studentId != null">se.student_id = #{studentId}</if>
-            <if test="semesterId != null">se.semester_id = #{semesterId}</if>
+            <if test="courseId != null">and se.course_id = #{courseId}</if>
+            <if test="studentId != null">and se.student_id = #{studentId}</if>
+            <if test="semesterId != null">and se.semester_id = #{semesterId}</if>
         </where>
     </select>
 

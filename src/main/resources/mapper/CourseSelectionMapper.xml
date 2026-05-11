@@ -26,7 +26,7 @@
 
     <!-- 获取我的课程选择列表 -->
     <select id="getMyCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.MyCourseSelectionVO">
-        select cs.id, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point
+        select cs.id, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join semester s on cs.semester_id = s.id
@@ -39,7 +39,7 @@
     </select>
     <!-- 获取单一选课信息 -->
     <select id="getCourseSelectionListVO" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -48,7 +48,7 @@
     </select>
     <!-- 查询选课列表 -->
     <select id="getCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
         from course_selection cs
                  left join course c on cs.course_id = c.id
                  left join student stu on cs.student_id = stu.id

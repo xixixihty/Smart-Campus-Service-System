@@ -12,7 +12,7 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
-          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable>
+          <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 200px">
             <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
           </el-select>
         </el-form-item>
@@ -27,20 +27,23 @@
       <el-table :data="tableData" stripe border>
         <el-table-column prop="id" label="ID" width="70" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="160" />
-        <el-table-column prop="courseCode" label="课程代码" width="110" />
+        <el-table-column prop="studentNo" label="学号" width="100" />
         <el-table-column prop="semesterName" label="学期" width="180" />
+        <el-table-column prop="usualScore" label="平时成绩" width="100" align="center" />
+        <el-table-column prop="finalScore" label="期末成绩" width="100" align="center" />
+        <el-table-column prop="totalScore" label="总成绩" width="100" align="center" />
+        <el-table-column prop="scorePoint" label="绩点" width="80" align="center" />
         <el-table-column prop="credit" label="学分" width="70" align="center" />
-        <el-table-column prop="score" label="成绩" width="100" align="center">
+        <el-table-column prop="examStatus" label="考试状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.score >= 90 ? 'success' : row.score >= 60 ? '' : 'danger'" size="small">
-              {{ row.score }}
+            <el-tag :type="row.examStatus === '正常' ? 'success' : row.examStatus === '缺考' ? 'danger' : row.examStatus === '作弊' ? 'danger' : 'warning'" size="small">
+              {{ row.examStatus }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="gradePoint" label="绩点" width="80" align="center" />
-        <el-table-column label="详情" width="80" align="center">
+        <el-table-column label="操作" width="80" align="center">
           <template #default="{ row }">
-            <el-button type="primary" link @click="showDetail(row)">查看</el-button>
+            <el-button type="info" link @click="showDetail(row)"><el-icon><View /></el-icon>详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,10 +57,16 @@
     <el-dialog v-model="detailVisible" title="成绩详情" width="450px">
       <el-descriptions :column="1" border v-if="currentScore">
         <el-descriptions-item label="课程名称">{{ currentScore.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="学号">{{ currentScore.studentNo }}</el-descriptions-item>
         <el-descriptions-item label="学期">{{ currentScore.semesterName }}</el-descriptions-item>
         <el-descriptions-item label="学分">{{ currentScore.credit }}</el-descriptions-item>
-        <el-descriptions-item label="成绩">{{ currentScore.score }}</el-descriptions-item>
-        <el-descriptions-item label="绩点">{{ currentScore.gradePoint }}</el-descriptions-item>
+        <el-descriptions-item label="平时成绩">{{ currentScore.usualScore }}</el-descriptions-item>
+        <el-descriptions-item label="期末成绩">{{ currentScore.finalScore }}</el-descriptions-item>
+        <el-descriptions-item label="考试状态">{{ currentScore.examStatus }}</el-descriptions-item>
+        <el-descriptions-item label="总成绩">{{ currentScore.totalScore }}</el-descriptions-item>
+        <el-descriptions-item label="绩点">{{ currentScore.scorePoint }}</el-descriptions-item>
+        <el-descriptions-item label="学分">{{ currentScore.credit }}</el-descriptions-item>
+        <el-descriptions-item label="补考安排">{{ currentScore.ExamupExamId }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>

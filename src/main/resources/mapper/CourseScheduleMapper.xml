@@ -68,7 +68,7 @@
     </select>
     <!-- 查询课表 -->
     <select id="queryTimetable" resultType="com.hxq.smart_campus.entity.vo.TimetableVO">
-        select cs.id as course_schedule_id, c.course_name, t.name as teacher_name, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name,
+        select cs.id as course_schedule_id, c.course_name, t.name as teacher_name, CONCAT(cr.building, cr.room_number) as classroom_name,
                cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join course c on cs.course_id = c.id
@@ -91,7 +91,7 @@
     <!-- 检测教师时间冲突 -->
     <select id="checkTeacherConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -107,7 +107,7 @@
     <!-- 检测教室时间冲突 -->
     <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -123,7 +123,7 @@
     <!-- 检测班级时间冲突 -->
     <select id="checkClassConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.floor, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id

@@ -1,5 +1,6 @@
 <template>
-  <div class="common-layout">
+  <router-view v-if="isLoginPage" />
+  <div class="common-layout" v-else>
     <el-container>
       <el-header>
         <div class="header-left">
@@ -12,7 +13,7 @@
           </el-badge>
           <el-dropdown @command="handleUserCommand">
             <span class="user-info">
-              <el-avatar :size="32" :icon="UserFilled" />
+              <el-icon><UserFilled /></el-icon>
               <span>{{ username }}</span>
               <el-icon><ArrowDown /></el-icon>
             </span>
@@ -94,7 +95,7 @@
 
             <el-sub-menu index="seat">
               <template #title>
-                <el-icon><Chair /></el-icon>
+                <el-icon><Position /></el-icon>
                 <span>座位预约</span>
               </template>
               <el-menu-item index="/seat-reserve">
@@ -159,9 +160,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { UserFilled } from '@element-plus/icons-vue'
+import { UserFilled, Position } from '@element-plus/icons-vue'
+import { validateToken } from '@/api/auth'
 
 const router = useRouter()
 const route = useRoute()
@@ -170,11 +172,32 @@ const username = ref(localStorage.getItem('username') || '同学')
 const unreadNoticeCount = ref(0)
 
 const activeMenu = computed(() => route.path)
+const isLoginPage = computed(() => route.path === '/login')
+
+watch(() => route.path, () => {
+  username.value = localStorage.getItem('username') || '同学'
+})
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (token && token !== 'undefined' && token !== 'null') {
+    try {
+      await validateToken()
+    } catch {
+      localStorage.clear()
+      username.value = '同学'
+      if (route.path !== '/login') {
+        router.replace('/login')
+      }
+    }
+  }
+})
 
 const handleUserCommand = (command) => {
   if (command === 'logout') {
     localStorage.clear()
-    router.push('/login')
+    username.value = '同学'
+    router.replace('/login')
   } else if (command === 'profile') {
     router.push('/profile')
   } else if (command === 'password') {
@@ -237,7 +260,10 @@ html, body, #app {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .el-aside {

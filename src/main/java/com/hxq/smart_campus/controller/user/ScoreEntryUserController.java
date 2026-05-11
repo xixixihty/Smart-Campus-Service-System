@@ -3,8 +3,10 @@ package com.hxq.smart_campus.controller.user;
 import com.hxq.smart_campus.entity.vo.GpaVO;
 import com.hxq.smart_campus.entity.vo.ScoreEntryDetailVO;
 import com.hxq.smart_campus.entity.vo.ScoreEntryListVO;
+import com.hxq.smart_campus.entity.vo.SemesterDetailVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.ScoreEntryService;
+import com.hxq.smart_campus.service.SemesterService;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +23,7 @@ import java.util.List;
 @Tag(name = "用户成绩查询模块")
 public class ScoreEntryUserController {
     private final ScoreEntryService scoreEntryService;
+    private final SemesterService semesterService;
 
     /**
      * 获取成绩详情
@@ -65,8 +68,14 @@ public class ScoreEntryUserController {
             @RequestParam(required = false) Long semesterId
     ) {
         log.info("获取GPA: studentId={}, semesterId={}", studentId, semesterId);
-        // 从登陆信息中获取到用户信息
         studentId = SecurityUtils.getCurrentUserId();
+        if (semesterId == null) {
+            SemesterDetailVO currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester != null) {
+                semesterId = currentSemester.getId();
+                log.info("未传semesterId，使用当前学期: {}", semesterId);
+            }
+        }
         GpaVO gpaVO = scoreEntryService.getGpa(studentId, semesterId);
         return Result.success(gpaVO);
     }

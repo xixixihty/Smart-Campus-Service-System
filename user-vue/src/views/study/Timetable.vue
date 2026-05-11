@@ -80,12 +80,28 @@ const getCourseColor = (name) => {
 
 const getCellCourses = (day, period) => {
   return timetableData.value.filter(
-    (item) => item.weekDay === day && item.startPeriod <= period && item.endPeriod >= period
+    (item) => item.weekDay === day && item.startSection <= period && item.endSection >= period
   )
 }
 
+const parseWeekRange = (weekRange) => {
+  if (!weekRange) return { startWeek: 0, endWeek: 0 }
+  const match = weekRange.match(/(\d+)-(\d+)/)
+  if (match) {
+    return { startWeek: parseInt(match[1]), endWeek: parseInt(match[2]) }
+  }
+  return { startWeek: 0, endWeek: 0 }
+}
+
 const showCourseDetail = (item) => {
-  currentCourse.value = item
+  const weekInfo = parseWeekRange(item.weekRange)
+  currentCourse.value = {
+    ...item,
+    startWeek: weekInfo.startWeek,
+    endWeek: weekInfo.endWeek,
+    startPeriod: item.startSection,
+    endPeriod: item.endSection
+  }
   detailVisible.value = true
 }
 
@@ -93,7 +109,13 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getTimetable({ week: currentWeek.value })
-    timetableData.value = res.data || []
+    const rawData = res.data || []
+    timetableData.value = rawData.map(item => ({
+      ...item,
+      id: item.courseScheduleId,
+      startPeriod: item.startSection,
+      endPeriod: item.endSection
+    }))
   } finally {
     loading.value = false
   }

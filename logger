@@ -1,39 +1,144 @@
-runtime-core.esm-bundler.js:51 [Vue warn]: Unhandled error during execution of mounted hook 
-  at <AiCampus onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
-  at <RouterView> 
-  at <ElMain> 
-  at <ElContainer> 
-  at <ElContainer> 
-  at <App>
-warn$1 @ runtime-core.esm-bundler.js:51
-ai-campus:1 Uncaught (in promise) AxiosError: timeout of 15000ms exceeded
-    at XMLHttpRequest.handleTimeout (xhr.js:141:11)
-runtime-core.esm-bundler.js:51 [Vue warn]: Unhandled error during execution of mounted hook 
-  at <AiResource onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
-  at <RouterView> 
-  at <ElMain> 
-  at <ElContainer> 
-  at <ElContainer> 
-  at <App>
-warn$1 @ runtime-core.esm-bundler.js:51
-ai-campus:1 Uncaught (in promise) AxiosError: timeout of 15000ms exceeded
-    at XMLHttpRequest.handleTimeout (xhr.js:141:11)
-select.vue:407 Unhandled error during execution of mounted hook Proxy(Object) at <AiCampus>
-at <RouterView>
-at <ElMain>
-at <ElContainer>
-at <ElContainer>
-at <App> Array(6)
-(匿名) @ select.vue:407
-ai-teaching:1 Uncaught (in promise) AxiosError: timeout of 15000ms exceeded
-    at XMLHttpRequest.handleTimeout (xhr.js:141:11)
-runtime-core.esm-bundler.js:51 [Vue warn]: Unhandled error during execution of mounted hook 
-  at <AiResource onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< Proxy(Object) > > 
-  at <RouterView> 
-  at <ElMain> 
-  at <ElContainer> 
-  at <ElContainer> 
-  at <App>
-warn$1 @ runtime-core.esm-bundler.js:51
-ai-resource:1 Uncaught (in promise) AxiosError: timeout of 15000ms exceeded
-    at XMLHttpRequest.handleTimeout (xhr.js:141:11)
+2026-05-11T16:22:29.502+08:00 DEBUG 24212 --- [nio-8080-exec-7] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-11T16:22:29.552+08:00 DEBUG 24212 --- [nio-8080-exec-5] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-11T16:22:29.552+08:00 DEBUG 24212 --- [nio-8080-exec-6] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-11T16:22:29.553+08:00  INFO 24212 --- [nio-8080-exec-5] c.h.s.c.user.ScoreEntryUserController    : 获取GPA: studentId=null, semesterId=null
+2026-05-11T16:22:29.553+08:00  INFO 24212 --- [nio-8080-exec-6] c.h.s.c.user.ScoreEntryUserController    : 获取我的成绩列表: semesterId=null, courseId=null
+Creating a new SqlSession
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3274f4e6] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@420d566f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2004253900 wrapping com.mysql.cj.jdbc.ConnectionImpl@9120cb5] will not be managed by Spring
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time, update_time from semester where is_current = 1
+JDBC Connection [HikariProxyConnection@1177733878 wrapping com.mysql.cj.jdbc.ConnectionImpl@1022bbda] will not be managed by Spring
+==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ?
+==> Parameters: 
+==> Parameters: 1(Long)
+<==    Columns: id, course_name, studentName, studentNo, semesterName, usual_score, final_score, total_score, score_point, credit, exam_status
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time, update_time
+<==        Row: 1, Java程序设计, 李明, 2023001001, 2023-2024第二学期, 90.00, 85.00, 87.50, 1.00, 4.0, 正常
+<==        Row: 3, 数据结构, 李明, 2023001001, 2023-2024第二学期, 75.00, 80.00, 77.50, 2.00, 4.0, 正常
+<==        Row: 2, 2023-2024第二学期, 2024-02-25, 2024-07-10, 1, 进行中, 2026-04-21 18:28:51, 2026-05-09 16:36:06
+<==        Row: 5, 人工智能导论, 李明, 2023001001, 2023-2024第二学期, 95.00, 90.00, 92.50, 2.00, 2.0, 正常
+<==      Total: 3
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@420d566f]
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3274f4e6]
+2026-05-11T16:22:29.557+08:00  INFO 24212 --- [nio-8080-exec-5] c.h.s.c.user.ScoreEntryUserController    : 未传semesterId，使用当前学期: 2
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@464b0ad9] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1393362226 wrapping com.mysql.cj.jdbc.ConnectionImpl@9120cb5] will not be managed by Spring
+==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ? se.semester_id = ?
+==> Parameters: 1(Long), 2(Long)
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@464b0ad9]
+2026-05-11T16:22:29.560+08:00 ERROR 24212 --- [nio-8080-exec-5] c.h.s.exception.GlobalExceptionHandler   : 系统异常
+
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'se.semester_id = 2' at line 9
+### The error may exist in file [D:\gitDemo\smart_campus\target\classes\mapper\ScoreEntryMapper.xml]
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo,                sm.name as semesterName, se.usual_score, se.final_score, se.total_score,                se.score_point, c.credit, se.exam_status         from score_entry se         left join course c on se.course_id = c.id         left join student s on se.student_id = s.id         left join semester sm on se.semester_id = sm.id          WHERE se.student_id = ?             se.semester_id = ?
+### Cause: java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'se.semester_id = 2' at line 9
+; bad SQL grammar []
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:246) ~[spring-jdbc-6.2.17.jar:6.2.17]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107) ~[spring-jdbc-6.2.17.jar:6.2.17]
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:95) ~[mybatis-spring-3.0.5.jar:3.0.5]
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:347) ~[mybatis-spring-3.0.5.jar:3.0.5]
+	at jdk.proxy2/jdk.proxy2.$Proxy113.selectList(Unknown Source) ~[na:na]
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194) ~[mybatis-spring-3.0.5.jar:3.0.5]
+	at org.apache.ibatis.binding.MapperMethod.executeForMany(MapperMethod.java:147) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:80) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:141) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:86) ~[mybatis-3.5.19.jar:3.5.19]
+	at jdk.proxy2/jdk.proxy2.$Proxy115.getScoreList(Unknown Source) ~[na:na]
+	at com.hxq.smart_campus.service.impl.ScoreEntryServiceImpl.getGpa(ScoreEntryServiceImpl.java:283) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.17.jar:6.2.17]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:724) ~[spring-aop-6.2.17.jar:6.2.17]
+	at com.hxq.smart_campus.service.impl.ScoreEntryServiceImpl$$SpringCGLIB$$0.getGpa(<generated>) ~[classes/:na]
+	at com.hxq.smart_campus.controller.user.ScoreEntryUserController.getGpa(ScoreEntryUserController.java:79) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at com.hxq.smart_campus.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:61) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+Caused by: java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'se.semester_id = 2' at line 9
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java) ~[HikariCP-6.3.3.jar:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58) ~[mybatis-3.5.19.jar:3.5.19]
+	at jdk.proxy3/jdk.proxy3.$Proxy125.execute(Unknown Source) ~[na:na]
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110) ~[mybatis-3.5.19.jar:3.5.19]
+	at com.github.pagehelper.PageInterceptor.intercept(PageInterceptor.java:169) ~[pagehelper-6.1.0.jar:na]
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59) ~[mybatis-3.5.19.jar:3.5.19]
+	at jdk.proxy2/jdk.proxy2.$Proxy180.query(Unknown Source) ~[na:na]
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147) ~[mybatis-3.5.19.jar:3.5.19]
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142) ~[mybatis-3.5.19.jar:3.5.19]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333) ~[mybatis-spring-3.0.5.jar:3.0.5]
+	... 70 common frames omitted
+
