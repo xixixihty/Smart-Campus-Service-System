@@ -33,6 +33,8 @@ public class DashboardController {
         stats.put("studentCount", dashboardMapper.countStudents());
         stats.put("courseCount", dashboardMapper.countCourses());
         stats.put("borrowCount", dashboardMapper.countBorrowRecords());
+        stats.put("bookCount", dashboardMapper.countBooks());
+        stats.put("seatCount", dashboardMapper.countSeats());
         stats.put("leaveCount", dashboardMapper.countLeaveRequests());
         stats.put("noticeCount", dashboardMapper.countPublishedNotices());
         stats.put("studentByCollege", dashboardMapper.studentByCollege());

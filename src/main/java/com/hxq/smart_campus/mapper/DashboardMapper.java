@@ -24,6 +24,12 @@ public interface DashboardMapper {
     @Select("SELECT COUNT(*) FROM borrow_record")
     Long countBorrowRecords();
 
+    @Select("SELECT COUNT(*) FROM book")
+    Long countBooks();
+
+    @Select("SELECT COUNT(*) FROM seat")
+    Long countSeats();
+
     @Select("SELECT COUNT(*) FROM leave_request")
     Long countLeaveRequests();
 

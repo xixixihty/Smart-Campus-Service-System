@@ -1,9 +1,35 @@
 import request from '@/utils/request'
+import axios from 'axios'
 
-export const getCampusOverview = () => request.get('/ai/admin/campus-overview')
-export const getTeachingQuality = (params) => request.get('/ai/admin/teaching-quality', { params })
-export const getScoreAnalysis = (params) => request.get('/ai/admin/score-analysis', { params })
-export const getResourceOptimization = () => request.get('/ai/admin/resource-optimization')
+const aiRequest = axios.create({
+  baseURL: '/api',
+  timeout: 120000
+})
+
+aiRequest.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+aiRequest.interceptors.response.use(
+  (response) => {
+    const res = response.data
+    if (res.code === '200' || res.code === 200) {
+      return res
+    }
+    return Promise.reject(new Error(res.msg || '请求失败'))
+  },
+  (error) => Promise.reject(error)
+)
+
+export const getCampusOverview = () => aiRequest.get('/ai/admin/campus-overview')
+export const getTeachingQuality = (params) => aiRequest.get('/ai/admin/teaching-quality', { params })
+export const getScoreAnalysis = (params) => aiRequest.get('/ai/admin/score-analysis', { params })
+export const getResourceOptimization = () => aiRequest.get('/ai/admin/resource-optimization')
+export const getDashboardStats = () => request.get('/dashboard/admin/stats')
 
 export const chatStream = (message, context, onMessage, onDone, onError) => {
   const token = localStorage.getItem('token')

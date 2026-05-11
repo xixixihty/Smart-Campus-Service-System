@@ -207,7 +207,7 @@ const noticeCount = ref(0)
 
 const activeMenu = computed(() => route.path)
 const isLoginPage = computed(() => route.path === '/login')
-const defaultOpeneds = ref(['org', 'people', 'teaching', 'library', 'facility', 'campus', 'ai'])
+const defaultOpeneds = ref([])
 
 watch(() => route.path, () => {
   username.value = localStorage.getItem('username') || '管理员'

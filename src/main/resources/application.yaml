@@ -44,15 +44,13 @@ spring:
       base-url: http://localhost:11434
       chat:
         model: deepseek-r1:1.5b     # ????????????
-        temperature: 0.7
-      embedding:
-        enabled: false
     openai:
-      api-key: ${OPENAI_API_KEY}
-      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1  # ??????OpenAI????
+      api-key: sk-33e4ffbf84924ecf9f2942f4e08b29de
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
       chat:
         options:
           model: qwen-max
+        completions-path: /v1/chat/completions
 
 
 

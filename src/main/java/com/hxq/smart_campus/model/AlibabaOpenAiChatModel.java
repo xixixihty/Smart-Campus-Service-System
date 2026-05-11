@@ -56,7 +56,7 @@ public class AlibabaOpenAiChatModel implements ChatModel {
 
     @Deprecated
     public AlibabaOpenAiChatModel(OpenAiApi openAiApi) {
-        this(openAiApi, OpenAiChatOptions.builder().model("gpt-3.5-turbo").temperature(0.7).build());
+        this(openAiApi, OpenAiChatOptions.builder().model("qwen-max").temperature(0.7).build());
     }
 
     @Deprecated
@@ -621,7 +621,7 @@ public class AlibabaOpenAiChatModel implements ChatModel {
         
         // If no tools found in options, resolve ALL registered tools (ChatClient doesn't pass tools through Prompt)
         if (CollectionUtils.isEmpty(toolDefinitions)) {
-            toolDefinitions = this.toolCallingManager.resolveToolDefinitions(null);
+            toolDefinitions = this.toolCallingManager.resolveToolDefinitions(this.defaultOptions);
         }
         
         if (!CollectionUtils.isEmpty(toolDefinitions)) {
@@ -658,7 +658,7 @@ public class AlibabaOpenAiChatModel implements ChatModel {
 
     public static final class Builder {
         private OpenAiApi openAiApi;
-        private OpenAiChatOptions defaultOptions = OpenAiChatOptions.builder().model("gpt-3.5-turbo").temperature(0.7).build();
+        private OpenAiChatOptions defaultOptions = OpenAiChatOptions.builder().model("qwen-max").temperature(0.7).build();
         private ToolCallingManager toolCallingManager;
         private RetryTemplate retryTemplate = RetryUtils.DEFAULT_RETRY_TEMPLATE;
         private ObservationRegistry observationRegistry = ObservationRegistry.NOOP;

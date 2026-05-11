@@ -79,7 +79,6 @@
         from student s
         left join class c on s.class_id = c.id
         where s.student_no = #{studentNo}
-        and s.status = '正常'
     </select>
     
     <!-- 批量根据ID获取学生详情 -->
