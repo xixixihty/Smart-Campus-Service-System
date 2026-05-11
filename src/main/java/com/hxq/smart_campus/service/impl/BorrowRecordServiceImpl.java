@@ -99,13 +99,13 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         }
 
         // 1. Lua脚本原子归还（释放库存 + 检查候补）
-        String luaResult = redisBorrowService.executeReturn(record.getBookId(), record.getUserId());
-        if ("-1".equals(luaResult)) {
+        Long luaResult = redisBorrowService.executeReturn(record.getBookId(), record.getUserId());
+        if (luaResult == -1L) {
             throw new BusinessException("NOT_BORROWED", "未借阅该书");
         }
 
         // 2. 如果有候补用户，发送通知
-        if (!"1".equals(luaResult)) {
+        if (luaResult != 1L) {
             log.info("图书归还候补通知: 图书ID={}, 候补用户ID={}", record.getBookId(), luaResult);
             // TODO: 发送候补成功通知给用户
         }

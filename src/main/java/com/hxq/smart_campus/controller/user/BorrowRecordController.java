@@ -75,10 +75,12 @@ public class BorrowRecordController {
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String status,
-            @RequestParam Long userId
+            @RequestParam(required = false) Long userId
     ) {
+        if (userId == null) {
+            userId = SecurityUtils.getCurrentUserId();
+        }
         log.info("获取我的借阅记录，参数：pageNum={}, pageSize={}, status={}, userId={}", pageNum, pageSize, status, userId);
-        userId = SecurityUtils.getCurrentUserId();
         PageInfo<BorrowRecordListVO> pageInfo = borrowRecordService.getBorrowRecordMyList(pageNum, pageSize, status, userId);
         return Result.success(pageInfo);
     }

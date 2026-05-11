@@ -7,10 +7,10 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable>
-            <el-option label="借阅中" value="BORROWED" />
-            <el-option label="已归还" value="RETURNED" />
-            <el-option label="已逾期" value="OVERDUE" />
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 200px">
+            <el-option label="借出中" value="借出中" />
+            <el-option label="已归还" value="已归还" />
+            <el-option label="逾期" value="逾期" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -23,24 +23,27 @@
     <el-card shadow="never" style="margin-top: 16px" v-loading="loading">
       <el-table :data="tableData" stripe border>
         <el-table-column prop="id" label="ID" width="70" align="center" />
-        <el-table-column prop="bookName" label="书名" min-width="180" />
-        <el-table-column prop="isbn" label="ISBN" width="140" />
-        <el-table-column prop="borrowDate" label="借阅日期" width="120" />
-        <el-table-column prop="dueDate" label="应还日期" width="120" />
-        <el-table-column prop="returnDate" label="归还日期" width="120" />
+        <el-table-column prop="borrowNo" label="借阅编号" width="120" align="center" />
+        <el-table-column prop="bookTitle" label="书名" min-width="180" align="center" />
+        <el-table-column prop="borrowDate" label="借阅日期" width="120" align="center" />
+        <el-table-column prop="dueDate" label="应还日期" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'BORROWED' ? 'warning' : row.status === 'RETURNED' ? 'success' : 'danger'" size="small">
-              {{ row.status === 'BORROWED' ? '借阅中' : row.status === 'RETURNED' ? '已归还' : '已逾期' }}
+            <el-tag :type="row.status === '借出中' ? 'warning' : row.status === '已归还' ? 'success' : 'danger'" size="small">
+              {{ row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" align="center" fixed="right">
+        <el-table-column label="操作" width="160" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button v-if="row.status === 'BORROWED' || row.status === 'OVERDUE'" type="success" size="small" @click="handleReturn(row)">
-              归还
-            </el-button>
-            <el-text v-else type="info" size="small">已完成</el-text>
+            <div class="action-buttons">
+              <el-button type="info" size="small" @click="handleDetail(row)">
+                <el-icon><View /></el-icon>详情
+              </el-button>
+              <el-button v-if="row.status === '借出中' || row.status === '逾期'" type="success" size="small" @click="handleReturn(row)">
+                归还
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -50,15 +53,36 @@
           @size-change="fetchData" @current-change="fetchData" />
       </div>
     </el-card>
+
+    <el-dialog v-model="detailVisible" title="借阅详情" width="500px">
+      <el-descriptions :column="1" border v-if="currentBorrow">
+        <el-descriptions-item label="借阅编号">{{ currentBorrow.borrowNo }}</el-descriptions-item>
+        <el-descriptions-item label="书名">{{ currentBorrow.bookTitle }}</el-descriptions-item>
+        <el-descriptions-item label="借阅日期">{{ currentBorrow.borrowDate }}</el-descriptions-item>
+        <el-descriptions-item label="应还日期">{{ currentBorrow.dueDate }}</el-descriptions-item>
+        <el-descriptions-item label="归还日期">{{ currentBorrow.returnDate || '未归还' }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="currentBorrow.status === '借出中' ? 'warning' : currentBorrow.status === '已归还' ? 'success' : 'danger'" size="small">
+            {{ currentBorrow.status }}
+          </el-tag>
+        </el-descriptions-item>
+      </el-descriptions>
+      <template #footer>
+        <el-button @click="detailVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { View } from '@element-plus/icons-vue'
 import { getMyBorrows, returnBook } from '@/api/borrowRecord'
 
 const loading = ref(false)
+const detailVisible = ref(false)
+const currentBorrow = ref(null)
 const tableData = ref([])
 const total = ref(0)
 
@@ -76,8 +100,13 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.status = ''; handleSearch() }
 
+const handleDetail = (row) => {
+  currentBorrow.value = row
+  detailVisible.value = true
+}
+
 const handleReturn = (row) => {
-  ElMessageBox.confirm(`确定要归还"${row.bookName}"吗？`, '提示', { type: 'info' }).then(async () => {
+  ElMessageBox.confirm(`确定要归还"${row.bookTitle}"吗？`, '提示', { type: 'info' }).then(async () => {
     await returnBook(row.id)
     ElMessage.success('归还成功')
     fetchData()
@@ -92,4 +121,5 @@ onMounted(fetchData)
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
+.action-buttons { display: flex; gap: 4px; justify-content: center; align-items: center; }
 </style>

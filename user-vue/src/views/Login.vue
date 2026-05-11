@@ -12,26 +12,26 @@
     <div class="login-container">
       <div class="login-left">
         <div class="illustration">
-          <div class="illu-card card-1">
-            <el-icon :size="32" color="#409EFF"><Notebook /></el-icon>
-            <span>课程学习</span>
-          </div>
-          <div class="illu-card card-2">
-            <el-icon :size="32" color="#67C23A"><CollectionTag /></el-icon>
-            <span>图书借阅</span>
-          </div>
-          <div class="illu-card card-3">
-            <el-icon :size="32" color="#E6A23C"><Chair /></el-icon>
-            <span>座位预约</span>
-          </div>
-          <div class="illu-card card-4">
-            <el-icon :size="32" color="#F56C6C"><Cpu /></el-icon>
-            <span>AI 校园智慧助手</span>
-          </div>
           <div class="illu-center">
             <div class="center-icon">
               <el-icon :size="48"><School /></el-icon>
             </div>
+          </div>
+          <div class="illu-card card-1">
+            <el-icon :size="28" color="#409EFF"><Notebook /></el-icon>
+            <span>课程学习</span>
+          </div>
+          <div class="illu-card card-2">
+            <el-icon :size="28" color="#67C23A"><CollectionTag /></el-icon>
+            <span>图书借阅</span>
+          </div>
+          <div class="illu-card card-3">
+            <el-icon :size="28" color="#E6A23C"><Chair /></el-icon>
+            <span>座位预约</span>
+          </div>
+          <div class="illu-card card-4">
+            <el-icon :size="28" color="#F56C6C"><Cpu /></el-icon>
+            <span>AI助手</span>
           </div>
         </div>
       </div>
@@ -253,8 +253,8 @@ const handleLogin = async () => {
 
 .illustration {
   position: relative;
-  width: 360px;
-  height: 360px;
+  width: 400px;
+  height: 400px;
 }
 
 .illu-center {
@@ -266,10 +266,10 @@ const handleLogin = async () => {
 }
 
 .center-icon {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   background: linear-gradient(135deg, #409EFF, #67C23A);
-  border-radius: 24px;
+  border-radius: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,9 +288,9 @@ const handleLogin = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.85);
+  gap: 6px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   font-size: 13px;
@@ -299,16 +299,36 @@ const handleLogin = async () => {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   transition: transform 0.3s;
+  min-width: 90px;
 }
 
 .illu-card:hover {
   transform: scale(1.05);
 }
 
-.card-1 { top: 10px; left: 50%; transform: translateX(-50%); }
-.card-2 { top: 50%; right: 0; transform: translateY(-50%); }
-.card-3 { bottom: 10px; left: 50%; transform: translateX(-50%); }
-.card-4 { top: 50%; left: 0; transform: translateY(-50%); }
+.card-1 {
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.card-2 {
+  top: 50%;
+  right: 2%;
+  transform: translateY(-50%);
+}
+
+.card-3 {
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.card-4 {
+  top: 50%;
+  left: 2%;
+  transform: translateY(-50%);
+}
 
 .login-right {
   flex-shrink: 0;

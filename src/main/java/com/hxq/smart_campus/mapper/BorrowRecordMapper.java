@@ -101,4 +101,12 @@ public interface BorrowRecordMapper {
      */
     @Update("UPDATE borrow_record SET status = '已归还', return_date = CURDATE(), update_time = now() WHERE borrow_no = #{borrowNo}")
     int returnBookByBorrowNo(@Param("borrowNo") String borrowNo);
+
+    /**
+     * 获取所有借出中和逾期的借阅记录（用于Redis缓存初始化）
+     * @return 借阅记录列表
+     */
+    @Select("SELECT id, borrow_no as borrowNo, user_id as userId, book_id as bookId, status " +
+            "FROM borrow_record WHERE status IN ('借出中', '逾期')")
+    List<Map<String, Object>> getActiveBorrowRecords();
 }

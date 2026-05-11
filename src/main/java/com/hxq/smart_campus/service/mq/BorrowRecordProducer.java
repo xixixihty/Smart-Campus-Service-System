@@ -5,6 +5,7 @@ import com.hxq.smart_campus.entity.dto.BorrowMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,17 +13,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BorrowRecordProducer {
 
-    private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate borrowRabbitTemplate;
 
     public void sendBorrowMessage(BorrowMessage message) {
         log.info("发送借阅消息: borrowNo={}, bookId={}, userId={}", message.getBorrowNo(), message.getBookId(), message.getUserId());
-        rabbitTemplate.convertAndSend(BorrowRabbitMQConfig.BORROW_EXCHANGE,
+        borrowRabbitTemplate.convertAndSend(BorrowRabbitMQConfig.BORROW_EXCHANGE,
                 BorrowRabbitMQConfig.BORROW_ROUTING_KEY, message);
     }
 
     public void sendReturnMessage(BorrowMessage message) {
         log.info("发送归还消息: borrowNo={}, bookId={}, userId={}", message.getBorrowNo(), message.getBookId(), message.getUserId());
-        rabbitTemplate.convertAndSend(BorrowRabbitMQConfig.BORROW_EXCHANGE,
+        borrowRabbitTemplate.convertAndSend(BorrowRabbitMQConfig.BORROW_EXCHANGE,
                 BorrowRabbitMQConfig.BORROW_ROUTING_KEY, message);
     }
 }
