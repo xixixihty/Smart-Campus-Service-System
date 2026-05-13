@@ -1,177 +1,256 @@
-D:\JDK18\bin\java.exe -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true "-Dmanagement.endpoints.jmx.exposure.include=*" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2024.1.4\lib\idea_rt.jar=61693:C:\Program Files\JetBrains\IntelliJ IDEA 2024.1.4\bin" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath D:\gitDemo\smart_campus\target\classes;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-web\3.5.13\spring-boot-starter-web-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter\3.5.13\spring-boot-starter-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-autoconfigure\3.5.13\spring-boot-autoconfigure-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-logging\3.5.13\spring-boot-starter-logging-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\ch\qos\logback\logback-classic\1.5.32\logback-classic-1.5.32.jar;D:\develop\apache-maven-3.6.1\mvn-repo\ch\qos\logback\logback-core\1.5.32\logback-core-1.5.32.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\logging\log4j\log4j-to-slf4j\2.24.3\log4j-to-slf4j-2.24.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\yaml\snakeyaml\2.4\snakeyaml-2.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-json\3.5.13\spring-boot-starter-json-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.21.2\jackson-datatype-jdk8-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\module\jackson-module-parameter-names\2.21.2\jackson-module-parameter-names-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-tomcat\3.5.13\spring-boot-starter-tomcat-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\tomcat\embed\tomcat-embed-core\10.1.53\tomcat-embed-core-10.1.53.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\tomcat\embed\tomcat-embed-el\10.1.53\tomcat-embed-el-10.1.53.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.53\tomcat-embed-websocket-10.1.53.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-web\6.2.17\spring-web-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-beans\6.2.17\spring-beans-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\micrometer\micrometer-observation\1.15.10\micrometer-observation-1.15.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\micrometer\micrometer-commons\1.15.10\micrometer-commons-1.15.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-webmvc\6.2.17\spring-webmvc-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-aop\6.2.17\spring-aop-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-context\6.2.17\spring-context-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-expression\6.2.17\spring-expression-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\mybatis\spring\boot\mybatis-spring-boot-starter\3.0.5\mybatis-spring-boot-starter-3.0.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-jdbc\3.5.13\spring-boot-starter-jdbc-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\zaxxer\HikariCP\6.3.3\HikariCP-6.3.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-jdbc\6.2.17\spring-jdbc-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\mybatis\spring\boot\mybatis-spring-boot-autoconfigure\3.0.5\mybatis-spring-boot-autoconfigure-3.0.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\mybatis\mybatis\3.5.19\mybatis-3.5.19.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\mybatis\mybatis-spring\3.0.5\mybatis-spring-3.0.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\pagehelper\pagehelper-spring-boot-starter\2.1.0\pagehelper-spring-boot-starter-2.1.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\pagehelper\pagehelper-spring-boot-autoconfigure\2.1.0\pagehelper-spring-boot-autoconfigure-2.1.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\pagehelper\pagehelper\6.1.0\pagehelper-6.1.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\jsqlparser\jsqlparser\4.7\jsqlparser-4.7.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-starter-model-openai\1.1.4\spring-ai-starter-model-openai-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-openai\1.1.4\spring-ai-autoconfigure-model-openai-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-tool\1.1.4\spring-ai-autoconfigure-model-tool-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-retry\1.1.4\spring-ai-autoconfigure-retry-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-chat-observation\1.1.4\spring-ai-autoconfigure-model-chat-observation-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-embedding-observation\1.1.4\spring-ai-autoconfigure-model-embedding-observation-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-image-observation\1.1.4\spring-ai-autoconfigure-model-image-observation-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-openai\1.1.4\spring-ai-openai-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-model\1.1.4\spring-ai-model-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-commons\1.1.4\spring-ai-commons-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\micrometer\context-propagation\1.1.4\context-propagation-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-template-st\1.1.4\spring-ai-template-st-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\antlr\ST4\4.3.4\ST4-4.3.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\antlr\antlr-runtime\3.5.3\antlr-runtime-3.5.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\antlr\antlr4-runtime\4.13.1\antlr4-runtime-4.13.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\victools\jsonschema-module-swagger-2\4.38.0\jsonschema-module-swagger-2-4.38.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\swagger\core\v3\swagger-annotations-jakarta\2.2.38\swagger-annotations-jakarta-2.2.38.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-retry\1.1.4\spring-ai-retry-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\retry\spring-retry\2.0.12\spring-retry-2.0.12.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\victools\jsonschema-generator\4.38.0\jsonschema-generator-4.38.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\classmate\1.7.3\classmate-1.7.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\victools\jsonschema-module-jackson\4.38.0\jsonschema-module-jackson-4.38.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-context-support\6.2.17\spring-context-support-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-webflux\6.2.17\spring-webflux-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-chat-client\1.1.4\spring-ai-autoconfigure-model-chat-client-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-client-chat\1.1.4\spring-ai-client-chat-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\modelcontextprotocol\sdk\mcp-json-jackson2\0.17.0\mcp-json-jackson2-0.17.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\modelcontextprotocol\sdk\mcp-json\0.17.0\mcp-json-0.17.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\networknt\json-schema-validator\2.0.0\json-schema-validator-2.0.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\ethlo\time\itu\1.14.0\itu-1.14.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\module\jackson-module-jsonSchema\2.21.2\jackson-module-jsonSchema-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\javax\validation\validation-api\1.1.0.Final\validation-api-1.1.0.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\knuddels\jtokkit\1.1.0\jtokkit-1.1.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-chat-memory\1.1.4\spring-ai-autoconfigure-model-chat-memory-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-starter-model-ollama\1.1.4\spring-ai-starter-model-ollama-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-autoconfigure-model-ollama\1.1.4\spring-ai-autoconfigure-model-ollama-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\ai\spring-ai-ollama\1.1.4\spring-ai-ollama-1.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\mysql\mysql-connector-j\9.6.0\mysql-connector-j-9.6.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\aliyun\oss\aliyun-sdk-oss\3.15.1\aliyun-sdk-oss-3.15.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\httpcomponents\httpclient\4.4.1\httpclient-4.4.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\httpcomponents\httpcore\4.4.16\httpcore-4.4.16.jar;D:\develop\apache-maven-3.6.1\mvn-repo\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\commons-codec\commons-codec\1.18.0\commons-codec-1.18.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jdom\jdom2\2.0.6.1\jdom2-2.0.6.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\codehaus\jettison\jettison\1.1\jettison-1.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\stax\stax-api\1.0.1\stax-api-1.0.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\aliyun\aliyun-java-sdk-core\4.5.10\aliyun-java-sdk-core-4.5.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\google\code\gson\gson\2.13.2\gson-2.13.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\javax\xml\bind\jaxb-api\2.3.1\jaxb-api-2.3.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\javax\activation\javax.activation-api\1.2.0\javax.activation-api-1.2.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jacoco\org.jacoco.agent\0.8.5\org.jacoco.agent-0.8.5-runtime.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\ini4j\ini4j\0.5.4\ini4j-0.5.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\opentracing\opentracing-api\0.33.0\opentracing-api-0.33.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\opentracing\opentracing-util\0.33.0\opentracing-util-0.33.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\opentracing\opentracing-noop\0.33.0\opentracing-noop-0.33.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\aliyun\aliyun-java-sdk-ram\3.1.0\aliyun-java-sdk-ram-3.1.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\aliyun\aliyun-java-sdk-kms\2.11.0\aliyun-java-sdk-kms-2.11.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-data-redis\3.5.13\spring-boot-starter-data-redis-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\lettuce\lettuce-core\6.6.0.RELEASE\lettuce-core-6.6.0.RELEASE.jar;D:\develop\apache-maven-3.6.1\mvn-repo\redis\clients\authentication\redis-authx-core\0.1.1-beta2\redis-authx-core-0.1.1-beta2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-common\4.1.132.Final\netty-common-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-handler\4.1.132.Final\netty-handler-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-transport-native-unix-common\4.1.132.Final\netty-transport-native-unix-common-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-transport\4.1.132.Final\netty-transport-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\projectreactor\reactor-core\3.7.17\reactor-core-3.7.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\data\spring-data-redis\3.5.10\spring-data-redis-3.5.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\data\spring-data-keyvalue\3.5.10\spring-data-keyvalue-3.5.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\data\spring-data-commons\3.5.10\spring-data-commons-3.5.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-tx\6.2.17\spring-tx-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-oxm\6.2.17\spring-oxm-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.21.2\jackson-datatype-jsr310-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\core\jackson-core\2.21.2\jackson-core-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\core\jackson-databind\2.21.2\jackson-databind-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\poi\poi-ooxml\5.5.1\poi-ooxml-5.5.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\poi\poi\5.5.1\poi-5.5.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\commons\commons-math3\3.6.1\commons-math3-3.6.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\zaxxer\SparseBitSet\1.3\SparseBitSet-1.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\poi\poi-ooxml-lite\5.5.1\poi-ooxml-lite-5.5.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\xmlbeans\xmlbeans\5.3.0\xmlbeans-5.3.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\commons\commons-compress\1.28.0\commons-compress-1.28.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\commons-io\commons-io\2.21.0\commons-io-2.21.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\virtuald\curvesapi\1.08\curvesapi-1.08.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\logging\log4j\log4j-api\2.24.3\log4j-api-2.24.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\apache\commons\commons-collections4\4.5.0\commons-collections4-4.5.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.8.15\springdoc-openapi-starter-webmvc-ui-2.8.15.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springdoc\springdoc-openapi-starter-webmvc-api\2.8.15\springdoc-openapi-starter-webmvc-api-2.8.15.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springdoc\springdoc-openapi-starter-common\2.8.15\springdoc-openapi-starter-common-2.8.15.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-validation\3.5.13\spring-boot-starter-validation-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\hibernate\validator\hibernate-validator\8.0.3.Final\hibernate-validator-8.0.3.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jboss\logging\jboss-logging\3.6.3.Final\jboss-logging-3.6.3.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\swagger\core\v3\swagger-core-jakarta\2.2.41\swagger-core-jakarta-2.2.41.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\swagger\core\v3\swagger-models-jakarta\2.2.41\swagger-models-jakarta-2.2.41.jar;D:\develop\apache-maven-3.6.1\mvn-repo\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\webjars\swagger-ui\5.31.0\swagger-ui-5.31.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\webjars\webjars-locator-lite\1.1.3\webjars-locator-lite-1.1.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jspecify\jspecify\1.0.0\jspecify-1.0.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\cn\hutool\hutool-all\5.8.27\hutool-all-5.8.27.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\redisson\redisson-spring-boot-starter\3.25.0\redisson-spring-boot-starter-3.25.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-actuator\3.5.13\spring-boot-starter-actuator-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-actuator-autoconfigure\3.5.13\spring-boot-actuator-autoconfigure-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-actuator\3.5.13\spring-boot-actuator-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\micrometer\micrometer-jakarta9\1.15.10\micrometer-jakarta9-1.15.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\micrometer\micrometer-core\1.15.10\micrometer-core-1.15.10.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\redisson\redisson\3.25.0\redisson-3.25.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-codec\4.1.132.Final\netty-codec-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-buffer\4.1.132.Final\netty-buffer-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-resolver\4.1.132.Final\netty-resolver-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-resolver-dns\4.1.132.Final\netty-resolver-dns-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\netty\netty-codec-dns\4.1.132.Final\netty-codec-dns-4.1.132.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\javax\cache\cache-api\1.1.1\cache-api-1.1.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\reactivex\rxjava3\rxjava\3.1.12\rxjava-3.1.12.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jboss\marshalling\jboss-marshalling\2.0.11.Final\jboss-marshalling-2.0.11.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jboss\marshalling\jboss-marshalling-river\2.0.11.Final\jboss-marshalling-river-2.0.11.Final.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\esotericsoftware\kryo\5.5.0\kryo-5.5.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\esotericsoftware\reflectasm\1.11.9\reflectasm-1.11.9.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\esotericsoftware\minlog\1.3.1\minlog-1.3.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.21.2\jackson-dataformat-yaml-2.21.2.jar;D:\develop\apache-maven-3.6.1\mvn-repo\net\bytebuddy\byte-buddy\1.17.8\byte-buddy-1.17.8.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jodd\jodd-bean\5.1.6\jodd-bean-5.1.6.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\jodd\jodd-core\5.1.6\jodd-core-5.1.6.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\redisson\redisson-spring-data-32\3.25.0\redisson-spring-data-32-3.25.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\boot\spring-boot-starter-amqp\3.5.13\spring-boot-starter-amqp-3.5.13.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-messaging\6.2.17\spring-messaging-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\amqp\spring-rabbit\3.2.9\spring-rabbit-3.2.9.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\amqp\spring-amqp\3.2.9\spring-amqp-3.2.9.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\rabbitmq\amqp-client\5.25.0\amqp-client-5.25.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\alibaba\csp\sentinel-core\1.8.6\sentinel-core-1.8.6.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\alibaba\csp\sentinel-spring-webmvc-adapter\1.8.6\sentinel-spring-webmvc-adapter-1.8.6.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\github\ben-manes\caffeine\caffeine\3.1.8\caffeine-3.1.8.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\checkerframework\checker-qual\3.37.0\checker-qual-3.37.0.jar;D:\develop\apache-maven-3.6.1\mvn-repo\com\google\errorprone\error_prone_annotations\2.21.1\error_prone_annotations-2.21.1.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\projectlombok\lombok\1.18.44\lombok-1.18.44.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\jsonwebtoken\jjwt-api\0.12.5\jjwt-api-0.12.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\jsonwebtoken\jjwt-impl\0.12.5\jjwt-impl-0.12.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\io\jsonwebtoken\jjwt-jackson\0.12.5\jjwt-jackson-0.12.5.jar;D:\develop\apache-maven-3.6.1\mvn-repo\jakarta\xml\bind\jakarta.xml.bind-api\4.0.4\jakarta.xml.bind-api-4.0.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\objenesis\objenesis\3.3\objenesis-3.3.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-core\6.2.17\spring-core-6.2.17.jar;D:\develop\apache-maven-3.6.1\mvn-repo\org\springframework\spring-jcl\6.2.17\spring-jcl-6.2.17.jar com.hxq.smart_campus.SmartCampusApplication
-Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-05-12T19:01:45.762+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-12T19:01:45.777+08:00  INFO 5108 --- [nio-8080-exec-1] c.h.s.controller.user.UserAiController   : AI图书推荐，用户ID：1
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@97aa8a0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1887486184 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id WHERE r.user_id = ? order by r.id desc
+==> Parameters: 1(Long)
+<==    Columns: id, borrowNo, userName, bookTitle, borrowDate, dueDate, status
+<==        Row: 4, BR20260510000004, 李明, 活着, 2024-04-01, 2024-04-30, 已归还
+<==        Row: 1, BR20260510000001, 李明, Java编程思想, 2024-06-01, 2024-06-30, 已归还
+<==      Total: 2
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@97aa8a0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@78ff2ab7] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@244196032 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select b.id, b.isbn, b.title, b.author, bc.category_name, b.publisher, b.available_copies, b.status, b.cover_image, b.description from book b left join book_category bc on b.category_id = bc.id
+==> Parameters: 
+<==    Columns: id, isbn, title, author, category_name, publisher, available_copies, status, cover_image, description
+<==        Row: 1, 9787111638436, Java编程思想, Bruce Eckel, 编程语言, 机械工业出版社, 4, 在库, https://hexiongqi.oss-cn-hangzhou.aliyuncs.com/7e9a8d90-baa7-4ec2-886f-0a134a7681bf.jpg, <<BLOB>>
+<==        Row: 2, 9787115472778, MySQL必知必会, Ben Forta, 计算机科学, 人民邮电出版社, 2, 在库, /covers/mysql.jpg, <<BLOB>>
+<==        Row: 3, 9787020002207, 红楼梦, 曹雪芹, 中国文学, 人民文学出版社, 8, 在库, /covers/hlm.jpg, <<BLOB>>
+<==        Row: 4, 9787506365437, 活着, 余华, 中国文学, 作家出版社, 5, 在库, /covers/huozhe.jpg, <<BLOB>>
+<==        Row: 5, 9787302523286, 深度学习, Ian Goodfellow, 计算机科学, 人民邮电出版社, 1, 在库, /covers/dl.jpg, <<BLOB>>
+<==        Row: 6, 9787121348469, Spring Boot实战, Craig Walls, 计算机科学, 人民邮电出版社, 4, 在库, /covers/springboot.jpg, <<BLOB>>
+<==      Total: 6
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@78ff2ab7]
+2026-05-12T19:01:45.829+08:00  INFO 5108 --- [nio-8080-exec-1] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
+可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》...
+2026-05-12T19:01:46.032+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园图书推荐专家。根据学生的借阅历史和可借图书列表，推荐3-5本最合适的图书。请说明每本书的推荐理由，结合学生的阅读偏好进行分析。返回格式要简洁清晰。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
 
- :: Spring Boot ::               (v3.5.13)
+可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》-余华、《深度学习》-Ian Goodfellow、《Spring Boot实战》-Craig Walls
 
-2026-05-11T18:54:47.867+08:00  INFO 26396 --- [           main] c.h.smart_campus.SmartCampusApplication  : Starting SmartCampusApplication using Java 18.0.2.1 with PID 26396 (D:\gitDemo\smart_campus\target\classes started by hexiongqi in D:\gitDemo\smart_campus)
-2026-05-11T18:54:47.868+08:00 DEBUG 26396 --- [           main] c.h.smart_campus.SmartCampusApplication  : Running with Spring Boot v3.5.13, Spring v6.2.17
-2026-05-11T18:54:47.869+08:00  INFO 26396 --- [           main] c.h.smart_campus.SmartCampusApplication  : No active profile set, falling back to 1 default profile: "default"
-2026-05-11T18:54:48.909+08:00  INFO 26396 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2026-05-11T18:54:48.912+08:00  INFO 26396 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2026-05-11T18:54:48.947+08:00  INFO 26396 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 0 Redis repository interfaces.
-2026-05-11T18:54:49.548+08:00  INFO 26396 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-05-11T18:54:49.559+08:00  INFO 26396 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-05-11T18:54:49.559+08:00  INFO 26396 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.53]
-2026-05-11T18:54:49.599+08:00  INFO 26396 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-05-11T18:54:49.599+08:00  INFO 26396 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1693 ms
-Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
-2026-05-11T18:54:49.687+08:00 DEBUG 26396 --- [           main] c.h.s.filter.JwtAuthenticationFilter     : Filter 'jwtAuthenticationFilter' configured for use
-Logging initialized using 'class org.apache.ibatis.logging.stdout.StdOutImpl' adapter.
-2026-05-11T18:54:50.458+08:00  INFO 26396 --- [           main] org.redisson.Version                     : Redisson 3.25.0
-2026-05-11T18:54:55.245+08:00  WARN 26396 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'adminBorrowRecordController' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\controller\admin\AdminBorrowRecordController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'borrowRecordServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\BorrowRecordServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'redisBorrowService' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\RedisBorrowService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'redissonClient' defined in class path resource [com/hxq/smart_campus/config/RedissonConfig.class]: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-2026-05-11T18:54:55.247+08:00  INFO 26396 --- [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
-2026-05-11T18:54:55.259+08:00  INFO 26396 --- [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+请根据借阅历史分析该学生的阅读偏好，并从可借图书中推荐最合适的几本。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:46.063+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:46.063+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
+2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园图书推荐专家。根据学生的借阅历史和可借图书列表，推荐3-5本最合适的图书。请说明每本书的推荐理由，结合学生的阅读偏好进行分析。返回格式要简洁清晰。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
 
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-05-11T18:54:55.271+08:00 ERROR 26396 --- [           main] o.s.boot.SpringApplication               : Application run failed
+可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》-余华、《深度学习》-Ian Goodfellow、《Spring Boot实战》-Craig Walls
 
-org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'adminBorrowRecordController' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\controller\admin\AdminBorrowRecordController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'borrowRecordServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\BorrowRecordServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'redisBorrowService' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\RedisBorrowService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'redissonClient' defined in class path resource [com/hxq/smart_campus/config/RedissonConfig.class]: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1228) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1194) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1130) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:991) ~[spring-context-6.2.17.jar:6.2.17]
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628) ~[spring-context-6.2.17.jar:6.2.17]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.13.jar:3.5.13]
-	at com.hxq.smart_campus.SmartCampusApplication.main(SmartCampusApplication.java:12) ~[classes/:na]
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'borrowRecordServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\BorrowRecordServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'redisBorrowService' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\RedisBorrowService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'redissonClient' defined in class path resource [com/hxq/smart_campus/config/RedissonConfig.class]: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1770) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 21 common frames omitted
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'redisBorrowService' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\RedisBorrowService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'redissonClient' defined in class path resource [com/hxq/smart_campus/config/RedissonConfig.class]: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1708) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 35 common frames omitted
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'redissonClient' defined in class path resource [com/hxq/smart_campus/config/RedissonConfig.class]: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:489) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1708) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 48 common frames omitted
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception with message: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:200) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:89) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:169) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 61 common frames omitted
-Caused by: org.redisson.client.RedisConnectionException: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.redisson.connection.MasterSlaveConnectionManager.doConnect(MasterSlaveConnectionManager.java:221) ~[redisson-3.25.0.jar:3.25.0]
-	at org.redisson.connection.MasterSlaveConnectionManager.connect(MasterSlaveConnectionManager.java:191) ~[redisson-3.25.0.jar:3.25.0]
-	at org.redisson.config.ConfigSupport.createConnectionManager(ConfigSupport.java:220) ~[redisson-3.25.0.jar:3.25.0]
-	at org.redisson.Redisson.<init>(Redisson.java:69) ~[redisson-3.25.0.jar:3.25.0]
-	at org.redisson.Redisson.create(Redisson.java:114) ~[redisson-3.25.0.jar:3.25.0]
-	at com.hxq.smart_campus.config.RedissonConfig.redissonClient(RedissonConfig.java:19) ~[classes/:na]
-	at com.hxq.smart_campus.config.RedissonConfig$$SpringCGLIB$$0.CGLIB$redissonClient$0(<generated>) ~[classes/:na]
-	at com.hxq.smart_campus.config.RedissonConfig$$SpringCGLIB$$FastClass$$1.invoke(<generated>) ~[classes/:na]
-	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:258) ~[spring-core-6.2.17.jar:6.2.17]
-	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:400) ~[spring-context-6.2.17.jar:6.2.17]
-	at com.hxq.smart_campus.config.RedissonConfig$$SpringCGLIB$$0.redissonClient(<generated>) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:172) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 64 common frames omitted
-Caused by: java.util.concurrent.ExecutionException: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096) ~[na:na]
-	at org.redisson.connection.MasterSlaveConnectionManager.doConnect(MasterSlaveConnectionManager.java:217) ~[redisson-3.25.0.jar:3.25.0]
-	... 77 common frames omitted
-Caused by: org.redisson.client.RedisConnectionException: Unable to connect to Redis server: localhost/127.0.0.1:6379
-	at org.redisson.connection.pool.ConnectionPool.lambda$createConnection$0(ConnectionPool.java:129) ~[redisson-3.25.0.jar:3.25.0]
-	at java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:863) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:841) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2162) ~[na:na]
-	at org.redisson.connection.pool.ConnectionPool.promiseFailure(ConnectionPool.java:281) ~[redisson-3.25.0.jar:3.25.0]
-	at org.redisson.connection.pool.ConnectionPool.lambda$createConnection$6(ConnectionPool.java:245) ~[redisson-3.25.0.jar:3.25.0]
-	at java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:863) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:841) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2162) ~[na:na]
-	at org.redisson.client.RedisClient$1$2.run(RedisClient.java:306) ~[redisson-3.25.0.jar:3.25.0]
-	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:166) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:569) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
-Caused by: java.util.concurrent.CompletionException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
-	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(CompletableFuture.java:368) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture.completeRelay(CompletableFuture.java:377) ~[na:na]
-	at java.base/java.util.concurrent.CompletableFuture$UniRelay.tryFire(CompletableFuture.java:1097) ~[na:na]
-	... 11 common frames omitted
-Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
-Caused by: java.net.ConnectException: Connection refused: no further information
-	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
-	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672) ~[na:na]
-	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:946) ~[na:na]
-	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:336) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:339) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:784) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562) ~[netty-transport-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
-	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.132.Final.jar:4.1.132.Final]
+请根据借阅历史分析该学生的阅读偏好，并从可借图书中推荐最合适的几本。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:53.618+08:00 DEBUG 5108 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-12T19:01:53.629+08:00 ERROR 5108 --- [nio-8080-exec-2] c.h.s.exception.GlobalExceptionHandler   : 系统异常
+
+org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/ai/user/hot-books.
+	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at com.hxq.smart_campus.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:61) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
 	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
 
+2026-05-12T19:01:54.925+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-12T19:01:54.926+08:00  INFO 5108 --- [nio-8080-exec-4] c.h.s.controller.user.UserAiController   : AI借阅行为分析，用户ID：1
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ec4f269] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@573881203 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id WHERE r.user_id = ? order by r.id desc
+==> Parameters: 1(Long)
+<==    Columns: id, borrowNo, userName, bookTitle, borrowDate, dueDate, status
+<==        Row: 4, BR20260510000004, 李明, 活着, 2024-04-01, 2024-04-30, 已归还
+<==        Row: 1, BR20260510000001, 李明, Java编程思想, 2024-06-01, 2024-06-30, 已归还
+<==      Total: 2
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ec4f269]
+2026-05-12T19:01:54.931+08:00  INFO 5108 --- [nio-8080-exec-4] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=以下是学生的借阅记录：
+《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
+《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：...
+2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园阅读行为分析专家。根据学生的借阅记录，生成个性化的阅读分析报告。分析内容包括：
+1. 阅读量统计
+2. 阅读偏好分析（类别、作者等）
+3. 借阅规律（时段、频率等）
+4. 改进建议和推荐阅读方向, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的借阅记录：
+《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
+《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：已归还
 
-Process finished with exit code 1
+请生成详细的阅读行为分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
+2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园阅读行为分析专家。根据学生的借阅记录，生成个性化的阅读分析报告。分析内容包括：
+1. 阅读量统计
+2. 阅读偏好分析（类别、作者等）
+3. 借阅规律（时段、频率等）
+4. 改进建议和推荐阅读方向, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的借阅记录：
+《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
+《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：已归还
+
+请生成详细的阅读行为分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:56.110+08:00  INFO 5108 --- [nio-8080-exec-1] c.hxq.smart_campus.service.ai.AiService  : AI分析完成: responseLength=525
+2026-05-12T19:01:56.977+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-12T19:01:56.977+08:00  INFO 5108 --- [nio-8080-exec-3] c.h.s.controller.user.UserAiController   : AI学习成绩分析，用户ID：1
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@522df12a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@887038597 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ?
+==> Parameters: 1(Long)
+<==    Columns: id, course_name, studentName, studentNo, semesterName, usual_score, final_score, total_score, score_point, credit, exam_status
+<==        Row: 1, Java程序设计, 李明, 2023001001, 2023-2024第二学期, 90.00, 85.00, 87.50, 1.00, 4.0, 正常
+<==        Row: 3, 数据结构, 李明, 2023001001, 2023-2024第二学期, 75.00, 80.00, 77.50, 2.00, 4.0, 正常
+<==        Row: 5, 人工智能导论, 李明, 2023001001, 2023-2024第二学期, 95.00, 90.00, 92.50, 2.00, 2.0, 正常
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@522df12a]
+2026-05-12T19:01:56.992+08:00  INFO 5108 --- [nio-8080-exec-3] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=以下是学生的成绩记录：
+课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
+课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
+课程...
+2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个学习成绩分析专家。根据学生的成绩列表，生成详细的学习分析报告。分析内容包括：
+1. 成绩概况（平均分、最高/最低分、绩点估算）
+2. 优势学科与薄弱环节
+3. 成绩趋势分析（进步或退步）
+4. 针对性学习建议, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的成绩记录：
+课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
+课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
+课程：人工智能导论，成绩：92.50，学分：2.0，学期：2023-2024第二学期
+
+请生成详细的学习成绩分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
+2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个学习成绩分析专家。根据学生的成绩列表，生成详细的学习分析报告。分析内容包括：
+1. 成绩概况（平均分、最高/最低分、绩点估算）
+2. 优势学科与薄弱环节
+3. 成绩趋势分析（进步或退步）
+4. 针对性学习建议, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的成绩记录：
+课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
+课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
+课程：人工智能导论，成绩：92.50，学分：2.0，学期：2023-2024第二学期
+
+请生成详细的学习成绩分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:58.150+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-12T19:01:58.152+08:00  INFO 5108 --- [nio-8080-exec-8] c.h.s.controller.user.UserAiController   : AI选修课程推荐，用户ID：1，学期ID：null
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ebd353] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1464500194 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ?
+==> Parameters: 1(Long)
+<==    Columns: id, course_name, studentName, studentNo, semesterName, usual_score, final_score, total_score, score_point, credit, exam_status
+<==        Row: 1, Java程序设计, 李明, 2023001001, 2023-2024第二学期, 90.00, 85.00, 87.50, 1.00, 4.0, 正常
+<==        Row: 3, 数据结构, 李明, 2023001001, 2023-2024第二学期, 75.00, 80.00, 77.50, 2.00, 4.0, 正常
+<==        Row: 5, 人工智能导论, 李明, 2023001001, 2023-2024第二学期, 95.00, 90.00, 92.50, 2.00, 2.0, 正常
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ebd353]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c673045] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1213653828 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, create_time,capacity from course order by create_time desc
+==> Parameters: 
+<==    Columns: id, course_code, course_name, credit, hours, type, status, create_time, capacity
+<==        Row: 1, CS101, 计算机导论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 2, CS102, Java程序设计, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 3, CS201, 数据结构, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 4, SE101, 软件工程概论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 5, MATH101, 高等数学, 5.0, 80, 必修, 开课, 2026-04-21 18:28:51, null
+<==        Row: 6, CS301, 人工智能导论, 2.0, 32, 选修, 开课, 2026-04-21 18:28:51, 60
+<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 2026-04-21 18:28:51, 120
+<==      Total: 7
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c673045]
+2026-05-12T19:01:58.165+08:00  INFO 5108 --- [nio-8080-exec-8] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=已修课程及成绩：
+《Java程序设计》成绩：87.50（学分：4.0）
+《数据结构》成绩：77.50（学分：4.0）
+《人工智能导论》成绩：92.50（学分：2.0）
+
+可选课程列表：
+《计算机导论》...
+2026-05-12T19:01:58.167+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个选修课程推荐专家。根据学生的已修课程成绩和可选课程列表，推荐最适合的选修课程。分析维度：
+1. 学生已修课程的成绩表现
+2. 专业方向匹配度
+3. 课程难度递进关系
+4. 学分规划建议
+给出3-5门推荐课程及理由。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=已修课程及成绩：
+《Java程序设计》成绩：87.50（学分：4.0）
+《数据结构》成绩：77.50（学分：4.0）
+《人工智能导论》成绩：92.50（学分：2.0）
+
+可选课程列表：
+《计算机导论》类型：必修，学分：3.0
+《Java程序设计》类型：必修，学分：4.0
+《数据结构》类型：必修，学分：4.0
+《软件工程概论》类型：必修，学分：3.0
+《高等数学》类型：必修，学分：5.0
+《人工智能导论》类型：选修，学分：2.0
+《大学英语》类型：公选，学分：4.0
+
+请推荐最适合该学生的选修课程。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:58.167+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
+2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个选修课程推荐专家。根据学生的已修课程成绩和可选课程列表，推荐最适合的选修课程。分析维度：
+1. 学生已修课程的成绩表现
+2. 专业方向匹配度
+3. 课程难度递进关系
+4. 学分规划建议
+给出3-5门推荐课程及理由。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=已修课程及成绩：
+《Java程序设计》成绩：87.50（学分：4.0）
+《数据结构》成绩：77.50（学分：4.0）
+《人工智能导论》成绩：92.50（学分：2.0）
+
+可选课程列表：
+《计算机导论》类型：必修，学分：3.0
+《Java程序设计》类型：必修，学分：4.0
+《数据结构》类型：必修，学分：4.0
+《软件工程概论》类型：必修，学分：3.0
+《高等数学》类型：必修，学分：5.0
+《人工智能导论》类型：选修，学分：2.0
+《大学英语》类型：公选，学分：4.0
+
+请推荐最适合该学生的选修课程。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
+2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}

@@ -6,6 +6,7 @@ import com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO;
 import com.hxq.smart_campus.entity.vo.MyLeaveRequestVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.LeaveApprovalService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class LeaveApprovalUserController {
     @Operation(summary = "提交请假申请")
     public Result<LeaveRequestResponseDTO> insertLeaveRequest(@RequestBody LeaveRequestCreateDTO leaveRequestCreateDTO) {
         log.info("提交请假申请：{}", leaveRequestCreateDTO);
+        leaveRequestCreateDTO.setStudentId(SecurityUtils.getCurrentUserId());
         LeaveRequestResponseDTO leaveRequestResponseDTO = leaveApprovalService.insertLeaveRequest(leaveRequestCreateDTO);
         return Result.success(leaveRequestResponseDTO);
     }

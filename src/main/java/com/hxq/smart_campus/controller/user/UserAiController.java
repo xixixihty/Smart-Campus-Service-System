@@ -1,5 +1,10 @@
 package com.hxq.smart_campus.controller.user;
 
+import com.hxq.smart_campus.entity.vo.BookRecommendVO;
+import com.hxq.smart_campus.entity.vo.CourseRecommendVO;
+import com.hxq.smart_campus.entity.vo.HotBookVO;
+import com.hxq.smart_campus.entity.vo.ReadingAnalysisVO;
+import com.hxq.smart_campus.entity.vo.ScoreAnalysisVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.ai.*;
 import com.hxq.smart_campus.utils.SecurityUtils;
@@ -8,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/ai/user")
@@ -23,45 +30,45 @@ public class UserAiController {
 
     @GetMapping("/book-recommend")
     @Operation(summary = "图书推荐（基于个人借阅历史）")
-    public Result<String> recommendBooks() {
+    public Result<List<BookRecommendVO>> recommendBooks() {
         Long userId = SecurityUtils.getCurrentUserId();
         log.info("AI图书推荐，用户ID：{}", userId);
-        String result = bookRecommendService.recommendByStudent(userId);
+        List<BookRecommendVO> result = bookRecommendService.recommendByStudent(userId);
         return Result.success(result);
     }
 
-    @GetMapping("/book-recommend/hot")
+    @GetMapping("/hot-books")
     @Operation(summary = "热门图书推荐")
-    public Result<String> recommendHotBooks() {
+    public Result<List<HotBookVO>> recommendHotBooks() {
         log.info("AI热门图书推荐");
-        String result = bookRecommendService.recommendHotBooks();
+        List<HotBookVO> result = bookRecommendService.recommendHotBooks();
         return Result.success(result);
     }
 
     @GetMapping("/reading-analysis")
     @Operation(summary = "借阅行为分析")
-    public Result<String> analyzeReading() {
+    public Result<ReadingAnalysisVO> analyzeReading() {
         Long userId = SecurityUtils.getCurrentUserId();
         log.info("AI借阅行为分析，用户ID：{}", userId);
-        String result = readingAnalysisService.analyzeReadingBehavior(userId);
+        ReadingAnalysisVO result = readingAnalysisService.analyzeReadingBehavior(userId);
         return Result.success(result);
     }
 
     @GetMapping("/score-analysis")
     @Operation(summary = "学习成绩分析")
-    public Result<String> analyzeScores() {
+    public Result<ScoreAnalysisVO> analyzeScores() {
         Long userId = SecurityUtils.getCurrentUserId();
         log.info("AI学习成绩分析，用户ID：{}", userId);
-        String result = scoreAnalysisService.analyzeStudentScores(userId);
+        ScoreAnalysisVO result = scoreAnalysisService.analyzeStudentScores(userId);
         return Result.success(result);
     }
 
     @GetMapping("/course-recommend")
     @Operation(summary = "选修课程推荐")
-    public Result<String> recommendCourses(@RequestParam(required = false) Long semesterId) {
+    public Result<List<CourseRecommendVO>> recommendCourses(@RequestParam(required = false) Long semesterId) {
         Long userId = SecurityUtils.getCurrentUserId();
         log.info("AI选修课程推荐，用户ID：{}，学期ID：{}", userId, semesterId);
-        String result = courseRecommendService.recommendCourses(userId, semesterId);
+        List<CourseRecommendVO> result = courseRecommendService.recommendCourses(userId, semesterId);
         return Result.success(result);
     }
 }

@@ -44,4 +44,14 @@
         </where>
     </select>
 
+    <!-- 获取可用座位列表（包含空闲和使用中） -->
+    <select id="getAvailableSeatList" resultType="com.hxq.smart_campus.entity.vo.SeatListVO">
+        select id, room_id as roomId, seat_number as seatNumber, status
+        from seat
+        <where>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            <if test="status == null">and status in ('空闲', '使用中')</if>
+        </where>
+    </select>
+
 </mapper>

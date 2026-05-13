@@ -3,9 +3,12 @@ package com.hxq.smart_campus.service;
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
+import com.hxq.smart_campus.entity.vo.SeatListVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
+import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface SeatReservationService {
     /**
@@ -62,4 +65,26 @@ public interface SeatReservationService {
      * @return
      */
     PageInfo<SeatReservationListVO> getMySeatReservationList(Integer pageNum, Integer pageSize, LocalDate date, String status, Long userId);
+
+    /**
+     * 获取可用座位列表
+     * @return
+     */
+    List<SeatListVO> getAvailableSeatList();
+
+    /**
+     * 获取可用座位列表（支持区域和日期筛选）
+     * @param areaId 区域ID
+     * @param date 日期
+     * @return
+     */
+    List<SeatListVO> getAvailableSeatList(Long areaId, LocalDate date);
+
+    /**
+     * 获取座位当日时段占用情况
+     * @param seatId 座位ID
+     * @param date 日期
+     * @return
+     */
+    SeatScheduleVO getSeatSchedule(Long seatId, LocalDate date);
 }

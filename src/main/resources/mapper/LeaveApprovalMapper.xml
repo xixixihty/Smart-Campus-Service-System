@@ -30,27 +30,27 @@
 
     <!-- 提交请假申请 -->
     <insert id="insertLeaveRequest" useGeneratedKeys="true" keyProperty="id">
-        insert into leave_request
-            <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="studentId != null">student_id</if>
-                <if test="leaveType != null">leave_type</if>
-                <if test="startTime != null">start_time</if>
-                <if test="endTime != null">end_time</if>
-                <if test="reason != null">reason</if>
-                status
-                create_time
-            </trim>
-                values
-            <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="studentId != null">#{studentId}</if>
-                <if test="leaveType != null">#{leaveType}</if>
-                <if test="startTime != null">#{startTime}</if>
-                <if test="endTime != null">#{endTime}</if>
-                <if test="reason != null">#{reason}</if>
-                '待审批'
-                now()
-            </trim>
-    </insert>
+    insert into leave_request
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="studentId != null">student_id,</if>
+        <if test="leaveType != null">leave_type,</if>
+        <if test="startTime != null">start_time,</if>
+        <if test="endTime != null">end_time,</if>
+        <if test="reason != null">reason,</if>
+        status,
+        create_time,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="studentId != null">#{studentId},</if>
+        <if test="leaveType != null">#{leaveType},</if>
+        <if test="startTime != null">#{startTime},</if>
+        <if test="endTime != null">#{endTime},</if>
+        <if test="reason != null">#{reason},</if>
+        '待审批',
+        now(),
+    </trim>
+</insert>
     <!-- 审批请假申请 -->
     <insert id="approveLeaveRequest">
         insert into leave_approval_log (leave_request_id, approver_id, result, comment, approve_time)
@@ -85,7 +85,7 @@
     </select>
     <!-- 获取请假申请列表 -->
     <select id="getMyLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.MyLeaveRequestVO">
-        select l.id, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
+        select l.id, l.leave_type, l.start_time, l.end_time, l.reason, l.status, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
         <where>

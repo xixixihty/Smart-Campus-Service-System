@@ -54,4 +54,11 @@ public interface SemesterService {
      * @return
      */
     boolean setCurrentSemester(Long id);
+
+    /**
+     * 根据名称获取学期详情
+     * @param semesterName
+     * @return
+     */
+    SemesterDetailVO getSemesterDetailByName(String semesterName);
 }

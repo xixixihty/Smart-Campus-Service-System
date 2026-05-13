@@ -9,7 +9,7 @@
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
           <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 200px">
-            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
+            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="时段名称">
@@ -56,22 +56,16 @@
       </el-descriptions>
       <!-- 新增/编辑：表单 -->
       <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="所属学期" prop="semesterId">
-          <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
-            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
+        <el-form-item label="所属学期" prop="semesterName">
+          <el-select v-model="form.semesterName" placeholder="请选择学期" style="width: 100%">  
+            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.name" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="时段名称" prop="periodName">
-          <el-input v-model="form.periodName" placeholder="如：第一轮选课" />
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
           <el-date-picker v-model="form.startTime" type="datetime" placeholder="请选择开始时间" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker v-model="form.endTime" type="datetime" placeholder="请选择结束时间" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
-        </el-form-item>
-        <el-form-item label="最大选课数" prop="maxSelections">
-          <el-input-number v-model="form.maxSelections" :min="1" :max="10" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -105,10 +99,9 @@ const detailData = reactive({
 })
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', periodName: '' })
-const form = reactive({ id: null, semesterId: '', periodName: '', startTime: '', endTime: '', maxSelections: 3 })
+const form = reactive({ id: null, semesterId: '', semesterName: '', periodName: '', startTime: '', endTime: '', maxSelections: 3 })
 const rules = {
-  semesterId: [{ required: true, message: '请选择学期', trigger: 'change' }],
-  periodName: [{ required: true, message: '请输入时段名称', trigger: 'blur' }],
+  semesterName: [{ required: true, message: '请选择学期', trigger: 'change' }],
   startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
   endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
 }

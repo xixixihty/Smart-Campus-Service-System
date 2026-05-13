@@ -6,7 +6,9 @@ import com.hxq.smart_campus.entity.dto.CourseSelectionResponseDTO;
 import com.hxq.smart_campus.entity.vo.AvailableCourseVO;
 import com.hxq.smart_campus.entity.vo.CourseSelectionListVO;
 import com.hxq.smart_campus.entity.vo.MyCourseSelectionVO;
+import com.hxq.smart_campus.entity.vo.SelectionTimeRedisVO;
 import com.hxq.smart_campus.result.Result;
+import com.hxq.smart_campus.service.CourseSelectionPeriodService;
 import com.hxq.smart_campus.service.CourseSelectionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseSelectionController {
     private final CourseSelectionService courseSelectionService;
+    private final CourseSelectionPeriodService courseSelectionPeriodService;
 
 
     /**
@@ -105,5 +108,22 @@ public class CourseSelectionController {
         log.info("查询可选课程列表: semesterId={}");
         List<AvailableCourseVO> courseSelectionListVO = courseSelectionService.getAvailableCourseList(semesterId);
         return Result.success(courseSelectionListVO);
+    }
+
+    /**
+     * 获取当前学期的选课时间段
+     * @return
+     */
+    @GetMapping("/period")
+    @Operation(summary = "获取当前学期的选课时间段")
+    public Result<SelectionTimeRedisVO> getCurrentSemesterCourseSelectionPeriod() {
+        log.info("获取当前学期的选课时间段");
+        try {
+            SelectionTimeRedisVO selectionTimeRedisVO = courseSelectionPeriodService.getCurrentSemesterCourseSelectionPeriod();
+            return Result.success(selectionTimeRedisVO);
+        } catch (IllegalArgumentException e) {
+            log.warn("获取选课时间段失败: {}", e.getMessage());
+            return Result.success(null);
+        }
     }
 }

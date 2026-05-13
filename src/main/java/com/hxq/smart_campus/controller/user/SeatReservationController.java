@@ -3,7 +3,9 @@ package com.hxq.smart_campus.controller.user;
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
+import com.hxq.smart_campus.entity.vo.SeatListVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
+import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.SeatReservationService;
 import com.hxq.smart_campus.utils.SecurityUtils;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/seat-reservations/user")
@@ -109,8 +112,10 @@ public class SeatReservationController {
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) String status
     ) {
-        log.info("获取座位预约列表，参数：pageNum={}, pageSize={}, userId={}, seatId={}, date={}, status={}", pageNum, pageSize, userId, seatId, date, status);
-        PageInfo<SeatReservationListVO> seatReservationListVO = seatReservationService.getSeatReservationList(pageNum, pageSize, userId, seatId, date, status);
+        // 强制使用当前登录用户ID，防止越权查询
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        log.info("获取座位预约列表，参数：pageNum={}, pageSize={}, userId={}, seatId={}, date={}, status={}", pageNum, pageSize, currentUserId, seatId, date, status);
+        PageInfo<SeatReservationListVO> seatReservationListVO = seatReservationService.getSeatReservationList(pageNum, pageSize, currentUserId, seatId, date, status);
         return Result.success(seatReservationListVO);
     }
 
@@ -132,9 +137,41 @@ public class SeatReservationController {
             @RequestParam(required = false) String status
     ) {
         log.info("获取我的座位预约列表，参数：pageNum={}, pageSize={}, date={}, status={}", pageNum, pageSize, date, status );
-        // TODO :从登陆信息中获取到用户ID
         Long userId = SecurityUtils.getCurrentUserId();
         PageInfo<SeatReservationListVO> seatReservationListVO = seatReservationService.getMySeatReservationList(pageNum, pageSize, date, status, userId);
         return Result.success(seatReservationListVO);
     }
+
+    /**
+     * 获取可预约的座位列表
+     * @return
+     */
+    @GetMapping("/available")
+    @Operation(summary = "获取可预约的座位列表")
+    public Result<List<SeatListVO>> getAvailableSeatList(
+            @RequestParam(required = false) Long areaId,
+            @RequestParam(required = false) LocalDate date) {
+        log.info("获取可预约的座位列表，参数：areaId={}, date={}", areaId, date);
+        List<SeatListVO> seatListVO = seatReservationService.getAvailableSeatList(areaId, date);
+        return Result.success(seatListVO);
+    }
+
+    /**
+     * 获取座位当日时段占用情况
+     * @param seatId 座位ID
+     * @param date 日期
+     * @return
+     */
+    @GetMapping("/{seatId}/schedule/{date}")
+    @Operation(summary = "获取座位当日时段占用情况")
+    public Result<SeatScheduleVO> getSeatSchedule(
+            @PathVariable Long seatId,
+            @PathVariable String date) {
+        log.info("获取座位时段，参数：seatId={}, date={}", seatId, date);
+        SeatScheduleVO schedule = seatReservationService.getSeatSchedule(seatId, LocalDate.parse(date));
+        return Result.success(schedule);
+    }
+
+
+
 }

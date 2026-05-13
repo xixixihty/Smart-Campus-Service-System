@@ -50,6 +50,15 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
         if (courseSelectionPeriodCreateDTO == null) {
             throw new IllegalArgumentException("参数不能为空");
         }
+        
+        if (courseSelectionPeriodCreateDTO.getSemesterId() == null && courseSelectionPeriodCreateDTO.getSemesterName() != null && !courseSelectionPeriodCreateDTO.getSemesterName().isEmpty()) {
+            SemesterDetailVO semesterDetailVO = semesterService.getSemesterDetailByName(courseSelectionPeriodCreateDTO.getSemesterName());
+            if (semesterDetailVO == null) {
+                throw new IllegalArgumentException("学期不存在: " + courseSelectionPeriodCreateDTO.getSemesterName());
+            }
+            courseSelectionPeriodCreateDTO.setSemesterId(semesterDetailVO.getId());
+        }
+        
         int result = courseSelectionPeriodMapper.insertCourseSelectionPeriod(courseSelectionPeriodCreateDTO);
         if (result <= 0) {
             throw new RuntimeException("创建失败");

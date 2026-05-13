@@ -5,3 +5,4 @@ export const getMyCourses = (params) => request.get('/course-selections/user/my'
 export const selectCourse = (data) => request.post('/course-selections/user', data)
 export const dropCourse = (id) => request.delete(`/course-selections/user/${id}`)
 export const getSelectionList = (params) => request.get('/course-selections/user', { params })
+export const getCurrentPeriod = () => request.get('/course-selections/user/period')

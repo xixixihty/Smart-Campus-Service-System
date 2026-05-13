@@ -7,11 +7,11 @@
     <insert id="insertCourseSelectionPeriod">
         insert into course_selection_period
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            course_id, start_time, end_time
+            semester_id, start_time, end_time
         </trim>
              values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            #{courseId}, #{startTime}, #{endTime}
+            #{semesterId}, #{startTime}, #{endTime}
         </trim>
     </insert>
     <!-- 更新选课时间段 -->

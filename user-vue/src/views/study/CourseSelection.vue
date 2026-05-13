@@ -81,13 +81,13 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getAvailableCourses, selectCourse, dropCourse } from '@/api/courseSelection'
+import { getAvailableCourses, selectCourse, dropCourse, getCurrentPeriod } from '@/api/courseSelection'
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const collegeOptions = ref([])
-const periodInfo = ref('第一轮选课 2025-03-01 ~ 2025-03-07')
+const periodInfo = ref()
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, courseName: '', courseType: '', collegeId: '' })
 
@@ -103,6 +103,32 @@ const fetchData = async () => {
     }))
     total.value = res.data.total || 0
   } finally { loading.value = false }
+}
+
+const fetchPeriodInfo = async () => {
+  try {
+    const res = await getCurrentPeriod()
+    if (res.data) {
+      const { startTime, endTime } = res.data
+      periodInfo.value = formatDateTime(startTime) + ' ~ ' + formatDateTime(endTime)
+    } else {
+      periodInfo.value = '未设置'
+    }
+  } catch (e) {
+    periodInfo.value = '获取失败'
+    console.error('获取选课时间段失败:', e)
+  }
+}
+
+const formatDateTime = (dateTimeStr) => {
+  if (!dateTimeStr) return ''
+  const date = new Date(dateTimeStr)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
@@ -124,7 +150,10 @@ const handleDrop = (row) => {
   }).catch(() => {})
 }
 
-onMounted(fetchData)
+onMounted(() => {
+  fetchData()
+  fetchPeriodInfo()
+})
 </script>
 
 <style scoped>

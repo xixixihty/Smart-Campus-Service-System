@@ -87,7 +87,7 @@ const routes = [
     path: '/leave-request',
     name: 'LeaveRequest',
     component: () => import('@/views/campus/LeaveRequest.vue'),
-    meta: { title: '请假申请' }
+    meta: { title: '请假管理' }
   },
   {
     path: '/ai-book-recommend',

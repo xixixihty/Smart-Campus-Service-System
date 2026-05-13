@@ -122,6 +122,19 @@ public class SemesterServiceImpl implements SemesterService {
     }
 
     /**
+     * 根据名称获取学期详情
+     * @param semesterName 学期名称
+     * @return 学期详情VO
+     */
+    @Override
+    public SemesterDetailVO getSemesterDetailByName(String semesterName) {
+        if (semesterName == null || semesterName.isEmpty()) {
+            throw new IllegalArgumentException("学期名称不能为空！");
+        }
+        return semesterMapper.getSemesterDetailByName(semesterName);
+    }
+
+    /**
      * 设置当前学期
      * @param id 学期ID
      * @return 是否设置成功

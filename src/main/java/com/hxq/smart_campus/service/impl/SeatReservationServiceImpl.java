@@ -5,9 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.dto.SeatReservationMessage;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
+import com.hxq.smart_campus.entity.vo.SeatDetailVO;
+import com.hxq.smart_campus.entity.vo.SeatListVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationDetailVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
+import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 import com.hxq.smart_campus.exception.BusinessException;
+import com.hxq.smart_campus.mapper.SeatMapper;
 import com.hxq.smart_campus.mapper.SeatReservationMapper;
 import com.hxq.smart_campus.service.SeatReservationService;
 import com.hxq.smart_campus.service.mq.SeatReservationProducer;
@@ -22,6 +26,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.hxq.smart_campus.constant.MessageConstant.SEAT_STATUS_FREE;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +35,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     private final SeatReservationMapper seatReservationMapper;
     private final RedisSeatService redisSeatService;
     private final SeatReservationProducer seatReservationProducer;
+    private final SeatMapper seatMapper;
 
     @Override
     public SeatReservationResponseDTO insertSeatReservation(SeatReservationCreateDTO dto) {
@@ -64,7 +71,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         String reservationNo = generateReservationNo();
         dto.setReservationNo(reservationNo);
 
-        Integer result = redisSeatService.reserveSeat(
+        Long result = redisSeatService.reserveSeat(
                 dto.getSeatId(), userId, dto.getDate(),
                 dto.getStartTime(), dto.getEndTime(), reservationNo);
         if (result == 0) {
@@ -110,7 +117,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         }
 
         // 1. 执行 Redis Lua 取消预约
-        Integer result = redisSeatService.cancelReservation(
+        Long result = redisSeatService.cancelReservation(
                 existing.getSeatId(), existing.getUserId(),
                 existing.getDate(), existing.getStartTime());
         if (result == -1) {
@@ -215,6 +222,58 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         List<SeatReservationListVO> list = seatReservationMapper.getSeatReservationList(userId, null, date, status);
         log.info("获取我的预约列表成功，数量：{}", list.size());
         return new PageInfo<>(list);
+    }
+
+    /**
+     * 获取可用座位列表（包含空闲和使用中的座位）
+     * @return
+     */
+    @Override
+    public List<SeatListVO> getAvailableSeatList() {
+        return seatMapper.getAvailableSeatList(null);
+    }
+
+    @Override
+    public List<SeatListVO> getAvailableSeatList(Long areaId, LocalDate date) {
+        return seatMapper.getSeatList(areaId, null);
+    }
+
+    @Override
+    public SeatScheduleVO getSeatSchedule(Long seatId, LocalDate date) {
+        SeatScheduleVO schedule = new SeatScheduleVO();
+        schedule.setSeatId(seatId);
+        
+        SeatDetailVO seatDetail = seatMapper.getSeatDetail(seatId);
+        if (seatDetail != null) {
+            schedule.setSeatNumber(seatDetail.getSeatNumber());
+        }
+        schedule.setDate(date);
+        
+        List<SeatReservationListVO> reservations = seatReservationMapper.getSeatReservationList(null, seatId, date, null);
+        
+        List<SeatScheduleVO.TimeSlotVO> timeSlots = new java.util.ArrayList<>();
+        String[] times = {"08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"};
+        
+        for (String time : times) {
+            SeatScheduleVO.TimeSlotVO slot = new SeatScheduleVO.TimeSlotVO();
+            slot.setTime(time);
+            slot.setAvailable(true);
+            
+            LocalTime slotTime = LocalTime.parse(time);
+            
+            for (SeatReservationListVO res : reservations) {
+                if (slotTime.isAfter(res.getStartTime()) && slotTime.isBefore(res.getEndTime())) {
+                    slot.setAvailable(false);
+                    slot.setReservedBy(res.getUserName());
+                    break;
+                }
+            }
+            
+            timeSlots.add(slot);
+        }
+        
+        schedule.setTimeSlots(timeSlots);
+        return schedule;
     }
 
     private String generateReservationNo() {

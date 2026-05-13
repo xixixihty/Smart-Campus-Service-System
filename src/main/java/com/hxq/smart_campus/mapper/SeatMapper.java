@@ -61,4 +61,11 @@ public interface SeatMapper {
      */
     @Select("select id from seat")
     List<Long> selectAllSeatIds();
+
+    /**
+     * 获取可用座位列表
+     * @param status 座位状态（null表示查询所有状态）
+     * @return 可用座位列表
+     */
+    List<SeatListVO> getAvailableSeatList(@Param("status") String status);
 }
