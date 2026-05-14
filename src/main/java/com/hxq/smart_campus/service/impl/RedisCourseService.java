@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -34,16 +35,35 @@ public class RedisCourseService {
         courseFilter = redissonClient.getBloomFilter("bf:courses");
         courseFilter.tryInit(5000L, 0.03);
         loadCourseToBloomFilter();
+        initAllCourseStocks();
     }
 
     /**
      * 从数据库加载所有课程ID到布隆过滤器
      */
     private void loadCourseToBloomFilter() {
-        // 从数据库加载所有课程ID到布隆过滤器
         List<Long> courseIds = loadAllCourseIds();
         courseIds.forEach(id -> courseFilter.add("course:" + id));
         log.info("课程布隆过滤器初始化完成，共加载 {} 个课程ID", courseIds.size());
+    }
+
+    private void initAllCourseStocks() {
+        List<Map<String, Object>> courses = courseMapper.selectOpenCourseStocks();
+        int successCount = 0;
+        int skipCount = 0;
+        for (Map<String, Object> course : courses) {
+            Long id = ((Number) course.get("id")).longValue();
+            Object capObj = course.get("capacity");
+            if (capObj == null) {
+                log.warn("课程ID={} 的 capacity 为 NULL，跳过库存初始化", id);
+                skipCount++;
+                continue;
+            }
+            Integer capacity = ((Number) capObj).intValue();
+            initStock(id, capacity);
+            successCount++;
+        }
+        log.info("课程库存初始化完成，成功 {} 门，跳过 {} 门", successCount, skipCount);
     }
 
     /**
@@ -71,13 +91,13 @@ public class RedisCourseService {
      * @param userId 用户ID
      * @return 选择结果，0表示失败，1表示成功
      */
-    public Integer executeSelection(Long courseId, Long userId) {
+    public Long executeSelection(Long courseId, Long userId) {
         String script = loadScriptFromResource("lua/select_course.lua");
         String stockKey = "course:stock:" + courseId;
         String selectedKey = "course:selected:" + userId;
         String waitingKey = "course:waiting:" + courseId;
 
-        return redisTemplate.execute(new DefaultRedisScript<>(script, Integer.class),
+        return redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
             List.of(stockKey, selectedKey, waitingKey),
             String.valueOf(courseId), String.valueOf(userId),
             String.valueOf(System.currentTimeMillis()));

@@ -7,19 +7,18 @@
     <insert id="insertCourseSelection">
         insert into course_selection
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            student_id, course_id, semester_id, status, create_time, update_time
+            student_id, course_id, semester_id, status
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            #{studentId}, #{courseId}, #{semesterId}, '已选', now(), now()
+            #{studentId}, #{courseId}, #{semesterId}, '已选'
         </trim>
     </insert>
     <!-- 退课 -->
     <update id="dropCourse">
         update course_selection
         <set>
-            status = '已退课',
-            update_time = now()
+            status = '已退课'
         </set>
         where id = #{courseSelectionId}
     </update>
@@ -39,7 +38,7 @@
     </select>
     <!-- 获取单一选课信息 -->
     <select id="getCourseSelectionListVO" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -48,7 +47,7 @@
     </select>
     <!-- 查询选课列表 -->
     <select id="getCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, stu.student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time, cs.update_time
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
                  left join course c on cs.course_id = c.id
                  left join student stu on cs.student_id = stu.id
@@ -59,6 +58,5 @@
             <if test="semesterId != null">and cs.semester_id = #{semesterId}</if>
             <if test="status != null">and cs.status = #{status}</if>
         </where>
-        order by cs.create_time desc
     </select>
 </mapper>

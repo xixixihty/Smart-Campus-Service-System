@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
@@ -74,6 +75,7 @@ public class CourseServiceImpl implements CourseService {
         }
         // 删除Redis缓存
         redisTemplate.delete(COURSE_DETAIL_KEY_PREFIX + id);
+        invalidateAvailableCourseCache();
         return convertToResponseDTO(courseDetailVO);
     }
     /**
@@ -94,6 +96,7 @@ public class CourseServiceImpl implements CourseService {
         }
         // 删除Redis缓存
         redisTemplate.delete(COURSE_DETAIL_KEY_PREFIX + courseUpdateDTO.getId());
+        invalidateAvailableCourseCache();
         return convertToResponseDTO(courseDetailVO);
     }
     /**
@@ -119,6 +122,7 @@ public class CourseServiceImpl implements CourseService {
         }
         // 删除Redis缓存
         ids.forEach(id -> redisTemplate.delete(COURSE_DETAIL_KEY_PREFIX + id));
+        invalidateAvailableCourseCache();
         return true;
     }
 
@@ -146,9 +150,9 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public List<AvailableCourseVO> getAvailableCourseList(Long semesterId) {
+    public List<AvailableCourseVO> getAvailableCourseList(Long semesterId, Long studentId) {
         // TODO : 根据学期ID获取可选课程列表
-        List<AvailableCourseVO> availableCourseVOList = courseMapper.getAvailableCourseList(semesterId);
+        List<AvailableCourseVO> availableCourseVOList = courseMapper.getAvailableCourseList(semesterId, studentId);
         // 缓存可选课程列表
         availableCourseVOList.stream().forEach(course -> {
             redisTemplate.opsForValue().set(AVAILABLE_COURSE_KEY_PREFIX + course.getId(), course, 1, TimeUnit.DAYS);
@@ -183,6 +187,14 @@ public class CourseServiceImpl implements CourseService {
             log.error("转换课程详情为响应DTO失败", e);
         }
         return courseResponseDTO;
+    }
+
+    private void invalidateAvailableCourseCache() {
+        Set<String> keys = redisTemplate.keys(AVAILABLE_COURSE_KEY_PREFIX + "*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("已失效可选课程缓存，共 {} 个key", keys.size());
+        }
     }
 
 

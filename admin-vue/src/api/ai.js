@@ -1,37 +1,8 @@
 import request from '@/utils/request'
-import axios from 'axios'
 
-const aiRequest = axios.create({
-  baseURL: '/api',
-  timeout: 120000
-})
-
-aiRequest.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
-
-aiRequest.interceptors.response.use(
-  (response) => {
-    const res = response.data
-    if (res.code === '200' || res.code === 200) {
-      return res
-    }
-    return Promise.reject(new Error(res.msg || '请求失败'))
-  },
-  (error) => Promise.reject(error)
-)
-
-export const getCampusOverview = () => aiRequest.get('/ai/admin/campus-overview')
-export const getTeachingQuality = (params) => aiRequest.get('/ai/admin/teaching-quality', { params })
-export const getScoreAnalysis = (params) => aiRequest.get('/ai/admin/score-analysis', { params })
-export const getResourceOptimization = () => aiRequest.get('/ai/admin/resource-optimization')
 export const getDashboardStats = () => request.get('/dashboard/admin/stats')
 
-export const chatStream = (message, context, onMessage, onDone, onError) => {
+export const chatStream = (message, context, onMessage, onDone, onError, signal) => {
   const token = localStorage.getItem('token')
   return fetch('/api/ai/admin/chat', {
     method: 'POST',
@@ -39,7 +10,8 @@ export const chatStream = (message, context, onMessage, onDone, onError) => {
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''
     },
-    body: JSON.stringify({ message, context })
+    body: JSON.stringify({ message, context }),
+    signal
   }).then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)

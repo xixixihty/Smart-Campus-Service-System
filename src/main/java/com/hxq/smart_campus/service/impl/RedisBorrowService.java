@@ -106,13 +106,13 @@ public class RedisBorrowService {
      * 执行借阅Lua脚本
      * @return -2=已借, -1=库存不足已排队, 1=成功
      */
-    public Integer executeBorrow(Long bookId, Long userId) {
+    public Long executeBorrow(Long bookId, Long userId) {
         String script = loadScript("lua/borrow_book.lua");
         String stockKey = "book:stock:" + bookId;
         String borrowedKey = "book:borrowed:" + userId;
         String waitingKey = "book:waiting:" + bookId;
 
-        return redisTemplate.execute(new DefaultRedisScript<>(script, Integer.class),
+        return redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
                 List.of(stockKey, borrowedKey, waitingKey),
                 String.valueOf(bookId), String.valueOf(userId),
                 String.valueOf(System.currentTimeMillis()));

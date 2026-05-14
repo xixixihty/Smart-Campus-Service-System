@@ -22,7 +22,7 @@ public class ReadingReportController {
     private final ReadingReportService readingReportService;
 
 
-    // TODO ：该模块需要AI配合实现
+
     /**
      * 新增读书报告
      * @param readingReportCreateDTO

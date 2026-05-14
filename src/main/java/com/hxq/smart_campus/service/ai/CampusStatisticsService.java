@@ -27,7 +27,7 @@ public class CampusStatisticsService {
 
         String userMessage = "请基于智慧校园系统的整体数据，生成一份校园数据统计分析报告，描述当前校园运营概况。";
 
-        return aiService.analyze(systemPrompt, userMessage);
+        return aiService.analyzeWithAdminTools(systemPrompt, userMessage);
     }
 
     public String analyzeTeachingQuality(Long courseId, Long semesterId) {
@@ -46,7 +46,7 @@ public class CampusStatisticsService {
 
         String userMessage = String.format("以下是课程ID=%s的成绩数据：\n%s\n\n请进行教学质量评估。", courseId, data);
 
-        return aiService.analyze(systemPrompt, userMessage);
+        return aiService.analyzeWithAdminTools(systemPrompt, userMessage);
     }
 
     public String analyzeResourceUtilization() {
@@ -56,6 +56,6 @@ public class CampusStatisticsService {
 
         String userMessage = "请分析当前校园资源利用情况，给出优化建议。";
 
-        return aiService.analyze(systemPrompt, userMessage);
+        return aiService.analyzeWithAdminTools(systemPrompt, userMessage);
     }
 }

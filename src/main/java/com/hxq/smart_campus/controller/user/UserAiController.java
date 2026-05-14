@@ -1,74 +1,39 @@
 package com.hxq.smart_campus.controller.user;
 
-import com.hxq.smart_campus.entity.vo.BookRecommendVO;
-import com.hxq.smart_campus.entity.vo.CourseRecommendVO;
-import com.hxq.smart_campus.entity.vo.HotBookVO;
-import com.hxq.smart_campus.entity.vo.ReadingAnalysisVO;
-import com.hxq.smart_campus.entity.vo.ScoreAnalysisVO;
-import com.hxq.smart_campus.result.Result;
-import com.hxq.smart_campus.service.ai.*;
+import com.hxq.smart_campus.entity.dto.AiChatDTO;
+import com.hxq.smart_campus.service.ai.AiService;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/api/ai/user")
-@Tag(name = "用户端AI服务")
+@Tag(name = "用户端AI学习助手")
 @RequiredArgsConstructor
 @Slf4j
 public class UserAiController {
 
-    private final BookRecommendService bookRecommendService;
-    private final ReadingAnalysisService readingAnalysisService;
-    private final ScoreAnalysisService scoreAnalysisService;
-    private final CourseRecommendService courseRecommendService;
+    private final AiService aiService;
 
-    @GetMapping("/book-recommend")
-    @Operation(summary = "图书推荐（基于个人借阅历史）")
-    public Result<List<BookRecommendVO>> recommendBooks() {
+    @PostMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "AI学习助手对话（流式）")
+    public Flux<String> chat(@RequestBody AiChatDTO chatDTO) {
         Long userId = SecurityUtils.getCurrentUserId();
-        log.info("AI图书推荐，用户ID：{}", userId);
-        List<BookRecommendVO> result = bookRecommendService.recommendByStudent(userId);
-        return Result.success(result);
-    }
-
-    @GetMapping("/hot-books")
-    @Operation(summary = "热门图书推荐")
-    public Result<List<HotBookVO>> recommendHotBooks() {
-        log.info("AI热门图书推荐");
-        List<HotBookVO> result = bookRecommendService.recommendHotBooks();
-        return Result.success(result);
-    }
-
-    @GetMapping("/reading-analysis")
-    @Operation(summary = "借阅行为分析")
-    public Result<ReadingAnalysisVO> analyzeReading() {
-        Long userId = SecurityUtils.getCurrentUserId();
-        log.info("AI借阅行为分析，用户ID：{}", userId);
-        ReadingAnalysisVO result = readingAnalysisService.analyzeReadingBehavior(userId);
-        return Result.success(result);
-    }
-
-    @GetMapping("/score-analysis")
-    @Operation(summary = "学习成绩分析")
-    public Result<ScoreAnalysisVO> analyzeScores() {
-        Long userId = SecurityUtils.getCurrentUserId();
-        log.info("AI学习成绩分析，用户ID：{}", userId);
-        ScoreAnalysisVO result = scoreAnalysisService.analyzeStudentScores(userId);
-        return Result.success(result);
-    }
-
-    @GetMapping("/course-recommend")
-    @Operation(summary = "选修课程推荐")
-    public Result<List<CourseRecommendVO>> recommendCourses(@RequestParam(required = false) Long semesterId) {
-        Long userId = SecurityUtils.getCurrentUserId();
-        log.info("AI选修课程推荐，用户ID：{}，学期ID：{}", userId, semesterId);
-        List<CourseRecommendVO> result = courseRecommendService.recommendCourses(userId, semesterId);
-        return Result.success(result);
+        String userName = SecurityUtils.getCurrentUserName();
+        log.info("用户端AI对话，用户ID：{}，消息：{}", userId, chatDTO.getMessage());
+        // 将当前用户上下文注入到system prompt，使AI工具能获取到用户ID参数
+        String userContext = String.format(
+                "当前用户信息：用户ID=%d, 用户名=%s。当用户查询个人数据时，使用该用户ID作为学生ID参数。",
+                userId, userName != null ? userName : "");
+        return aiService.analyzeStreamWithUserTools(userContext, chatDTO.getMessage())
+                .onErrorResume(e -> {
+                    log.error("AI对话异常", e);
+                    return Flux.just("抱歉，AI服务暂时不可用，请稍后再试。");
+                });
     }
 }

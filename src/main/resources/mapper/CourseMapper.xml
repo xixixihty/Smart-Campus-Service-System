@@ -8,22 +8,22 @@
     <insert id="insertCourse">
         insert into course
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="courseCode != null and courseCode != ''">course_code</if>
-            <if test="courseName != null and courseName != ''">course_name</if>
-            <if test="credit != null">credit</if>
-            <if test="hours != null">hours</if>
-            <if test="type != null and type != ''">type</if>
-            <if test="status != null and status != ''">status</if>
+            <if test="courseCode != null and courseCode != ''">course_code,</if>
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="credit != null">credit,</if>
+            <if test="hours != null">hours,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="status != null and status != ''">status,</if>
             <if test="capacity != null">capacity</if>
         </trim>
             values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="courseCode != null and courseCode != ''">#{courseCode}</if>
-            <if test="courseName != null and courseName != ''">#{courseName}</if>
-            <if test="credit != null">#{credit}</if>
-            <if test="hours != null">#{hours}</if>
-            <if test="type != null and type != ''">#{type}</if>
-            <if test="status != null and status != ''">#{status}</if>
+            <if test="courseCode != null and courseCode != ''">#{courseCode},</if>
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="credit != null">#{credit},</if>
+            <if test="hours != null">#{hours},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="status != null and status != ''">#{status},</if>
             <if test="capacity != null">#{capacity}</if>
         </trim>
     </insert>
@@ -31,11 +31,11 @@
     <update id="updateCourse">
         update course
         <set>
-            <if test="courseName != null and courseName != ''">course_name = #{courseName}</if>
-            <if test="credit != null">credit = #{credit}</if>
-            <if test="hours != null">hours = #{hours}</if>
-            <if test="type != null and type != ''">type = #{type}</if>
-            <if test="status != null and status != ''">status = #{status}</if>
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="credit != null">credit = #{credit},</if>
+            <if test="hours != null">hours = #{hours},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
             <if test="capacity != null">capacity = #{capacity}</if>
         </set>
         where id = #{id}
@@ -70,6 +70,14 @@
         left join teacher t on cs2.teacher_id = t.id
         where (c.type = '选修' or c.type = '公选')
           and c.status = '开课'
-          and (select count(*) from course_selection cs where cs.course_id = c.id and cs.status = '已选') &lt; c.capacity
+          and (select count(*) from course_selection cs where cs.course_id = c.id and cs.status = '已选') &lt; COALESCE(c.capacity, 0)
+        <if test="studentId != null">
+          and not exists (
+              select 1 from course_selection cs3
+              where cs3.course_id = c.id
+                and cs3.student_id = #{studentId}
+                and cs3.status = '已选'
+          )
+        </if>
     </select>
 </mapper>

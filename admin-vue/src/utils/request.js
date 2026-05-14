@@ -37,7 +37,8 @@ request.interceptors.response.use(
       localStorage.clear()
       router.replace('/login')
     }
-    ElMessage.error(error.message || '网络错误')
+    const serverMsg = error.response?.data?.msg
+    ElMessage.error(serverMsg || error.message || '网络错误')
     return Promise.reject(error)
   }
 )

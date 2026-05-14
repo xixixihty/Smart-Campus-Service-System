@@ -1,256 +1,71 @@
-2026-05-12T19:01:45.762+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
-2026-05-12T19:01:45.777+08:00  INFO 5108 --- [nio-8080-exec-1] c.h.s.controller.user.UserAiController   : AI图书推荐，用户ID：1
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@97aa8a0] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@1887486184 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id WHERE r.user_id = ? order by r.id desc
-==> Parameters: 1(Long)
-<==    Columns: id, borrowNo, userName, bookTitle, borrowDate, dueDate, status
-<==        Row: 4, BR20260510000004, 李明, 活着, 2024-04-01, 2024-04-30, 已归还
-<==        Row: 1, BR20260510000001, 李明, Java编程思想, 2024-06-01, 2024-06-30, 已归还
-<==      Total: 2
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@97aa8a0]
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@78ff2ab7] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@244196032 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select b.id, b.isbn, b.title, b.author, bc.category_name, b.publisher, b.available_copies, b.status, b.cover_image, b.description from book b left join book_category bc on b.category_id = bc.id
-==> Parameters: 
-<==    Columns: id, isbn, title, author, category_name, publisher, available_copies, status, cover_image, description
-<==        Row: 1, 9787111638436, Java编程思想, Bruce Eckel, 编程语言, 机械工业出版社, 4, 在库, https://hexiongqi.oss-cn-hangzhou.aliyuncs.com/7e9a8d90-baa7-4ec2-886f-0a134a7681bf.jpg, <<BLOB>>
-<==        Row: 2, 9787115472778, MySQL必知必会, Ben Forta, 计算机科学, 人民邮电出版社, 2, 在库, /covers/mysql.jpg, <<BLOB>>
-<==        Row: 3, 9787020002207, 红楼梦, 曹雪芹, 中国文学, 人民文学出版社, 8, 在库, /covers/hlm.jpg, <<BLOB>>
-<==        Row: 4, 9787506365437, 活着, 余华, 中国文学, 作家出版社, 5, 在库, /covers/huozhe.jpg, <<BLOB>>
-<==        Row: 5, 9787302523286, 深度学习, Ian Goodfellow, 计算机科学, 人民邮电出版社, 1, 在库, /covers/dl.jpg, <<BLOB>>
-<==        Row: 6, 9787121348469, Spring Boot实战, Craig Walls, 计算机科学, 人民邮电出版社, 4, 在库, /covers/springboot.jpg, <<BLOB>>
-<==      Total: 6
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@78ff2ab7]
-2026-05-12T19:01:45.829+08:00  INFO 5108 --- [nio-8080-exec-1] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
 
-可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》...
-2026-05-12T19:01:46.032+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园图书推荐专家。根据学生的借阅历史和可借图书列表，推荐3-5本最合适的图书。请说明每本书的推荐理由，结合学生的阅读偏好进行分析。返回格式要简洁清晰。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-05-14T15:15:47.802+08:00 ERROR 6820 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
-可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》-余华、《深度学习》-Ian Goodfellow、《Spring Boot实战》-Craig Walls
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseSelectionController' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\controller\user\CourseSelectionController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseSelectionServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\CourseSelectionServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 7: Error creating bean with name 'redisCourseService': Invocation of init method failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1228) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1194) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1130) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:991) ~[spring-context-6.2.17.jar:6.2.17]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628) ~[spring-context-6.2.17.jar:6.2.17]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.13.jar:3.5.13]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.13.jar:3.5.13]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.13.jar:3.5.13]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.13.jar:3.5.13]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.13.jar:3.5.13]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.13.jar:3.5.13]
+	at com.hxq.smart_campus.SmartCampusApplication.main(SmartCampusApplication.java:12) ~[classes/:na]
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseSelectionServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\CourseSelectionServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 7: Error creating bean with name 'redisCourseService': Invocation of init method failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1770) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
+	... 21 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'redisCourseService': Invocation of init method failed
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:222) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:429) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1818) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1708) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
+	... 35 common frames omitted
+Caused by: java.lang.NullPointerException: Cannot invoke "java.lang.Number.intValue()" because the return value of "java.util.Map.get(Object)" is null
+	at com.hxq.smart_campus.service.impl.RedisCourseService.initAllCourseStocks(RedisCourseService.java:54) ~[classes/:na]
+	at com.hxq.smart_campus.service.impl.RedisCourseService.initCourseFilter(RedisCourseService.java:38) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401) ~[spring-beans-6.2.17.jar:6.2.17]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219) ~[spring-beans-6.2.17.jar:6.2.17]
+	... 47 common frames omitted
 
-请根据借阅历史分析该学生的阅读偏好，并从可借图书中推荐最合适的几本。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:46.063+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:46.063+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
-2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园图书推荐专家。根据学生的借阅历史和可借图书列表，推荐3-5本最合适的图书。请说明每本书的推荐理由，结合学生的阅读偏好进行分析。返回格式要简洁清晰。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=学生借阅历史：《活着》(已归还)、《Java编程思想》(已归还)
 
-可借图书列表：《Java编程思想》-Bruce Eckel、《MySQL必知必会》-Ben Forta、《红楼梦》-曹雪芹、《活着》-余华、《深度学习》-Ian Goodfellow、《Spring Boot实战》-Craig Walls
-
-请根据借阅历史分析该学生的阅读偏好，并从可借图书中推荐最合适的几本。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:46.066+08:00 DEBUG 5108 --- [nio-8080-exec-1] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:53.618+08:00 DEBUG 5108 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
-2026-05-12T19:01:53.629+08:00 ERROR 5108 --- [nio-8080-exec-2] c.h.s.exception.GlobalExceptionHandler   : 系统异常
-
-org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/ai/user/hot-books.
-	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:585) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.17.jar:6.2.17]
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.53.jar:6.0]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at com.hxq.smart_campus.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:61) ~[classes/:na]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.17.jar:6.2.17]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1775) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.53.jar:10.1.53]
-	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
-
-2026-05-12T19:01:54.925+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
-2026-05-12T19:01:54.926+08:00  INFO 5108 --- [nio-8080-exec-4] c.h.s.controller.user.UserAiController   : AI借阅行为分析，用户ID：1
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ec4f269] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@573881203 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status from borrow_record r left join student s on r.user_id = s.id left join book b on r.book_id = b.id WHERE r.user_id = ? order by r.id desc
-==> Parameters: 1(Long)
-<==    Columns: id, borrowNo, userName, bookTitle, borrowDate, dueDate, status
-<==        Row: 4, BR20260510000004, 李明, 活着, 2024-04-01, 2024-04-30, 已归还
-<==        Row: 1, BR20260510000001, 李明, Java编程思想, 2024-06-01, 2024-06-30, 已归还
-<==      Total: 2
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ec4f269]
-2026-05-12T19:01:54.931+08:00  INFO 5108 --- [nio-8080-exec-4] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=以下是学生的借阅记录：
-《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
-《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：...
-2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园阅读行为分析专家。根据学生的借阅记录，生成个性化的阅读分析报告。分析内容包括：
-1. 阅读量统计
-2. 阅读偏好分析（类别、作者等）
-3. 借阅规律（时段、频率等）
-4. 改进建议和推荐阅读方向, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的借阅记录：
-《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
-《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：已归还
-
-请生成详细的阅读行为分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:54.933+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
-2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个校园阅读行为分析专家。根据学生的借阅记录，生成个性化的阅读分析报告。分析内容包括：
-1. 阅读量统计
-2. 阅读偏好分析（类别、作者等）
-3. 借阅规律（时段、频率等）
-4. 改进建议和推荐阅读方向, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的借阅记录：
-《活着》借阅日期：2024-04-01，应还日期：2024-04-30，状态：已归还
-《Java编程思想》借阅日期：2024-06-01，应还日期：2024-06-30，状态：已归还
-
-请生成详细的阅读行为分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:54.934+08:00 DEBUG 5108 --- [nio-8080-exec-4] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:56.110+08:00  INFO 5108 --- [nio-8080-exec-1] c.hxq.smart_campus.service.ai.AiService  : AI分析完成: responseLength=525
-2026-05-12T19:01:56.977+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
-2026-05-12T19:01:56.977+08:00  INFO 5108 --- [nio-8080-exec-3] c.h.s.controller.user.UserAiController   : AI学习成绩分析，用户ID：1
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@522df12a] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@887038597 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ?
-==> Parameters: 1(Long)
-<==    Columns: id, course_name, studentName, studentNo, semesterName, usual_score, final_score, total_score, score_point, credit, exam_status
-<==        Row: 1, Java程序设计, 李明, 2023001001, 2023-2024第二学期, 90.00, 85.00, 87.50, 1.00, 4.0, 正常
-<==        Row: 3, 数据结构, 李明, 2023001001, 2023-2024第二学期, 75.00, 80.00, 77.50, 2.00, 4.0, 正常
-<==        Row: 5, 人工智能导论, 李明, 2023001001, 2023-2024第二学期, 95.00, 90.00, 92.50, 2.00, 2.0, 正常
-<==      Total: 3
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@522df12a]
-2026-05-12T19:01:56.992+08:00  INFO 5108 --- [nio-8080-exec-3] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=以下是学生的成绩记录：
-课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
-课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
-课程...
-2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个学习成绩分析专家。根据学生的成绩列表，生成详细的学习分析报告。分析内容包括：
-1. 成绩概况（平均分、最高/最低分、绩点估算）
-2. 优势学科与薄弱环节
-3. 成绩趋势分析（进步或退步）
-4. 针对性学习建议, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的成绩记录：
-课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
-课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
-课程：人工智能导论，成绩：92.50，学分：2.0，学期：2023-2024第二学期
-
-请生成详细的学习成绩分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:56.993+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
-2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个学习成绩分析专家。根据学生的成绩列表，生成详细的学习分析报告。分析内容包括：
-1. 成绩概况（平均分、最高/最低分、绩点估算）
-2. 优势学科与薄弱环节
-3. 成绩趋势分析（进步或退步）
-4. 针对性学习建议, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=以下是学生的成绩记录：
-课程：Java程序设计，成绩：87.50，学分：4.0，学期：2023-2024第二学期
-课程：数据结构，成绩：77.50，学分：4.0，学期：2023-2024第二学期
-课程：人工智能导论，成绩：92.50，学分：2.0，学期：2023-2024第二学期
-
-请生成详细的学习成绩分析报告。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:56.995+08:00 DEBUG 5108 --- [nio-8080-exec-3] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:58.150+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
-2026-05-12T19:01:58.152+08:00  INFO 5108 --- [nio-8080-exec-8] c.h.s.controller.user.UserAiController   : AI选修课程推荐，用户ID：1，学期ID：null
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ebd353] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@1464500194 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select se.id, c.course_name, s.name as studentName, s.student_no as studentNo, sm.name as semesterName, se.usual_score, se.final_score, se.total_score, se.score_point, c.credit, se.exam_status from score_entry se left join course c on se.course_id = c.id left join student s on se.student_id = s.id left join semester sm on se.semester_id = sm.id WHERE se.student_id = ?
-==> Parameters: 1(Long)
-<==    Columns: id, course_name, studentName, studentNo, semesterName, usual_score, final_score, total_score, score_point, credit, exam_status
-<==        Row: 1, Java程序设计, 李明, 2023001001, 2023-2024第二学期, 90.00, 85.00, 87.50, 1.00, 4.0, 正常
-<==        Row: 3, 数据结构, 李明, 2023001001, 2023-2024第二学期, 75.00, 80.00, 77.50, 2.00, 4.0, 正常
-<==        Row: 5, 人工智能导论, 李明, 2023001001, 2023-2024第二学期, 95.00, 90.00, 92.50, 2.00, 2.0, 正常
-<==      Total: 3
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ebd353]
-Creating a new SqlSession
-SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c673045] was not registered for synchronization because synchronization is not active
-JDBC Connection [HikariProxyConnection@1213653828 wrapping com.mysql.cj.jdbc.ConnectionImpl@1e5e58e4] will not be managed by Spring
-==>  Preparing: select id, course_code, course_name, credit, hours, type, status, create_time,capacity from course order by create_time desc
-==> Parameters: 
-<==    Columns: id, course_code, course_name, credit, hours, type, status, create_time, capacity
-<==        Row: 1, CS101, 计算机导论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 2, CS102, Java程序设计, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 3, CS201, 数据结构, 4.0, 64, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 4, SE101, 软件工程概论, 3.0, 48, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 5, MATH101, 高等数学, 5.0, 80, 必修, 开课, 2026-04-21 18:28:51, null
-<==        Row: 6, CS301, 人工智能导论, 2.0, 32, 选修, 开课, 2026-04-21 18:28:51, 60
-<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 2026-04-21 18:28:51, 120
-<==      Total: 7
-Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c673045]
-2026-05-12T19:01:58.165+08:00  INFO 5108 --- [nio-8080-exec-8] c.hxq.smart_campus.service.ai.AiService  : AI分析请求: userMessage=已修课程及成绩：
-《Java程序设计》成绩：87.50（学分：4.0）
-《数据结构》成绩：77.50（学分：4.0）
-《人工智能导论》成绩：92.50（学分：2.0）
-
-可选课程列表：
-《计算机导论》...
-2026-05-12T19:01:58.167+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Request: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个选修课程推荐专家。根据学生的已修课程成绩和可选课程列表，推荐最适合的选修课程。分析维度：
-1. 学生已修课程的成绩表现
-2. 专业方向匹配度
-3. 课程难度递进关系
-4. 学分规划建议
-给出3-5门推荐课程及理由。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=已修课程及成绩：
-《Java程序设计》成绩：87.50（学分：4.0）
-《数据结构》成绩：77.50（学分：4.0）
-《人工智能导论》成绩：92.50（学分：2.0）
-
-可选课程列表：
-《计算机导论》类型：必修，学分：3.0
-《Java程序设计》类型：必修，学分：4.0
-《数据结构》类型：必修，学分：4.0
-《软件工程概论》类型：必修，学分：3.0
-《高等数学》类型：必修，学分：5.0
-《人工智能导论》类型：选修，学分：2.0
-《大学英语》类型：公选，学分：4.0
-
-请推荐最适合该学生的选修课程。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:58.167+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Headers: {Accept=[text/event-stream], Content-Type=[application/json]}
-2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Executing API call to: org.springframework.ai.openai.api.OpenAiApi@4d4b9e48
-2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : API Request Body: ChatCompletionRequest[messages=[ChatCompletionMessage[rawContent=你是一个选修课程推荐专家。根据学生的已修课程成绩和可选课程列表，推荐最适合的选修课程。分析维度：
-1. 学生已修课程的成绩表现
-2. 专业方向匹配度
-3. 课程难度递进关系
-4. 学分规划建议
-给出3-5门推荐课程及理由。, role=SYSTEM, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null], ChatCompletionMessage[rawContent=已修课程及成绩：
-《Java程序设计》成绩：87.50（学分：4.0）
-《数据结构》成绩：77.50（学分：4.0）
-《人工智能导论》成绩：92.50（学分：2.0）
-
-可选课程列表：
-《计算机导论》类型：必修，学分：3.0
-《Java程序设计》类型：必修，学分：4.0
-《数据结构》类型：必修，学分：4.0
-《软件工程概论》类型：必修，学分：3.0
-《高等数学》类型：必修，学分：5.0
-《人工智能导论》类型：选修，学分：2.0
-《大学英语》类型：公选，学分：4.0
-
-请推荐最适合该学生的选修课程。, role=USER, name=null, toolCallId=null, toolCalls=null, refusal=null, audioOutput=null, annotations=null, reasoningContent=null]], model=qwen-max, store=null, metadata=null, frequencyPenalty=null, logitBias=null, logprobs=null, topLogprobs=null, maxTokens=null, maxCompletionTokens=null, n=null, outputModalities=null, audioParameters=null, presencePenalty=null, responseFormat=null, seed=null, serviceTier=null, stop=null, stream=false, streamOptions=null, temperature=0.7, topP=null, tools=null, toolChoice=null, parallelToolCalls=null, user=null, reasoningEffort=null, webSearchOptions=null, verbosity=null, promptCacheKey=null, safetyIdentifier=null, extraBody={}]
-2026-05-12T19:01:58.169+08:00 DEBUG 5108 --- [nio-8080-exec-8] c.h.s.model.AlibabaOpenAiChatModel       : Request headers: {Accept=[text/event-stream], Content-Type=[application/json]}
+Process finished with exit code 1

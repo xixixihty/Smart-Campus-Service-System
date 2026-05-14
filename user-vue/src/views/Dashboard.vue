@@ -174,11 +174,7 @@ const recentNotices = ref([
 ])
 
 const aiActions = [
-  { label: '图书推荐', path: '/ai-book-recommend', icon: 'Star', color: '#409EFF' },
-  { label: '热门图书', path: '/ai-hot-books', icon: 'TrendCharts', color: '#67C23A' },
-  { label: '阅读分析', path: '/ai-reading-analysis', icon: 'DataAnalysis', color: '#E6A23C' },
-  { label: '成绩分析', path: '/ai-score-analysis', icon: 'PieChart', color: '#F56C6C' },
-  { label: '课程推荐', path: '/ai-course-recommend', icon: 'Guide', color: '#909399' }
+  { label: 'AI 学习助手', path: '/ai-assistant', icon: 'Cpu', color: '#409EFF' }
 ]
 </script>
 

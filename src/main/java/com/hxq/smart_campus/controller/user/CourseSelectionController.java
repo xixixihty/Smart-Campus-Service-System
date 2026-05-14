@@ -10,6 +10,8 @@ import com.hxq.smart_campus.entity.vo.SelectionTimeRedisVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.CourseSelectionPeriodService;
 import com.hxq.smart_campus.service.CourseSelectionService;
+import com.hxq.smart_campus.service.SemesterService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.List;
 public class CourseSelectionController {
     private final CourseSelectionService courseSelectionService;
     private final CourseSelectionPeriodService courseSelectionPeriodService;
+    private final SemesterService semesterService;
 
 
     /**
@@ -37,6 +40,18 @@ public class CourseSelectionController {
     @Operation(summary = "学生选课")
     public Result<CourseSelectionResponseDTO> selectCourse(@RequestBody CourseSelectionCreateDTO courseSelectionCreateDTO) {
         log.info("学生选课，选课信息：{}", courseSelectionCreateDTO);
+        // 从登录信息中获取用户ID
+        Long studentId = SecurityUtils.getCurrentUserId();
+        courseSelectionCreateDTO.setStudentId(studentId);
+        // 方案C：前端未传semesterId时，自动填充当前学期ID
+        if (courseSelectionCreateDTO.getSemesterId() == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester == null) {
+                return Result.error("当前学期未设置，请联系管理员");
+            }
+            courseSelectionCreateDTO.setSemesterId(currentSemester.getId());
+            log.info("前端未传学期ID，自动填充当前学期ID：{}", currentSemester.getId());
+        }
         CourseSelectionResponseDTO courseSelectionResponseDTO = courseSelectionService.selectCourse(courseSelectionCreateDTO);
         return Result.success(courseSelectionResponseDTO);
     }

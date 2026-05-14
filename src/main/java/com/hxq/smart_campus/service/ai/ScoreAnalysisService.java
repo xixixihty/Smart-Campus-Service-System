@@ -77,6 +77,6 @@ public class ScoreAnalysisService {
 
         String userMessage = String.format("以下是班级成绩数据：\n%s\n\n请分析班级整体学习情况。", data);
 
-        return aiService.analyze(systemPrompt, userMessage);
+        return aiService.analyzeWithAdminTools(systemPrompt, userMessage);
     }
 }

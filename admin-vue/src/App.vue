@@ -162,28 +162,10 @@
               </el-menu-item>
             </el-sub-menu>
 
-            <el-sub-menu index="ai">
-              <template #title>
-                <el-icon><Cpu /></el-icon>
-                <span>AI 校园智慧助手</span>
-              </template>
-              <el-menu-item index="/ai-campus">
-                <el-icon><DataAnalysis /></el-icon>
-                <span>校园数据概览</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-teaching">
-                <el-icon><TrendCharts /></el-icon>
-                <span>教学质量评估</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-score">
-                <el-icon><PieChart /></el-icon>
-                <span>成绩数据分析</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-resource">
-                <el-icon><Setting /></el-icon>
-                <span>资源优化建议</span>
-              </el-menu-item>
-            </el-sub-menu>
+            <el-menu-item index="/ai-assistant">
+              <el-icon><Cpu /></el-icon>
+              <span>AI 智慧助手</span>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>

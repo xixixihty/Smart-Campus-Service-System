@@ -126,28 +126,10 @@ const routes = [
     meta: { title: '请假审批' }
   },
   {
-    path: '/ai-campus',
-    name: 'AiCampus',
-    component: () => import('@/views/ai/AiCampus.vue'),
-    meta: { title: '校园数据概览' }
-  },
-  {
-    path: '/ai-teaching',
-    name: 'AiTeaching',
-    component: () => import('@/views/ai/AiTeaching.vue'),
-    meta: { title: '教学质量评估' }
-  },
-  {
-    path: '/ai-score',
-    name: 'AiScore',
-    component: () => import('@/views/ai/AiScore.vue'),
-    meta: { title: '成绩数据分析' }
-  },
-  {
-    path: '/ai-resource',
-    name: 'AiResource',
-    component: () => import('@/views/ai/AiResource.vue'),
-    meta: { title: '资源优化建议' }
+    path: '/ai-assistant',
+    name: 'AiAssistant',
+    component: () => import('@/views/ai/AiAssistant.vue'),
+    meta: { title: 'AI 智慧助手' }
   },
   {
     path: '/profile',

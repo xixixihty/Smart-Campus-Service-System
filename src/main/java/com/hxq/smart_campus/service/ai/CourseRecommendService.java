@@ -1,6 +1,6 @@
 package com.hxq.smart_campus.service.ai;
 
-import com.hxq.smart_campus.entity.vo.CourseListVO;
+import com.hxq.smart_campus.entity.vo.AvailableCourseVO;
 import com.hxq.smart_campus.entity.vo.CourseRecommendVO;
 import com.hxq.smart_campus.entity.vo.ScoreEntryListVO;
 import com.hxq.smart_campus.mapper.CourseMapper;
@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,46 +17,54 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourseRecommendService {
 
-    private final AiService aiService;
     private final CourseMapper courseMapper;
     private final ScoreEntryMapper scoreEntryMapper;
-    private final Random random = new Random();
 
     public List<CourseRecommendVO> recommendCourses(Long studentId, Long semesterId) {
         List<ScoreEntryListVO> scores = scoreEntryMapper.getScoreList(null, studentId, null);
-        List<CourseListVO> availableCourses = courseMapper.getCourseList(null, null, null, null);
+        List<AvailableCourseVO> availableCourses = courseMapper.getAvailableCourseList(semesterId, null);
 
-        List<String> takenCourses = scores.stream()
-                .map(ScoreEntryListVO::getCourseName)
-                .collect(Collectors.toList());
-
-        List<CourseRecommendVO> recommendations = new ArrayList<>();
-        
-        List<CourseListVO> filteredCourses = availableCourses.stream()
-                .filter(c -> !takenCourses.contains(c.getCourseName()))
-                .limit(5)
-                .collect(Collectors.toList());
-
-        String[] reasons = {
-            "与您的专业方向高度匹配",
-            "根据您的成绩表现推荐",
-            "热门选修课程",
-            "有助于提升专业能力",
-            "学分规划推荐"
-        };
-
-        for (int i = 0; i < filteredCourses.size(); i++) {
-            CourseListVO course = filteredCourses.get(i);
-            recommendations.add(CourseRecommendVO.builder()
-                    .id(course.getId())
-                    .courseName(course.getCourseName())
-                    .courseType(course.getType())
-                    .credit(course.getCredit())
-                    .teacherName("待定")
-                    .reason(reasons[i % reasons.length])
-                    .rating(random.nextInt(3) + 3)
-                    .build());
+        if (availableCourses == null || availableCourses.isEmpty()) {
+            return Collections.emptyList();
         }
+
+        // 已选/已修课程名集合（带null保护）
+        Set<String> takenCourses = scores != null ? scores.stream()
+                .map(ScoreEntryListVO::getCourseName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet()) : Collections.emptySet();
+
+        // 筛选未修过的课程，按容量利用率排序（已选/容量比越高越热门）
+        List<CourseRecommendVO> recommendations = availableCourses.stream()
+                .filter(c -> c.getCourseName() != null && !takenCourses.contains(c.getCourseName()))
+                .sorted((a, b) -> {
+                    double aRate = a.getCapacity() != null && a.getCapacity() > 0
+                            ? (double) (a.getSelectedCount() != null ? a.getSelectedCount() : 0) / a.getCapacity()
+                            : 0;
+                    double bRate = b.getCapacity() != null && b.getCapacity() > 0
+                            ? (double) (b.getSelectedCount() != null ? b.getSelectedCount() : 0) / b.getCapacity()
+                            : 0;
+                    return Double.compare(bRate, aRate);
+                })
+                .limit(5)
+                .map(c -> {
+                    double popularity = c.getCapacity() != null && c.getCapacity() > 0
+                            ? (double) (c.getSelectedCount() != null ? c.getSelectedCount() : 0) / c.getCapacity()
+                            : 0;
+                    int rating = (int) Math.round(3 + popularity * 2); // 3-5星
+                    return CourseRecommendVO.builder()
+                            .id(c.getId())
+                            .courseName(c.getCourseName())
+                            .courseType(c.getType())
+                            .credit(c.getCredit())
+                            .teacherName(c.getTeacherName() != null ? c.getTeacherName() : "待定")
+                            .reason(popularity > 0.8 ? "热门课程，名额紧张" :
+                                    popularity > 0.5 ? "热门选修课程" :
+                                    popularity > 0.3 ? "推荐选修" : "新开课程推荐")
+                            .rating(rating)
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         return recommendations;
     }

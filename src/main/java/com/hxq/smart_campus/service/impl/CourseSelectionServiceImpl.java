@@ -141,12 +141,15 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         }
 
         // 获取分布式锁
-        RLock lock = redissonClient.getLock("lock:course:" + courseSelectionCreateDTO.getCourseId());
+        RLock lock = redissonClient.getLock(LOCK_COURSE_KEY_PREFIX + courseSelectionCreateDTO.getCourseId());
 
         try {
+            // 尝试获取锁，超时时间3秒，等待时间10秒
             if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
                 // Lua脚本执行选课逻辑
-                Integer result = redisCourseService.executeSelection(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
+                Long result = redisCourseService.executeSelection(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
+                log.info("选课Lua脚本执行结果: result={}, courseId={}, studentId={}", result,
+                        courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
                 // 课程已选
                 if (result == -2) {
                     throw CourseSelectionException.courseSelectionExist("已经选修过该课程");
@@ -213,27 +216,15 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
 //        redisTemplate.opsForValue().set(RedisConstant.MY_COURSE_SELECTION_KEY_PREFIX + studentId, courseSelectionList, 1, TimeUnit.DAYS);
 //        // 返回数据
 //        return true;
-
         log.info("学生退课，参数：{}", id);
         CourseSelectionListVO selection = courseSelectionMapper.getCourseSelectionListVO(id);
         if (selection == null) {
             throw CourseSelectionException.courseSelectionNotExist("课程不存在");
         }
-        // 根据选课名称获取课程ID
-        CourseDetailVO courseDetailVO = courseMapper.getCourseDetailByName(selection.getCourseName());
-        if (courseDetailVO == null) {
-            throw CourseSelectionException.courseNotExist("课程不存在");
-        }
-        // 根据学生姓名获取学生ID
-        StudentDetailVO studentDetailVO = studentMapper.getStudentDetailByName(selection.getStudentName());
-        if (studentDetailVO == null) {
-            throw CourseSelectionException.studentNotExist("学生不存在");
-        }
-        // 获取分布式锁
-        RLock lock = redissonClient.getLock("lock:course:" + courseDetailVO.getId());
+        RLock lock = redissonClient.getLock(LOCK_COURSE_KEY_PREFIX + selection.getCourseId());
         try {
             if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
-                String result = redisCourseService.executeDrop(courseDetailVO.getId(), studentDetailVO.getId());
+                String result = redisCourseService.executeDrop(selection.getCourseId(), selection.getStudentId());
                 if (RLOCK_DROP_COURSE_NOT_EXIST.equals(result)) {
                     throw CourseSelectionException.courseSelectionNotExist("未选择该课程");
                 }
@@ -244,7 +235,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                 }
                 // 如果有候补用户，发送通知
                 if (!"1".equals(result)) {
-                    sendWaitingNotification(courseDetailVO.getId(), Long.parseLong(result));
+                    sendWaitingNotification(selection.getCourseId(), Long.parseLong(result));
                 }
                 return true;
             } else {
@@ -286,7 +277,6 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
     @Override
     public List<MyCourseSelectionVO> getMyCourseSelectionList(Long semesterId, String status) {
         // 从登陆信息中获取到用户信息
-        // TODO: 从登录信息中获取用户ID，需要创建SecurityUtils类，用于获取当前登录用户的ID
         Long studentId = SecurityUtils.getCurrentUserId();
         if (studentId == null) {
             throw new IllegalArgumentException("用户信息不能为空");
@@ -331,7 +321,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             return availableCourseList;
         }
         // 如果Redis中没有，则从数据库中获取
-        availableCourseList = courseService.getAvailableCourseList(semesterId);
+        availableCourseList = courseService.getAvailableCourseList(semesterId, SecurityUtils.getCurrentUserId());
         if (availableCourseList == null) {
             throw CourseSelectionException.availableCourseListEmpty("可选课程列表为空");
         }
@@ -530,8 +520,14 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         if (dto.getCourseId() == null) {
             throw new IllegalArgumentException("课程ID不能为空");
         }
+        // 兜底：如果Controller未填充semesterId，则自动查询当前学期
         if (dto.getSemesterId() == null) {
-            throw new IllegalArgumentException("学期ID不能为空");
+            var currentSemester = semesterMapper.getCurrentSemester();
+            if (currentSemester == null) {
+                throw new IllegalArgumentException("当前学期未设置，请联系管理员");
+            }
+            dto.setSemesterId(currentSemester.getId());
+            log.info("Service层兜底：自动填充当前学期ID：{}", currentSemester.getId());
         }
     }
 

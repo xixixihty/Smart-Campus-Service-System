@@ -90,34 +90,10 @@ const routes = [
     meta: { title: '请假管理' }
   },
   {
-    path: '/ai-book-recommend',
-    name: 'AiBookRecommend',
-    component: () => import('@/views/ai/AiBookRecommend.vue'),
-    meta: { title: '图书推荐' }
-  },
-  {
-    path: '/ai-hot-books',
-    name: 'AiHotBooks',
-    component: () => import('@/views/ai/AiHotBooks.vue'),
-    meta: { title: '热门图书' }
-  },
-  {
-    path: '/ai-reading-analysis',
-    name: 'AiReadingAnalysis',
-    component: () => import('@/views/ai/AiReadingAnalysis.vue'),
-    meta: { title: '阅读分析' }
-  },
-  {
-    path: '/ai-score-analysis',
-    name: 'AiScoreAnalysis',
-    component: () => import('@/views/ai/AiScoreAnalysis.vue'),
-    meta: { title: '成绩分析' }
-  },
-  {
-    path: '/ai-course-recommend',
-    name: 'AiCourseRecommend',
-    component: () => import('@/views/ai/AiCourseRecommend.vue'),
-    meta: { title: '课程推荐' }
+    path: '/ai-assistant',
+    name: 'AiAssistant',
+    component: () => import('@/views/ai/AiAssistant.vue'),
+    meta: { title: 'AI 学习助手' }
   },
   {
     path: '/profile',

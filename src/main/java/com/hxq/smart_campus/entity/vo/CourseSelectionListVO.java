@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class CourseSelectionListVO {
     private Long id;                // 选课ID
     private Long courseId;          // 课程ID
+    private Long studentId;         // 学生ID
     private String studentName;     // 学生姓名
     private String courseName;      // 课程名称
     private BigDecimal credit;      // 学分

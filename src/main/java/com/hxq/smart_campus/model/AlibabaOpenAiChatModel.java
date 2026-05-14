@@ -16,8 +16,10 @@ import org.springframework.ai.chat.observation.DefaultChatModelObservationConven
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.ModelOptionsUtils;
+import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.model.tool.ToolExecutionResult;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.retry.RetryUtils;
@@ -27,6 +29,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.*;
 import org.springframework.util.LinkedMultiValueMap;
 import reactor.core.publisher.Flux;
+import reactor.util.retry.Retry;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -172,13 +175,18 @@ public class AlibabaOpenAiChatModel implements ChatModel {
 
         if (response != null && response.hasToolCalls()) {
             try {
+                int toolCount = response.getResult().getOutput().getToolCalls() != null ?
+                        response.getResult().getOutput().getToolCalls().size() : 0;
+                logger.info("检测到 {} 个工具调用，开始执行", toolCount);
                 var toolExecutionResult = this.toolCallingManager.executeToolCalls(prompt, response);
                 if (toolExecutionResult.returnDirect()) {
+                    logger.info("工具调用直接返回结果");
                     return ChatResponse.builder()
                             .from(response)
                             .generations(ToolExecutionResult.buildGenerations(toolExecutionResult))
                             .build();
                 } else {
+                    logger.info("工具调用执行完成，递归调用模型获取文本响应");
                     return this.internalCall(new Prompt(toolExecutionResult.conversationHistory(), prompt.getOptions()), response);
                 }
             } catch (Exception e) {
@@ -187,6 +195,11 @@ public class AlibabaOpenAiChatModel implements ChatModel {
             }
         }
 
+        String responseContent = response != null && response.getResult() != null ?
+                response.getResult().getOutput().getText() : "null";
+        logger.info("AI模型最终响应: hasToolCalls={}, contentLength={}",
+                response != null ? response.hasToolCalls() : false,
+                responseContent != null ? responseContent.length() : 0);
         return response;
     }
 
@@ -206,6 +219,11 @@ public class AlibabaOpenAiChatModel implements ChatModel {
             }
 
             Flux<OpenAiApi.ChatCompletionChunk> completionChunks = this.openAiApi.chatCompletionStream(request, getAdditionalHttpHeaders(prompt))
+                .retryWhen(Retry.backoff(2, java.time.Duration.ofMillis(500))
+                        .maxBackoff(java.time.Duration.ofSeconds(5))
+                        .filter(throwable -> throwable instanceof org.springframework.web.reactive.function.client.WebClientResponseException
+                                && (((org.springframework.web.reactive.function.client.WebClientResponseException) throwable)
+                                        .getStatusCode().is5xxServerError())))
                 .doOnError(e -> {
                     if (e instanceof org.springframework.web.reactive.function.client.WebClientResponseException) {
                         org.springframework.web.reactive.function.client.WebClientResponseException webClientException = 
@@ -272,12 +290,17 @@ public class AlibabaOpenAiChatModel implements ChatModel {
                     .flatMap(response -> {
                         if (response.hasToolCalls()) {
                             try {
+                                int toolCount = response.getResult().getOutput().getToolCalls() != null ?
+                                        response.getResult().getOutput().getToolCalls().size() : 0;
+                                logger.info("流式检测到 {} 个工具调用，开始执行", toolCount);
                                 var toolExecutionResult = this.toolCallingManager.executeToolCalls(prompt, response);
                                 if (toolExecutionResult.returnDirect()) {
+                                    logger.info("流式工具调用直接返回结果");
                                     return Flux.just(ChatResponse.builder().from(response)
                                             .generations(ToolExecutionResult.buildGenerations(toolExecutionResult))
                                             .build());
                                 } else {
+                                    logger.info("流式工具调用执行完成，递归调用模型");
                                     return this.internalStream(new Prompt(toolExecutionResult.conversationHistory(), prompt.getOptions()), response);
                                 }
                             } catch (Exception e) {
@@ -362,7 +385,10 @@ public class AlibabaOpenAiChatModel implements ChatModel {
             textContent = ensureServiceJsonFormat(textContent);
         }
         
-        var assistantMessage = new AssistantMessage(textContent);
+        var assistantMessage = AssistantMessage.builder()
+                .content(textContent)
+                .toolCalls(toolCalls)
+                .build();
         return new Generation(assistantMessage, generationMetadataBuilder.build());
     }
     
@@ -520,6 +546,14 @@ public class AlibabaOpenAiChatModel implements ChatModel {
             requestOptions.setHttpHeaders(this.defaultOptions.getHttpHeaders());
         }
 
+        // Preserve tool callbacks from the original prompt (lost during copyToTarget/merge)
+        if (prompt.getOptions() instanceof ToolCallingChatOptions toolOptions) {
+            List<ToolCallback> toolCallbacks = toolOptions.getToolCallbacks();
+            if (toolCallbacks != null && !toolCallbacks.isEmpty()) {
+                requestOptions.setToolCallbacks(new ArrayList<>(toolCallbacks));
+            }
+        }
+
         return new Prompt(prompt.getInstructions(), requestOptions);
     }
 
@@ -595,12 +629,44 @@ public class AlibabaOpenAiChatModel implements ChatModel {
     }
 
     private Stream<OpenAiApi.ChatCompletionMessage> convertAssistantMessage(AssistantMessage message) {
-        return Stream.of(new OpenAiApi.ChatCompletionMessage(message.getText(), OpenAiApi.ChatCompletionMessage.Role.ASSISTANT));
+        List<OpenAiApi.ChatCompletionMessage.ToolCall> toolCalls = null;
+        if (message.getToolCalls() != null && !message.getToolCalls().isEmpty()) {
+            toolCalls = message.getToolCalls().stream()
+                    .map(tc -> {
+                        var function = new OpenAiApi.ChatCompletionMessage.ChatCompletionFunction(tc.name(), tc.arguments());
+                        return new OpenAiApi.ChatCompletionMessage.ToolCall(tc.id(), tc.type(), function);
+                    })
+                    .collect(Collectors.toList());
+        }
+        // 使用全参数构造器，确保tool_calls信息被保留（ChatCompletionMessage是record类型，不可变）
+        return Stream.of(new OpenAiApi.ChatCompletionMessage(
+                message.getText(),
+                OpenAiApi.ChatCompletionMessage.Role.ASSISTANT,
+                null,   // name
+                null,   // toolCallId
+                toolCalls,
+                null,   // refusal
+                null,   // audioOutput
+                null,   // annotations
+                null    // reasoningContent
+        ));
     }
 
     private Stream<OpenAiApi.ChatCompletionMessage> convertToolMessage(ToolResponseMessage message) {
-        message.getResponses().forEach(response -> Assert.isTrue(response.id() != null, "ToolResponseMessage must have an id"));
-        return message.getResponses().stream().map(tr -> new OpenAiApi.ChatCompletionMessage(tr.responseData(), OpenAiApi.ChatCompletionMessage.Role.TOOL));
+        return message.getResponses().stream().map(tr -> {
+            Assert.isTrue(tr.id() != null, "ToolResponseMessage must have an id");
+            return new OpenAiApi.ChatCompletionMessage(
+                    tr.responseData(),
+                    OpenAiApi.ChatCompletionMessage.Role.TOOL,
+                    tr.name(),    // name: tool function name
+                    tr.id(),      // toolCallId: REQUIRED for OpenAI-compatible API
+                    null,         // toolCalls
+                    null,         // refusal
+                    null,         // audioOutput
+                    null,         // annotations
+                    null          // reasoningContent
+            );
+        });
     }
 
     private OpenAiApi.ChatCompletionRequest mergeRequestOptions(OpenAiApi.ChatCompletionRequest request, Prompt prompt) {
@@ -611,19 +677,17 @@ public class AlibabaOpenAiChatModel implements ChatModel {
     }
 
     private OpenAiApi.ChatCompletionRequest addToolDefinitions(OpenAiApi.ChatCompletionRequest request, Prompt prompt) {
-        // Get options from prompt, fall back to default options, then to null for full tool resolution
         OpenAiChatOptions requestOptions = prompt.getOptions() instanceof OpenAiChatOptions 
                 ? (OpenAiChatOptions) prompt.getOptions() 
                 : this.defaultOptions;
-        
-        // Try to resolve tools from request options first
-        List<ToolDefinition> toolDefinitions = this.toolCallingManager.resolveToolDefinitions(requestOptions);
-        
-        // If no tools found in options, resolve ALL registered tools (ChatClient doesn't pass tools through Prompt)
-        if (CollectionUtils.isEmpty(toolDefinitions)) {
-            toolDefinitions = this.toolCallingManager.resolveToolDefinitions(this.defaultOptions);
+
+        List<OpenAiApi.FunctionTool> promptTools = requestOptions.getTools();
+        if (!CollectionUtils.isEmpty(promptTools)) {
+            return ModelOptionsUtils.merge(OpenAiChatOptions.builder().tools(promptTools).build(), request, OpenAiApi.ChatCompletionRequest.class);
         }
-        
+
+        List<ToolDefinition> toolDefinitions = this.toolCallingManager.resolveToolDefinitions(requestOptions);
+
         if (!CollectionUtils.isEmpty(toolDefinitions)) {
             return ModelOptionsUtils.merge(OpenAiChatOptions.builder().tools(this.getFunctionTools(toolDefinitions)).build(), request, OpenAiApi.ChatCompletionRequest.class);
         }

@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CourseMapper {
@@ -72,7 +73,7 @@ public interface CourseMapper {
      * @param semesterId
      * @return
      */
-    List<AvailableCourseVO> getAvailableCourseList(Long semesterId);
+    List<AvailableCourseVO> getAvailableCourseList(@Param("semesterId") Long semesterId, @Param("studentId") Long studentId);
 
     /**
      * 查询所有课程ID
@@ -88,4 +89,7 @@ public interface CourseMapper {
      */
     @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where course_name = #{courseName}")
     CourseDetailVO getCourseDetailByName(String courseName);
+
+    @Select("select id, capacity from course where status = '开课'")
+    List<Map<String, Object>> selectOpenCourseStocks();
 }

@@ -63,5 +63,5 @@ public interface CourseService {
      * @param semesterId
      * @return
      */
-    List<AvailableCourseVO> getAvailableCourseList(Long semesterId);
+    List<AvailableCourseVO> getAvailableCourseList(Long semesterId, Long studentId);
 }

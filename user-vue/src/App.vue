@@ -123,32 +123,10 @@
               </el-menu-item>
             </el-sub-menu>
 
-            <el-sub-menu index="ai">
-              <template #title>
-                <el-icon><Cpu /></el-icon>
-                <span>AI 校园智慧助手</span>
-              </template>
-              <el-menu-item index="/ai-book-recommend">
-                <el-icon><Star /></el-icon>
-                <span>图书推荐</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-hot-books">
-                <el-icon><TrendCharts /></el-icon>
-                <span>热门图书</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-reading-analysis">
-                <el-icon><DataAnalysis /></el-icon>
-                <span>阅读分析</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-score-analysis">
-                <el-icon><PieChart /></el-icon>
-                <span>成绩分析</span>
-              </el-menu-item>
-              <el-menu-item index="/ai-course-recommend">
-                <el-icon><Guide /></el-icon>
-                <span>课程推荐</span>
-              </el-menu-item>
-            </el-sub-menu>
+            <el-menu-item index="/ai-assistant">
+              <el-icon><Cpu /></el-icon>
+              <span>AI 学习助手</span>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>

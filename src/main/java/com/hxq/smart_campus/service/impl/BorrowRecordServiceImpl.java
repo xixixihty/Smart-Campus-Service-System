@@ -56,7 +56,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         }
 
         // 2. Lua脚本原子借阅（防重借 + 库存扣减 + 排队）
-        Integer result = redisBorrowService.executeBorrow(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId());
+        Long result = redisBorrowService.executeBorrow(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId());
         if (result == -2) {
             throw new BusinessException("ALREADY_BORROWED", "已借未还，不可重复借阅");
         } else if (result == -1) {
