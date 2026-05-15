@@ -65,6 +65,13 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
         }
         Long newCourseSelectionPeriodId = courseSelectionPeriodMapper.getLastInsertId();
         CourseSelectionPeriodDetailVO courseSelectionPeriodDetailVO = courseSelectionPeriodMapper.getCourseSelectionPeriodById(newCourseSelectionPeriodId);
+
+        SemesterDetailVO currentSemester = semesterService.getCurrentSemester();
+        if (currentSemester != null && currentSemester.getId().equals(courseSelectionPeriodCreateDTO.getSemesterId())) {
+            redisTemplate.delete(COURSE_SELECTION_KEY_PERIOD + currentSemester.getId());
+            log.info("新增选课时间段后清除当前学期缓存: semesterId={}", currentSemester.getId());
+        }
+
         return convertToCourseSelectionPeriodResponseDTO(courseSelectionPeriodDetailVO);
 
     }

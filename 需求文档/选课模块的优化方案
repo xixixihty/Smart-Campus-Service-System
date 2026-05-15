@@ -1,0 +1,64 @@
+Bug 分析报告
+我已经完整阅读了选课模块的所有相关代码，以下是三个Bug的根本原因分析。
+
+Bug 1：可选课程列表缺少"公选"类型课程
+表面现象：列表中只有"选修"课程，没有"公选"课程。
+
+根本原因：SQL 查询本身是正确的（WHERE (c.type = '选修' or c.type = '公选')），但Redis 缓存层导致数据过时。
+
+数据流如下：
+
+用户端请求可选课程列表 → CourseSelectionController
+Service 层先查 Redis 缓存（key = "availableCourse:{semesterId}:{studentId}"）
+缓存命中则直接返回，不再查询数据库
+缓存 TTL 为 1 天
+问题在于 semesterId 参数。前端调用时没有传递 semesterId，导致缓存 key 变成 "availableCourse:null:{studentId}"。首次查询时缓存未命中，从数据库查出结果并写入缓存。此后如果管理员在后台新增了"公选"课程，虽然 invalidateAvailableCourseCache() 会尝试清除缓存，但缓存清除的范围可能覆盖不到这个 key 模式，或者缓存清除发生在查询之后，导致用户仍然看到旧的缓存数据。
+
+此外，SQL 中虽然声明了 semesterId 参数，但 getAvailableCourseList 的 SQL 查询根本没有使用 #{semesterId}，这意味着查询会返回所有学期的课程，而非当前学期的课程。
+
+Bug 2a：我的选课中出现未选择的课程 / 状态不匹配
+根本原因一：缺少状态过滤
+
+getMyCourseSelectionList 的 SQL 查询中，status 过滤是可选条件（<if test="status != null">），且默认不传：
+
+
+<where>
+    <if test="studentId != null">cs.student_id = #{studentId}</if>
+    <if test="semesterId != null">and cs.semester_id = #{semesterId}</if>
+    <if test="status != null">and cs.status = #{status}</if>
+</where>
+前端 Vue 代码中，当 status 为空时会主动 delete params.status，导致后端查询所有状态的记录——包括"已退课"的记录。用户在退选课程后（软删除，状态改为 已退课），再次打开"我的选课"，由于没有按状态过滤，退选的课程也一并返回。
+
+根本原因二：前端状态值与数据库值不一致
+
+前端下拉筛选的选项值为 "退选"，但数据库中退选后的状态存的是 "已退课"。当用户按"退选"筛选时，SQL 条件 cs.status = '退选' 无法匹配数据库中的任何记录。
+
+Bug 2b：列表数据没有去重
+根本原因：选课记录表使用的是软删除模型（status = '已选' / '已退课'），而幂等性检查 countByStudentAndCourse 仅统计 status = '已选' 的记录：
+
+
+<select id="countByStudentAndCourse" resultType="int">
+    select count(*) from course_selection
+    where student_id = #{studentId}
+      and course_id = #{courseId}
+      and status = '已选'
+</select>
+当学生：选课 → 退选（status 变为 已退课）→ 再次选同一门课时，countByStudentAndCourse 返回 0（因为旧记录是"已退课"状态），于是允许插入一条新记录。这就造成了同一个 (student_id, course_id) 存在多条记录：
+
+id	student_id	course_id	status
+1	123	456	已退课
+2	123	456	已选
+查询 getMyCourseSelectionList 时，即使加了 DISTINCT，由于 cs.id 不同，仍然会返回两条记录，导致前端列表中出现重复课程。
+
+优化方案
+针对 Bug 1（可选课程缺少公选类型）
+修复 semesterId 传递：确保前端传递 semesterId，且 SQL 中真正使用该参数过滤课程
+缓存策略优化：在后台增删改课程时，确保缓存清除能覆盖到所有相关的 availableCourse:* 缓存键
+作为备选：降低缓存 TTL，或在课程数据变更时直接删除而非模糊匹配缓存
+针对 Bug 2a（未选课程出现 / 状态不匹配）
+默认只查"已选"状态：getMyCourseSelectionList 方法中，当 status 参数为 null 时，默认只查询 status = '已选' 的记录，而不是不加过滤
+统一状态值：前端筛选选项值从 "退选" 改为 "已退课"，与数据库保持一致
+针对 Bug 2b（列表未去重）
+方案一（推荐）：重新选课时，将已有的 已退课 行更新回 已选，而不是插入新行。这需要在 countByStudentAndCourse 之后增加一步判断：如果存在 已退课 的记录，则复用该行
+方案二：在 getMyCourseSelectionList 查询中按 (student_id, course_id) 分组，使用 MAX(id) 或窗口函数只取每个课程最新的一条记录
+配套改进：在退选操作时，增加业务校验，确保退选后重新选课走的是复用逻辑

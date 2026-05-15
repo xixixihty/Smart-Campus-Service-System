@@ -43,10 +43,6 @@ public class CourseServiceImpl implements CourseService {
         // 如果Redis中没有，则从数据库中获取
         PageHelper.startPage(pageNum, pageSize);
         List<CourseListVO> courseList = courseMapper.getCourseList(courseCode, courseName, type, status);
-        // 将查询的课程存储到Redis中
-        courseList.stream().forEach(courseListVO -> {
-            redisTemplate.opsForValue().set(COURSE_DETAIL_KEY_PREFIX + courseListVO.getId(), courseListVO, 1, TimeUnit.DAYS);
-        }) ;
         return new PageInfo<>(courseList);
     }
     /**
@@ -153,10 +149,6 @@ public class CourseServiceImpl implements CourseService {
     public List<AvailableCourseVO> getAvailableCourseList(Long semesterId, Long studentId) {
         // TODO : 根据学期ID获取可选课程列表
         List<AvailableCourseVO> availableCourseVOList = courseMapper.getAvailableCourseList(semesterId, studentId);
-        // 缓存可选课程列表
-        availableCourseVOList.stream().forEach(course -> {
-            redisTemplate.opsForValue().set(AVAILABLE_COURSE_KEY_PREFIX + course.getId(), course, 1, TimeUnit.DAYS);
-        });
         return availableCourseVOList;
     }
 

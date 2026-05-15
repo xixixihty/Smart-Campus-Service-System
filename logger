@@ -1,71 +1,85 @@
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-05-14T15:15:47.802+08:00 ERROR 6820 --- [           main] o.s.boot.SpringApplication               : Application run failed
-
-org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseSelectionController' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\controller\user\CourseSelectionController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseSelectionServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\CourseSelectionServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 7: Error creating bean with name 'redisCourseService': Invocation of init method failed
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1228) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1194) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1130) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:991) ~[spring-context-6.2.17.jar:6.2.17]
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628) ~[spring-context-6.2.17.jar:6.2.17]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.13.jar:3.5.13]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.13.jar:3.5.13]
-	at com.hxq.smart_campus.SmartCampusApplication.main(SmartCampusApplication.java:12) ~[classes/:na]
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseSelectionServiceImpl' defined in file [D:\gitDemo\smart_campus\target\classes\com\hxq\smart_campus\service\impl\CourseSelectionServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 7: Error creating bean with name 'redisCourseService': Invocation of init method failed
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1770) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 21 common frames omitted
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'redisCourseService': Invocation of init method failed
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:222) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:429) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1818) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1708) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 35 common frames omitted
-Caused by: java.lang.NullPointerException: Cannot invoke "java.lang.Number.intValue()" because the return value of "java.util.Map.get(Object)" is null
-	at com.hxq.smart_campus.service.impl.RedisCourseService.initAllCourseStocks(RedisCourseService.java:54) ~[classes/:na]
-	at com.hxq.smart_campus.service.impl.RedisCourseService.initCourseFilter(RedisCourseService.java:38) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577) ~[na:na]
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401) ~[spring-beans-6.2.17.jar:6.2.17]
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219) ~[spring-beans-6.2.17.jar:6.2.17]
-	... 47 common frames omitted
-
-
-Process finished with exit code 1
+2026-05-15T13:54:27.450+08:00 DEBUG 25980 --- [nio-8080-exec-9] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-15T13:54:27.539+08:00 DEBUG 25980 --- [nio-8080-exec-2] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-15T13:54:27.539+08:00 DEBUG 25980 --- [nio-8080-exec-3] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-15T13:54:27.540+08:00  INFO 25980 --- [nio-8080-exec-2] c.h.s.c.user.CourseSelectionController   : 获取当前学期的选课时间段
+Creating a new SqlSession
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f413c87] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@15a8bc1e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@762084956 wrapping com.mysql.cj.jdbc.ConnectionImpl@77fe65ff] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@817814950 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time, update_time from semester where is_current = 1
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time, update_time from semester where is_current = 1
+==> Parameters: 
+==> Parameters: 
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time, update_time
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time, update_time
+<==        Row: 3, 2026-2027第一学期, 2026-03-01, 2026-07-15, 1, 进行中, 2026-05-12 15:34:31, 2026-05-12 15:34:41
+<==        Row: 3, 2026-2027第一学期, 2026-03-01, 2026-07-15, 1, 进行中, 2026-05-12 15:34:31, 2026-05-12 15:34:41
+<==      Total: 1
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@15a8bc1e]
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f413c87]
+2026-05-15T13:54:27.540+08:00  INFO 25980 --- [nio-8080-exec-3] c.h.s.c.user.CourseSelectionController   : 查询可选课程列表: semesterId=3
+2026-05-15T13:54:28.939+08:00 DEBUG 25980 --- [nio-8080-exec-4] c.h.s.filter.JwtAuthenticationFilter     : JWT认证成功，用户: 2023001001
+2026-05-15T13:54:28.941+08:00  INFO 25980 --- [nio-8080-exec-4] c.h.s.c.user.CourseSelectionController   : 学生选课，选课信息：CourseSelectionCreateDTO(studentId=null, courseId=7, semesterId=null)
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3d2e99eb] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@903042752 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, name, start_date, end_date, is_current, status, create_time, update_time from semester where is_current = 1
+==> Parameters: 
+<==    Columns: id, name, start_date, end_date, is_current, status, create_time, update_time
+<==        Row: 3, 2026-2027第一学期, 2026-03-01, 2026-07-15, 1, 进行中, 2026-05-12 15:34:31, 2026-05-12 15:34:41
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3d2e99eb]
+2026-05-15T13:54:28.942+08:00  INFO 25980 --- [nio-8080-exec-4] c.h.s.c.user.CourseSelectionController   : 前端未传学期ID，自动填充当前学期ID：3
+2026-05-15T13:54:28.944+08:00  INFO 25980 --- [nio-8080-exec-4] c.h.s.s.impl.CourseSelectionServiceImpl  : 学生选课，参数：CourseSelectionCreateDTO(studentId=1, courseId=7, semesterId=3)
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2d800708] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1680355986 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = ?
+==> Parameters: 7(Long)
+<==    Columns: id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time
+<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 120, 2026-04-21 18:28:51, 2026-04-28 11:26:46
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2d800708]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@777b58e7] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1517205831 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point from course_selection cs left join course c on cs.course_id = c.id left join student stu on cs.student_id = stu.id left join semester s on cs.semester_id = s.id WHERE cs.student_id = ? and cs.semester_id = ?
+==> Parameters: 1(Long), 3(Long)
+<==    Columns: id, course_id, studentId, student_name, course_name, credit, semester_name, status, score, score_point
+<==        Row: 14, 6, 1, 李明, 人工智能导论, 2.0, 2026-2027第一学期, 已选, null, null
+<==        Row: 15, 7, 1, 李明, 大学英语, 4.0, 2026-2027第一学期, 已退课, null, null
+<==        Row: 16, 8, 1, 李明, 测试选修课程, 3.0, 2026-2027第一学期, 已选, null, null
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@777b58e7]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2422a840] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@162750531 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = ?
+==> Parameters: 6(Long)
+<==    Columns: id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time
+<==        Row: 6, CS301, 人工智能导论, 2.0, 32, 选修, 开课, 60, 2026-04-21 18:28:51, 2026-04-28 11:26:46
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2422a840]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@646c2a32] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1438514775 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = ?
+==> Parameters: 7(Long)
+<==    Columns: id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time
+<==        Row: 7, ENG101, 大学英语, 4.0, 64, 公选, 开课, 120, 2026-04-21 18:28:51, 2026-04-28 11:26:46
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@646c2a32]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23e76447] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@643819443 wrapping com.mysql.cj.jdbc.ConnectionImpl@60c33609] will not be managed by Spring
+==>  Preparing: select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = ?
+==> Parameters: 8(Long)
+<==    Columns: id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time
+<==        Row: 8, CS001, 测试选修课程, 3.0, 48, 选修, 开课, 60, 2026-05-14 15:28:06, 2026-05-14 15:28:58
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23e76447]
+2026-05-15T13:54:28.953+08:00  INFO 25980 --- [nio-8080-exec-4] c.h.s.s.impl.CourseSelectionServiceImpl  : 选课Lua脚本执行结果: result=-2, courseId=7, studentId=1
+2026-05-15T13:54:28.954+08:00  WARN 25980 --- [nio-8080-exec-4] c.h.s.exception.GlobalExceptionHandler   : 业务异常: errorCode=COURSE_SELECTION_EXIST, errorMessage=已经选修过该课程: 已经选修过该课程

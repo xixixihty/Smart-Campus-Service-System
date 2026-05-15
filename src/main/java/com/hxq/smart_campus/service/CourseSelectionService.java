@@ -50,4 +50,17 @@ public interface CourseSelectionService {
      * @return
      */
     List<AvailableCourseVO> getAvailableCourseList(Long semesterId);
+
+    /**
+     * 清除我的选课缓存（本地Caffeine + Redis）
+     * @param studentId 学生ID
+     */
+    void invalidateMySelectionCache(Long studentId);
+
+    /**
+     * 清除可选课程缓存
+     * @param semesterId 学期ID
+     * @param studentId 学生ID
+     */
+    void invalidateAvailableCourseCache(Long semesterId, Long studentId);
 }

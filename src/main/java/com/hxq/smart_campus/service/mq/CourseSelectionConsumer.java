@@ -3,6 +3,7 @@ package com.hxq.smart_campus.service.mq;
 import com.hxq.smart_campus.config.RabbitMQConfig;
 import com.hxq.smart_campus.entity.dto.CourseSelectionCreateDTO;
 import com.hxq.smart_campus.mapper.CourseSelectionMapper;
+import com.hxq.smart_campus.service.CourseSelectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class CourseSelectionConsumer {
 
     private final CourseSelectionMapper courseSelectionMapper;
+    private final CourseSelectionService courseSelectionService;
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     public void handleCourseSelection(Map<String, Object> msg, Channel channel, Message message) {
@@ -30,13 +32,28 @@ public class CourseSelectionConsumer {
 
             log.info("消费选课消息: studentId={}, courseId={}, semesterId={}", studentId, courseId, semesterId);
 
-            CourseSelectionCreateDTO dto = new CourseSelectionCreateDTO();
-            dto.setStudentId(studentId);
-            dto.setCourseId(courseId);
-            dto.setSemesterId(semesterId);
+            int existingCount = courseSelectionMapper.countByStudentAndCourse(studentId, courseId);
+            if (existingCount > 0) {
+                log.warn("选课记录已存在，跳过插入: studentId={}, courseId={}", studentId, courseId);
+                channel.basicAck(deliveryTag, false);
+                return;
+            }
 
-            courseSelectionMapper.insertCourseSelection(dto);
-            log.info("选课记录已写入数据库: studentId={}, courseId={}", studentId, courseId);
+            var droppedRecord = courseSelectionMapper.selectDroppedRecord(studentId, courseId);
+            if (droppedRecord != null) {
+                courseSelectionMapper.reactivateCourseSelection(droppedRecord.getId());
+                log.info("复用已退课记录，重新激活: studentId={}, courseId={}, recordId={}", studentId, courseId, droppedRecord.getId());
+            } else {
+                CourseSelectionCreateDTO dto = new CourseSelectionCreateDTO();
+                dto.setStudentId(studentId);
+                dto.setCourseId(courseId);
+                dto.setSemesterId(semesterId);
+                courseSelectionMapper.insertCourseSelection(dto);
+                log.info("选课记录已写入数据库: studentId={}, courseId={}", studentId, courseId);
+            }
+
+            courseSelectionService.invalidateMySelectionCache(studentId);
+            courseSelectionService.invalidateAvailableCourseCache(semesterId, studentId);
 
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {

@@ -63,4 +63,12 @@ public interface CourseSelectionMapper {
      * @return
      */
     int dropCourse(Long id);
+
+    int dropCourseByStudentAndCourse(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
+
+    int countByStudentAndCourse(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
+
+    CourseSelectionListVO selectDroppedRecord(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
+
+    int reactivateCourseSelection(@Param("id") Long id);
 }

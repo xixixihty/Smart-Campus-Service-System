@@ -105,7 +105,13 @@ public class CourseSelectionController {
             @RequestParam(required = false) Long semesterId,
             @RequestParam(required = false) String status
     ) {
-        log.info("查询我的选课课程列表: semesterId={}, status={}");
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester != null) {
+                semesterId = currentSemester.getId();
+            }
+        }
+        log.info("查询我的选课课程列表: semesterId={}, status={}", semesterId, status);
         List<MyCourseSelectionVO> courseSelectionListVO = courseSelectionService.getMyCourseSelectionList(semesterId, status);
         return Result.success(courseSelectionListVO);
     }
@@ -120,7 +126,13 @@ public class CourseSelectionController {
     public Result<List<AvailableCourseVO>> getAvailableCourseList(
             @RequestParam(required = false) Long semesterId
     ) {
-        log.info("查询可选课程列表: semesterId={}");
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester != null) {
+                semesterId = currentSemester.getId();
+            }
+        }
+        log.info("查询可选课程列表: semesterId={}", semesterId);
         List<AvailableCourseVO> courseSelectionListVO = courseSelectionService.getAvailableCourseList(semesterId);
         return Result.success(courseSelectionListVO);
     }

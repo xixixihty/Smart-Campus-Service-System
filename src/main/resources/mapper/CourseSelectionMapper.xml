@@ -23,17 +23,59 @@
         where id = #{courseSelectionId}
     </update>
 
-    <!-- 获取我的课程选择列表 -->
+    <update id="dropCourseByStudentAndCourse">
+        update course_selection
+        <set>
+            status = '已退课'
+        </set>
+        where student_id = #{studentId}
+          and course_id = #{courseId}
+          and status = '已选'
+    </update>
+
+    <select id="countByStudentAndCourse" resultType="int">
+        select count(*) from course_selection
+        where student_id = #{studentId}
+          and course_id = #{courseId}
+          and status = '已选'
+    </select>
+
+    <select id="selectDroppedRecord" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
+        from course_selection cs
+        left join course c on cs.course_id = c.id
+        left join student stu on cs.student_id = stu.id
+        left join semester s on cs.semester_id = s.id
+        where cs.student_id = #{studentId}
+          and cs.course_id = #{courseId}
+          and cs.status = '已退课'
+        limit 1
+    </select>
+
+    <update id="reactivateCourseSelection">
+        update course_selection
+        <set>
+            status = '已选'
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 获取我的课程选择列表（按学生+课程去重，取最新记录） -->
     <select id="getMyCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.MyCourseSelectionVO">
         select cs.id, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
+        inner join (
+            select max(id) as id
+            from course_selection
+            <where>
+                <if test="studentId != null">student_id = #{studentId}</if>
+                <if test="semesterId != null">and semester_id = #{semesterId}</if>
+                <if test="status != null">and status = #{status}</if>
+            </where>
+            group by student_id, course_id
+        ) latest on cs.id = latest.id
         left join course c on cs.course_id = c.id
         left join semester s on cs.semester_id = s.id
-        <where>
-            <if test="studentId != null">cs.student_id = #{studentId}</if>
-            <if test="semesterId != null">and cs.semester_id = #{semesterId}</if>
-            <if test="status != null">and cs.status = #{status}</if>
-        </where>
         order by cs.id desc
     </select>
     <!-- 获取单一选课信息 -->

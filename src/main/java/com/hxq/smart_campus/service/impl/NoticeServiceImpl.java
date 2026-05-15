@@ -186,7 +186,7 @@ public class NoticeServiceImpl implements NoticeService {
                 (status != null ? status : "");
 
         List<NoticeListVO> noticeListVOList = (List<NoticeListVO>) redisTemplate.opsForValue().get(cacheKey);
-        if (noticeListVOList != null) {
+        if (noticeListVOList != null && !noticeListVOList.isEmpty()) {
             int total = noticeListVOList.size();
             int fromIndex = (pageNum - 1) * pageSize;
             if (fromIndex >= total) {
@@ -207,7 +207,9 @@ public class NoticeServiceImpl implements NoticeService {
         noticeListVOList = noticeMapper.getNoticeList(title, targetType, status);
         PageInfo<NoticeListVO> pageInfo = new PageInfo<>(noticeListVOList);
 
-        redisTemplate.opsForValue().set(cacheKey, noticeListVOList, 1, TimeUnit.DAYS);
+        if (noticeListVOList != null && !noticeListVOList.isEmpty()) {
+            redisTemplate.opsForValue().set(cacheKey, noticeListVOList, 1, TimeUnit.DAYS);
+        }
 
         return pageInfo;
     }
@@ -279,7 +281,7 @@ public class NoticeServiceImpl implements NoticeService {
 
         String cacheKey = MY_NOTICE_KEY_PREFIX + userIdentifier;
         List<MyNoticeVO> myNoticeVOList = (List<MyNoticeVO>) redisTemplate.opsForValue().get(cacheKey);
-        if (myNoticeVOList != null) {
+        if (myNoticeVOList != null && !myNoticeVOList.isEmpty()) {
             int total = myNoticeVOList.size();
             int fromIndex = (pageNum - 1) * pageSize;
             if (fromIndex >= total) {
@@ -300,7 +302,9 @@ public class NoticeServiceImpl implements NoticeService {
         myNoticeVOList = noticeMapper.getMyNoticeList(className, majorName, collegeName);
         PageInfo<MyNoticeVO> pageInfo = new PageInfo<>(myNoticeVOList);
 
-        redisTemplate.opsForValue().set(cacheKey, myNoticeVOList, 1, TimeUnit.DAYS);
+        if (myNoticeVOList != null && !myNoticeVOList.isEmpty()) {
+            redisTemplate.opsForValue().set(cacheKey, myNoticeVOList, 1, TimeUnit.DAYS);
+        }
 
         return pageInfo;
     }

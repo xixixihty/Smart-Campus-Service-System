@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -146,7 +147,15 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         try {
             // 尝试获取锁，超时时间3秒，等待时间10秒
             if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
-                // Lua脚本执行选课逻辑
+                var droppedRecord = courseSelectionMapper.selectDroppedRecord(
+                        courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getCourseId());
+                if (droppedRecord != null) {
+                    String selectedKey = "course:selected:" + courseSelectionCreateDTO.getStudentId();
+                    redisTemplate.opsForSet().remove(selectedKey, String.valueOf(courseSelectionCreateDTO.getCourseId()));
+                    log.info("检测到已退课记录，已清理Redis选课集合: studentId={}, courseId={}",
+                            courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getCourseId());
+                }
+
                 Long result = redisCourseService.executeSelection(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
                 log.info("选课Lua脚本执行结果: result={}, courseId={}, studentId={}", result,
                         courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
@@ -157,7 +166,6 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                     // 课程已满，加入候补队列
                     return buildWaitingResponseDTO(courseSelectionCreateDTO);
                 } else if (result == 1) {
-                    // 选课成功, 异步落库
                     sendSelectionMessage(courseSelectionCreateDTO);
                     return buildSuccessResponseDTO(courseSelectionCreateDTO);
                 }
@@ -233,6 +241,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                 if (updateResult <= 0) {
                     throw CourseSelectionException.dropCourseFailed("退课失败，请稍后再试");
                 }
+                courseSelectionMapper.dropCourseByStudentAndCourse(selection.getStudentId(), selection.getCourseId());
                 // 如果有候补用户，发送通知
                 if (!"1".equals(result)) {
                     sendWaitingNotification(selection.getCourseId(), Long.parseLong(result));
@@ -245,6 +254,10 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             Thread.currentThread().interrupt();
             throw CourseSelectionException.dropCourseFailed("退课失败，操作被中断，请稍后再试");
         } finally {
+            if (selection != null) {
+                invalidateMySelectionCache(selection.getStudentId());
+                invalidateAvailableCourseCacheForStudent(selection.getStudentId());
+            }
             if (lock.isHeldByCurrentThread()){
                 lock.unlock();
             }
@@ -276,30 +289,27 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      */
     @Override
     public List<MyCourseSelectionVO> getMyCourseSelectionList(Long semesterId, String status) {
-        // 从登陆信息中获取到用户信息
         Long studentId = SecurityUtils.getCurrentUserId();
         if (studentId == null) {
             throw new IllegalArgumentException("用户信息不能为空");
         }
-        // 先从本地缓存中获取我的课程列表
+        if (status == null || status.isEmpty()) {
+            status = "已选";
+        }
         List<MyCourseSelectionVO> localResult = getFromLocalCache(studentId, semesterId, status);
         if (localResult != null && !localResult.isEmpty()) {
             return localResult;
         }
-        // 再从Redis中获取我的选课课程列表
-        List<MyCourseSelectionVO> myCourseSelectionVORedis = (List<MyCourseSelectionVO>) redisTemplate.opsForValue().get(MY_COURSE_SELECTION_KEY_PREFIX + studentId);
+        String redisKey = MY_COURSE_SELECTION_KEY_PREFIX + studentId + ":" + semesterId + ":" + status;
+        List<MyCourseSelectionVO> myCourseSelectionVORedis = (List<MyCourseSelectionVO>) redisTemplate.opsForValue().get(redisKey);
         if (myCourseSelectionVORedis != null && !myCourseSelectionVORedis.isEmpty()) {
             return myCourseSelectionVORedis;
         }
-        // 最后从数据库中获取我的选课课程列表
         List<MyCourseSelectionVO> myCourseSelectionList = courseSelectionMapper.getMyCourseSelectionList(studentId, semesterId, status);
-        // 将我的课程信息缓存到本地和Redis中
-        //         redisTemplate.opsForValue().set(RedisConstant.MY_COURSE_SELECTION_KEY_PREFIX + studentId, myCourseSelectionList, 1, TimeUnit.DAYS);
-        //         myCourseSelectionList.stream().forEach(myCourseSelectionVO -> {
-        //             redisTemplate.opsForValue().set(RedisConstant.MY_COURSE_SELECTION_KEY_PREFIX + studentId, myCourseSelectionVO, 1, TimeUnit.DAYS);
-        //        });
-        redisTemplate.opsForValue().set(MY_COURSE_SELECTION_KEY_PREFIX + studentId, myCourseSelectionList, 1, TimeUnit.DAYS);
-        putToLocalCache(studentId, semesterId, status, myCourseSelectionList);
+        if (myCourseSelectionList != null && !myCourseSelectionList.isEmpty()) {
+            redisTemplate.opsForValue().set(redisKey, myCourseSelectionList, 1, TimeUnit.DAYS);
+            putToLocalCache(studentId, semesterId, status, myCourseSelectionList);
+        }
         return myCourseSelectionList;
     }
 
@@ -310,26 +320,21 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      */
     @Override
     public List<AvailableCourseVO> getAvailableCourseList(Long semesterId) {
-        // 判断选课时间是否在范围内
         boolean isCourseSelectionPeriodValid = isInCourseSelectionTimePeriod(semesterId);
         if (!isCourseSelectionPeriodValid) {
             throw CourseSelectionException.courseSelectionTimePeriodInvalid("选课时间不在范围内");
         }
-        // 先从Redis中获取可选课程列表
-        List<AvailableCourseVO> availableCourseList = (List<AvailableCourseVO>) redisTemplate.opsForValue().get(AVAILABLE_COURSE_KEY_PREFIX + semesterId);
-        if (availableCourseList != null) {
+        Long studentId = SecurityUtils.getCurrentUserId();
+        String cacheKey = AVAILABLE_COURSE_KEY_PREFIX + semesterId + ":" + studentId;
+        List<AvailableCourseVO> availableCourseList = (List<AvailableCourseVO>) redisTemplate.opsForValue().get(cacheKey);
+        if (availableCourseList != null && !availableCourseList.isEmpty()) {
             return availableCourseList;
         }
-        // 如果Redis中没有，则从数据库中获取
-        availableCourseList = courseService.getAvailableCourseList(semesterId, SecurityUtils.getCurrentUserId());
-        if (availableCourseList == null) {
+        availableCourseList = courseService.getAvailableCourseList(semesterId, studentId);
+        if (availableCourseList == null || availableCourseList.isEmpty()) {
             throw CourseSelectionException.availableCourseListEmpty("可选课程列表为空");
         }
-        // 将可选课程信息缓存到Redis中
-        //        availableCourseList.stream().forEach(course -> {
-        //            redisTemplate.opsForValue().set(AVAILABLE_COURSE_KEY_PREFIX + course.getId(), course, 1, TimeUnit.DAYS);
-        //        });
-        redisTemplate.opsForValue().set(AVAILABLE_COURSE_KEY_PREFIX + semesterId, availableCourseList, 1, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(cacheKey, availableCourseList, 30, TimeUnit.MINUTES);
         return availableCourseList;
     }
 
@@ -624,6 +629,33 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      */
     private String buildCacheKey(Long studentId, Long semesterId, String status) {
         return "my:selection:" + studentId + ":" + semesterId + ":" + status;
+    }
+
+    @Override
+    public void invalidateMySelectionCache(Long studentId) {
+        mySelectionCache.invalidateAll();
+        Set<String> keys = redisTemplate.keys(MY_COURSE_SELECTION_KEY_PREFIX + studentId + ":*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("已失效我的选课缓存: studentId={}, keys={}", studentId, keys.size());
+        }
+    }
+
+    @Override
+    public void invalidateAvailableCourseCache(Long semesterId, Long studentId) {
+        Set<String> keys = redisTemplate.keys(AVAILABLE_COURSE_KEY_PREFIX + "*:" + studentId);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("已失效可选课程缓存: studentId={}, keys={}", studentId, keys.size());
+        }
+    }
+
+    private void invalidateAvailableCourseCacheForStudent(Long studentId) {
+        Set<String> keys = redisTemplate.keys(AVAILABLE_COURSE_KEY_PREFIX + "*:" + studentId);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("已失效可选课程缓存: studentId={}, keys={}", studentId, keys.size());
+        }
     }
 }
 

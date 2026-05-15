@@ -84,7 +84,7 @@
           <div class="search-bar">
             <el-select v-model="myQueryForm.status" placeholder="全部状态" clearable style="width: 150px" @change="fetchMyCourses">
               <el-option label="已选" value="已选" />
-              <el-option label="退选" value="退选" />
+              <el-option label="已退课" value="已退课" />
             </el-select>
           </div>
 
