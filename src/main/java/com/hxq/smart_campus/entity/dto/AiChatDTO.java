@@ -6,4 +6,5 @@ import lombok.Data;
 public class AiChatDTO {
     private String message;
     private String context;
+    private String sessionId;
 }

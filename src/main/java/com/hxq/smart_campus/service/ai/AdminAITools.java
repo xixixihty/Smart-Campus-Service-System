@@ -2,7 +2,6 @@ package com.hxq.smart_campus.service.ai;
 
 import com.hxq.smart_campus.entity.vo.ScoreEntryListVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
-import com.hxq.smart_campus.entity.vo.StudentListVO;
 import com.hxq.smart_campus.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,6 @@ public class AdminAITools {
     private final ScoreEntryMapper scoreEntryMapper;
     private final BorrowRecordMapper borrowRecordMapper;
     private final SeatReservationMapper seatReservationMapper;
-    private final StudentMapper studentMapper;
 
     @Tool(description = "获取校园整体统计数据。当用户询问校园概况、学生数量、教师数量、课程数量等统计信息时调用此工具。")
     public String getCampusStatistics() {
@@ -37,16 +35,16 @@ public class AdminAITools {
         long leaveRequests = dashboardMapper.countLeaveRequests();
         long notices = dashboardMapper.countPublishedNotices();
 
-        return String.format("""
-                校园数据统计：
-                - 学生总数：%d
-                - 教师总数：%d
-                - 课程总数：%d
-                - 图书总数：%d
-                - 座位总数：%d
-                - 借阅记录数：%d
-                - 请假申请数：%d
-                - 已发布通知数：%d""",
+        return String.format(
+                "校园数据统计：\n" +
+                "- 学生总数：%d\n" +
+                "- 教师总数：%d\n" +
+                "- 课程总数：%d\n" +
+                "- 图书总数：%d\n" +
+                "- 座位总数：%d\n" +
+                "- 借阅记录数：%d\n" +
+                "- 请假申请数：%d\n" +
+                "- 已发布通知数：%d",
                 students, teachers, courses, books, seats, borrowRecords, leaveRequests, notices);
     }
 
@@ -90,17 +88,7 @@ public class AdminAITools {
     public String getClassScores(@ToolParam(description = "班级ID") Long classId,
                                  @ToolParam(description = "学期ID（可选）", required = false) Long semesterId) {
         log.info("Tool调用: getClassScores, classId={}, semesterId={}", classId, semesterId);
-        List<StudentListVO> students = studentMapper.getStudentList(null, null, classId, null, null);
-        if (students.isEmpty()) {
-            return "该班级暂无学生数据。";
-        }
-        List<String> studentNos = students.stream()
-                .map(StudentListVO::getStudentNo)
-                .collect(Collectors.toList());
-        List<ScoreEntryListVO> allScores = scoreEntryMapper.getScoreList(null, null, semesterId);
-        List<ScoreEntryListVO> classScores = allScores.stream()
-                .filter(s -> s.getStudentNo() != null && studentNos.contains(s.getStudentNo()))
-                .collect(Collectors.toList());
+        List<ScoreEntryListVO> classScores = scoreEntryMapper.getScoreListByClassId(classId, semesterId);
         if (classScores.isEmpty()) {
             return "该班级暂无成绩数据。";
         }
@@ -129,11 +117,14 @@ public class AdminAITools {
     public String getSeatUtilization() {
         log.info("Tool调用: getSeatUtilization");
         long totalSeats = dashboardMapper.countSeats();
-        List<SeatReservationListVO> activeReservations = seatReservationMapper.getSeatReservationList(
+        List<SeatReservationListVO> inUseReservations = seatReservationMapper.getSeatReservationList(
                 null, null, null, "使用中");
-        long usedSeats = activeReservations.size();
+        List<SeatReservationListVO> awayReservations = seatReservationMapper.getSeatReservationList(
+                null, null, null, "暂离");
+        long usedSeats = inUseReservations.size() + awayReservations.size();
         double rate = totalSeats > 0 ? (double) usedSeats / totalSeats * 100 : 0;
-        return String.format("座位总数：%d | 当前使用中：%d | 使用率：%.1f%%", totalSeats, usedSeats, rate);
+        return String.format("座位总数：%d | 使用中：%d | 暂离：%d | 总占用：%d | 使用率：%.1f%%",
+                totalSeats, inUseReservations.size(), awayReservations.size(), usedSeats, rate);
     }
 
     @Tool(description = "获取请假状态分布统计。当用户询问请假情况时调用此工具。")

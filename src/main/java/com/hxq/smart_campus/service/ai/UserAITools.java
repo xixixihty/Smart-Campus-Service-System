@@ -81,9 +81,10 @@ public class UserAITools {
     }
 
     @Tool(description = "查询可选课程列表。当用户询问选课、有什么课可以选时调用此工具。")
-    public String getAvailableCourses(@ToolParam(description = "学期ID", required = false) Long semesterId) {
-        log.info("Tool调用: getAvailableCourses, semesterId={}", semesterId);
-        List<AvailableCourseVO> courses = courseMapper.getAvailableCourseList(semesterId, null);
+    public String getAvailableCourses(@ToolParam(description = "学期ID", required = false) Long semesterId,
+                                      @ToolParam(description = "学生ID（当前登录用户ID）", required = false) Long studentId) {
+        log.info("Tool调用: getAvailableCourses, semesterId={}, studentId={}", semesterId, studentId);
+        List<AvailableCourseVO> courses = courseMapper.getAvailableCourseList(semesterId, studentId);
         if (courses.isEmpty()) {
             return "暂无可选课程。";
         }

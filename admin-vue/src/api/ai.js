@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export const getDashboardStats = () => request.get('/dashboard/admin/stats')
 
-export const chatStream = (message, context, onMessage, onDone, onError, signal) => {
+export const chatStream = (message, context, sessionId, onStatus, onMessage, onDone, onError, signal) => {
   const token = localStorage.getItem('token')
   return fetch('/api/ai/admin/chat', {
     method: 'POST',
@@ -10,7 +10,7 @@ export const chatStream = (message, context, onMessage, onDone, onError, signal)
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''
     },
-    body: JSON.stringify({ message, context }),
+    body: JSON.stringify({ message, context, sessionId }),
     signal
   }).then(response => {
     if (!response.ok) {
@@ -29,10 +29,22 @@ export const chatStream = (message, context, onMessage, onDone, onError, signal)
         buffer += decoder.decode(value, { stream: true })
         const lines = buffer.split('\n')
         buffer = lines.pop() || ''
+
+        let currentEvent = 'message'
         for (const line of lines) {
-          if (line.startsWith('data:')) {
+          if (line.startsWith('event:')) {
+            currentEvent = line.slice(6).trim()
+          } else if (line.startsWith('data:')) {
             const data = line.slice(5).trim()
-            if (data) {
+            if (data === '[DONE]') {
+              onDone && onDone()
+              return
+            }
+            if (currentEvent === 'status') {
+              onStatus && onStatus(data)
+            } else if (currentEvent === 'error') {
+              onError && onError(data)
+            } else {
               onMessage && onMessage(data)
             }
           }

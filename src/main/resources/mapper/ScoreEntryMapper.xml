@@ -99,6 +99,18 @@
         </where>
     </select>
 
+    <select id="getScoreListByClassId" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryListVO">
+        select se.id, c.course_name, s.name as studentName, s.student_no as studentNo,
+               sm.name as semesterName, se.usual_score, se.final_score, se.total_score,
+               se.score_point, c.credit, se.exam_status
+        from score_entry se
+        left join course c on se.course_id = c.id
+        left join student s on se.student_id = s.id
+        left join semester sm on se.semester_id = sm.id
+        where s.class_id = #{classId}
+        <if test="semesterId != null">and se.semester_id = #{semesterId}</if>
+    </select>
+
     <!-- 根据维度查询成绩列表（用于统计分析） -->
     <!-- Mapper层只做一次查询，获取完整的成绩及相关信息 -->
     <select id="getScoreListForStatistics" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryForStatisticsVO">

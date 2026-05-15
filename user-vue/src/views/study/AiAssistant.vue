@@ -1,7 +1,7 @@
 <template>
   <div class="ai-assistant-container">
     <div class="chat-header">
-      <h3>AI 智慧助手</h3>
+      <h3>AI 学习助手</h3>
       <el-button type="text" @click="clearChat">清空对话</el-button>
     </div>
 
@@ -32,7 +32,7 @@
         v-model="inputMessage"
         type="textarea"
         :rows="2"
-        placeholder="输入你的问题，例如：查看校园整体统计数据..."
+        placeholder="输入你的问题，例如：帮我推荐几本适合我的书..."
         @keydown.enter.exact.prevent="sendMessage"
       />
       <el-button type="primary" :disabled="!inputMessage.trim() || loading" @click="sendMessage">
@@ -55,7 +55,7 @@ const sessionId = ref(generateSessionId())
 let abortController = null
 
 function generateSessionId() {
-  return 'admin_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
+  return 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
 }
 
 function scrollToBottom() {

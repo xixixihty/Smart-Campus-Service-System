@@ -60,6 +60,9 @@ public interface ScoreEntryMapper {
                                         @Param("studentId") Long studentId,
                                         @Param("semesterId") Long semesterId);
 
+    List<ScoreEntryListVO> getScoreListByClassId(@Param("classId") Long classId,
+                                                  @Param("semesterId") Long semesterId);
+
     /**
      * 根据维度查询成绩列表（用于统计分析）
      * Mapper层只做一次查询，Service层负责内存统计计算

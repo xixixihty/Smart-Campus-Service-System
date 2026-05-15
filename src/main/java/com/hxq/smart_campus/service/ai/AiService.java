@@ -2,134 +2,167 @@ package com.hxq.smart_campus.service.ai;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
 public class AiService {
 
-    private final ChatClient chatClient;
     private final ChatClient userChatClient;
     private final ChatClient adminChatClient;
+    private final ChatMemory chatMemory;
 
-    public AiService(ChatClient chatClient,
-                     @Qualifier("userChatClient") ChatClient userChatClient,
-                     @Qualifier("adminChatClient") ChatClient adminChatClient) {
-        this.chatClient = chatClient;
+    public AiService(@Qualifier("userChatClient") ChatClient userChatClient,
+                     @Qualifier("adminChatClient") ChatClient adminChatClient,
+                     ChatMemory chatMemory) {
         this.userChatClient = userChatClient;
         this.adminChatClient = adminChatClient;
+        this.chatMemory = chatMemory;
     }
 
-    public String analyze(String systemPrompt, String userMessage) {
-        log.info("AI分析请求: userMessage={}", userMessage);
-        var promptSpec = chatClient.prompt()
-                .user(userMessage);
-        if (StringUtils.hasText(systemPrompt)) {
-            promptSpec.system(systemPrompt);
+    public Flux<ServerSentEvent<String>> chatStreamWithUserTools(String systemPrompt, String userMessage,
+                                                                  String sessionId, Long userId) {
+        if (sessionId == null || sessionId.isEmpty()) {
+            sessionId = UUID.randomUUID().toString();
         }
-        String result = promptSpec.call()
-                .content();
-        log.info("AI分析响应: response={}", result);
-        return result;
-    }
+        String effectiveSessionId = sessionId;
+        log.info("AI用户端流式请求: sessionId={}, userId={}, userMessage={}", effectiveSessionId, userId, userMessage);
 
-    public Flux<String> analyzeStream(String systemPrompt, String userMessage) {
-        log.info("AI流式请求: userMessage={}", userMessage);
         StringBuilder fullResponse = new StringBuilder();
-        var promptSpec = chatClient.prompt()
-                .user(userMessage);
-        if (StringUtils.hasText(systemPrompt)) {
-            promptSpec.system(systemPrompt);
-        }
-        Flux<String> stream = promptSpec.stream()
+
+        Flux<String> contentStream = userChatClient.prompt()
+                .user(userMessage)
+                .system(systemPrompt)
+                .toolContext(Map.of("studentId", userId))
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .stream()
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
-                .doOnComplete(() -> log.info("AI流式响应: response={}", fullResponse.toString()));
-        return stream.switchIfEmpty(Flux.defer(() -> {
-            log.warn("AI流式响应为空，回退到非流式调用");
-            String result = analyze(systemPrompt, userMessage);
-            if (StringUtils.hasText(result)) {
-                return Flux.just(result);
-            }
-            return Flux.empty();
-        }));
+                .doOnComplete(() -> log.info("AI用户端流式响应完成: sessionId={}, response={}",
+                        effectiveSessionId, fullResponse.toString()));
+
+        return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
+                chatWithUserTools(systemPrompt, userMessage, effectiveSessionId, userId));
     }
 
-    public String analyzeWithUserTools(String systemPrompt, String userMessage) {
-        log.info("AI用户端请求: userMessage={}", userMessage);
-        var promptSpec = userChatClient.prompt()
-                .user(userMessage);
-        if (StringUtils.hasText(systemPrompt)) {
-            promptSpec.system(systemPrompt);
+    public Flux<ServerSentEvent<String>> chatStreamWithAdminTools(String systemPrompt, String userMessage,
+                                                                   String sessionId) {
+        if (sessionId == null || sessionId.isEmpty()) {
+            sessionId = UUID.randomUUID().toString();
         }
-        String result = promptSpec.call()
-                .content();
-        log.info("AI用户端响应: response={}", result);
-        return result;
-    }
+        String effectiveSessionId = sessionId;
+        log.info("AI管理端流式请求: sessionId={}, userMessage={}", effectiveSessionId, userMessage);
 
-    public Flux<String> analyzeStreamWithUserTools(String systemPrompt, String userMessage) {
-        log.info("AI用户端流式请求: userMessage={}", userMessage);
         StringBuilder fullResponse = new StringBuilder();
-        var promptSpec = userChatClient.prompt()
-                .user(userMessage);
-        if (systemPrompt != null && !systemPrompt.isEmpty()) {
-            promptSpec.system(systemPrompt);
-        }
-        Flux<String> stream = promptSpec.stream()
+
+        Flux<String> contentStream = adminChatClient.prompt()
+                .user(userMessage)
+                .system(systemPrompt)
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .stream()
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
-                .doOnComplete(() -> log.info("AI用户端流式响应: response={}", fullResponse.toString()));
-        // 如果流式响应为空，回退到非流式调用（处理工具调用场景）
-        return stream.switchIfEmpty(Flux.defer(() -> {
-            log.warn("AI用户端流式响应为空，回退到非流式调用");
-            String result = analyzeWithUserTools(systemPrompt, userMessage);
-            if (StringUtils.hasText(result)) {
-                return Flux.just(result);
-            }
-            return Flux.empty();
-        }));
+                .doOnComplete(() -> log.info("AI管理端流式响应完成: sessionId={}, response={}",
+                        effectiveSessionId, fullResponse.toString()));
+
+        return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
+                chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId));
+    }
+
+    private String chatWithUserTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
+        log.info("AI用户端非流式回退: sessionId={}, userId={}", sessionId, userId);
+        String result = userChatClient.prompt()
+                .user(userMessage)
+                .system(systemPrompt)
+                .toolContext(Map.of("studentId", userId))
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .call()
+                .content();
+        log.info("AI用户端非流式响应: sessionId={}, response={}", sessionId, result);
+        return result;
+    }
+
+    private String chatWithAdminTools(String systemPrompt, String userMessage, String sessionId) {
+        log.info("AI管理端非流式回退: sessionId={}", sessionId);
+        String result = adminChatClient.prompt()
+                .user(userMessage)
+                .system(systemPrompt)
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .call()
+                .content();
+        log.info("AI管理端非流式响应: sessionId={}, response={}", sessionId, result);
+        return result;
     }
 
     public String analyzeWithAdminTools(String systemPrompt, String userMessage) {
-        log.info("AI管理端请求: userMessage={}", userMessage);
-        var promptSpec = adminChatClient.prompt()
-                .user(userMessage);
-        if (StringUtils.hasText(systemPrompt)) {
-            promptSpec.system(systemPrompt);
-        }
-        String result = promptSpec.call()
-                .content();
-        log.info("AI管理端响应: response={}", result);
-        return result;
+        return chatWithAdminTools(systemPrompt, userMessage, UUID.randomUUID().toString());
     }
 
-    public Flux<String> analyzeStreamWithAdminTools(String systemPrompt, String userMessage) {
-        log.info("AI管理端流式请求: userMessage={}", userMessage);
-        StringBuilder fullResponse = new StringBuilder();
-        var promptSpec = adminChatClient.prompt()
-                .user(userMessage);
-        if (systemPrompt != null && !systemPrompt.isEmpty()) {
-            promptSpec.system(systemPrompt);
-        }
-        Flux<String> stream = promptSpec.stream()
-                .content()
-                .filter(msg -> msg != null && !msg.isEmpty())
-                .doOnNext(fullResponse::append)
-                .doOnComplete(() -> log.info("AI管理端流式响应: response={}", fullResponse.toString()));
-        // 如果流式响应为空，回退到非流式调用（处理工具调用场景）
+    private Flux<ServerSentEvent<String>> wrapStreamWithEvents(Flux<String> contentStream,
+                                                                String sessionId,
+                                                                FallbackProvider fallback) {
+        Flux<ServerSentEvent<String>> messageEvents = contentStream
+                .map(content -> ServerSentEvent.<String>builder()
+                        .event("message")
+                        .data(content)
+                        .build());
+
+        Flux<ServerSentEvent<String>> stream = Flux.concat(
+                Flux.just(ServerSentEvent.<String>builder()
+                        .event("status")
+                        .data("正在分析您的问题...")
+                        .build()),
+                messageEvents,
+                Flux.just(ServerSentEvent.<String>builder()
+                        .event("done")
+                        .data("[DONE]")
+                        .build())
+        );
+
         return stream.switchIfEmpty(Flux.defer(() -> {
-            log.warn("AI管理端流式响应为空，回退到非流式调用");
-            String result = analyzeWithAdminTools(systemPrompt, userMessage);
-            if (StringUtils.hasText(result)) {
-                return Flux.just(result);
+            log.warn("AI流式响应为空，回退到非流式调用: sessionId={}", sessionId);
+            try {
+                String result = fallback.execute();
+                if (StringUtils.hasText(result)) {
+                    return Flux.just(
+                            ServerSentEvent.<String>builder()
+                                    .event("status")
+                                    .data("正在查询数据...")
+                                    .build(),
+                            ServerSentEvent.<String>builder()
+                                    .event("message")
+                                    .data(result)
+                                    .build(),
+                            ServerSentEvent.<String>builder()
+                                    .event("done")
+                                    .data("[DONE]")
+                                    .build()
+                    );
+                }
+            } catch (Exception e) {
+                log.error("非流式回退失败: sessionId={}", sessionId, e);
             }
-            return Flux.empty();
+            return Flux.just(ServerSentEvent.<String>builder()
+                    .event("error")
+                    .data("抱歉，AI服务暂时不可用，请稍后再试。")
+                    .build());
         }));
+    }
+
+    @FunctionalInterface
+    private interface FallbackProvider {
+        String execute();
     }
 }
