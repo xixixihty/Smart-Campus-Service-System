@@ -80,32 +80,32 @@ function sendMessage() {
 
   abortController = new AbortController()
 
-  chatStream(
-    msg,
-    null,
-    sessionId.value,
-    (status) => {
+  chatStream({
+    message: msg,
+    context: null,
+    sessionId: sessionId.value,
+    onStatus: (status) => {
       assistantMsg.status = status
       scrollToBottom()
     },
-    (chunk) => {
+    onMessage: (chunk) => {
       assistantMsg.content += chunk
       assistantMsg.content = marked.parse(assistantMsg.content)
       scrollToBottom()
     },
-    () => {
+    onDone: () => {
       assistantMsg.status = ''
       loading.value = false
       scrollToBottom()
     },
-    (error) => {
+    onError: (error) => {
       assistantMsg.content = '<span style="color: red;">抱歉，AI服务暂时不可用，请稍后再试。</span>'
       assistantMsg.status = ''
       loading.value = false
       scrollToBottom()
     },
-    abortController.signal
-  )
+    signal: abortController.signal
+  })
 }
 
 function clearChat() {

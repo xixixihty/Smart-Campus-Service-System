@@ -2,12 +2,9 @@ package com.hxq.smart_campus.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.hxq.smart_campus.constant.RedisConstant;
 import com.hxq.smart_campus.entity.dto.CourseSelectionPeriodCreateDTO;
 import com.hxq.smart_campus.entity.dto.CourseSelectionPeriodResponseDTO;
 import com.hxq.smart_campus.entity.dto.CourseSelectionPeriodUpdateDTO;
-import com.hxq.smart_campus.entity.pojo.Course;
-import com.hxq.smart_campus.entity.pojo.CourseSelectionPeriod;
 import com.hxq.smart_campus.entity.vo.CourseSelectionPeriodDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseSelectionPeriodListVO;
 import com.hxq.smart_campus.entity.vo.SelectionTimeRedisVO;

@@ -15,6 +15,7 @@ import com.hxq.smart_campus.service.mq.BorrowRecordProducer;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BorrowRecordMapper borrowRecordMapper;
     private final RedisBorrowService redisBorrowService;
+    @Lazy
     private final BorrowRecordProducer borrowRecordProducer;
 
     @Override

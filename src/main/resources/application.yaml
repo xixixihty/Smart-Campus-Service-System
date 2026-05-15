@@ -128,3 +128,8 @@ logging:
     com.hxq.smart_campus: debug
     org.springframework.web: info
 
+# 智慧校园业务配置
+smartcampus:
+  rabbitmq:
+    enabled: true
+

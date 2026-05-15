@@ -326,7 +326,8 @@ public class AlibabaOpenAiChatModel implements ChatModel {
 
     private MultiValueMap<String, String> getAdditionalHttpHeaders(Prompt prompt) {
         Map<String, String> headers = new HashMap<>(this.defaultOptions.getHttpHeaders());
-        if (prompt.getOptions() != null && prompt.getOptions() instanceof OpenAiChatOptions chatOptions) {
+        if (prompt.getOptions() != null && prompt.getOptions() instanceof OpenAiChatOptions) {
+            OpenAiChatOptions chatOptions = (OpenAiChatOptions) prompt.getOptions();
             headers.putAll(chatOptions.getHttpHeaders());
         }
 
@@ -547,7 +548,8 @@ public class AlibabaOpenAiChatModel implements ChatModel {
         }
 
         // Preserve tool callbacks from the original prompt (lost during copyToTarget/merge)
-        if (prompt.getOptions() instanceof ToolCallingChatOptions toolOptions) {
+        if (prompt.getOptions() instanceof ToolCallingChatOptions) {
+            ToolCallingChatOptions toolOptions = (ToolCallingChatOptions) prompt.getOptions();
             List<ToolCallback> toolCallbacks = toolOptions.getToolCallbacks();
             if (toolCallbacks != null && !toolCallbacks.isEmpty()) {
                 requestOptions.setToolCallbacks(new ArrayList<>(toolCallbacks));

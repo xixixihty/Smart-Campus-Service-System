@@ -2,7 +2,11 @@ import request from '@/utils/request'
 
 export const getDashboardStats = () => request.get('/dashboard/admin/stats')
 
-export const chatStream = (message, context, sessionId, onStatus, onMessage, onDone, onError, signal) => {
+export const chatStream = ({ message, context, sessionId, onStatus, onMessage, onDone, onError, signal }) => {
+  if (typeof onMessage !== 'function') {
+    throw new Error('chatStream: onMessage 回调函数为必填参数')
+  }
+
   const token = localStorage.getItem('token')
   return fetch('/api/ai/admin/chat', {
     method: 'POST',
@@ -45,7 +49,7 @@ export const chatStream = (message, context, sessionId, onStatus, onMessage, onD
             } else if (currentEvent === 'error') {
               onError && onError(data)
             } else {
-              onMessage && onMessage(data)
+              onMessage(data)
             }
           }
         }

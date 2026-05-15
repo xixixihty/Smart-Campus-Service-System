@@ -40,9 +40,13 @@ public class AiService {
 
         StringBuilder fullResponse = new StringBuilder();
 
-        Flux<String> contentStream = userChatClient.prompt()
-                .user(userMessage)
-                .system(systemPrompt)
+        ChatClient.ChatClientRequestSpec spec = userChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+
+        Flux<String> contentStream = spec
                 .toolContext(Map.of("studentId", userId))
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
                 .stream()
@@ -66,9 +70,13 @@ public class AiService {
 
         StringBuilder fullResponse = new StringBuilder();
 
-        Flux<String> contentStream = adminChatClient.prompt()
-                .user(userMessage)
-                .system(systemPrompt)
+        ChatClient.ChatClientRequestSpec spec = adminChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+
+        Flux<String> contentStream = spec
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
                 .stream()
                 .content()
@@ -83,9 +91,12 @@ public class AiService {
 
     private String chatWithUserTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
         log.info("AI用户端非流式回退: sessionId={}, userId={}", sessionId, userId);
-        String result = userChatClient.prompt()
-                .user(userMessage)
-                .system(systemPrompt)
+        ChatClient.ChatClientRequestSpec spec = userChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+        String result = spec
                 .toolContext(Map.of("studentId", userId))
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
                 .call()
@@ -96,9 +107,12 @@ public class AiService {
 
     private String chatWithAdminTools(String systemPrompt, String userMessage, String sessionId) {
         log.info("AI管理端非流式回退: sessionId={}", sessionId);
-        String result = adminChatClient.prompt()
-                .user(userMessage)
-                .system(systemPrompt)
+        ChatClient.ChatClientRequestSpec spec = adminChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+        String result = spec
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
                 .call()
                 .content();

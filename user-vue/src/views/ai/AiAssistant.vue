@@ -144,28 +144,28 @@ async function sendMessage() {
     abortController = new AbortController()
     let fullContent = ''
 
-    await chatStream(
+    await chatStream({
       message,
-      '',
-      (chunk) => {
+      context: '',
+      onMessage: (chunk) => {
         fullContent += chunk
         streamingContent.value = renderMarkdown(fullContent)
         scrollToBottom()
       },
-      () => {
+      onDone: () => {
         chatMessages.value.push({ role: 'assistant', content: renderMarkdown(fullContent) })
         streamingContent.value = ''
         chatLoading.value = false
         scrollToBottom()
       },
-      (error) => {
+      onError: (error) => {
         console.error('AI对话错误:', error)
         chatMessages.value.push({ role: 'assistant', content: '抱歉，服务暂时不可用，请稍后重试。' })
         streamingContent.value = ''
         chatLoading.value = false
       },
-      abortController.signal
-    )
+      signal: abortController.signal
+    })
   } catch (error) {
     console.error('发送消息失败:', error)
     chatMessages.value.push({ role: 'assistant', content: '抱歉，发送失败，请重试。' })
