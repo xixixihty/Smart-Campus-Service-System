@@ -12,9 +12,16 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
-  # ??????MySQL?
+  # 排除未使用的 Spring AI 自动配置（仅使用 Chat，不用语音/图像/嵌入）
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+
   datasource:
-    username: root
+    username: ${DB_USERNAME:root}
     password: 1234
     url: jdbc:mysql://localhost:3306/smart_campus?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -45,7 +52,7 @@ spring:
       chat:
         model: deepseek-r1:1.5b     # ????????????
     openai:
-      api-key: sk-33e4ffbf84924ecf9f2942f4e08b29de
+      api-key: ${OPENAI_API_KEY}
       base-url: https://dashscope.aliyuncs.com/compatible-mode
       chat:
         options:
@@ -78,8 +85,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
     listener:
       simple:
         acknowledge-mode: manual
