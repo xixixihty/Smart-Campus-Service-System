@@ -101,4 +101,7 @@ public interface StudentMapper {
      * @return
      */
     MyInfo getStudentInfo(Long userId);
+
+    @Select("SELECT id FROM student")
+    java.util.List<Long> selectAllStudentIds();
 }

@@ -22,7 +22,7 @@ local waiters = redis.call('ZRANGE', waiting_key, 0, 0)
 if #waiters > 0 then
     local waiter = waiters[1]
     redis.call('DECR', stock_key)
-    redis.call('SADD', selected_key, course_id)
+    redis.call('SADD', 'course:selected:' .. waiter, course_id)
     redis.call('ZREM', waiting_key, waiter)
     return waiter
 end

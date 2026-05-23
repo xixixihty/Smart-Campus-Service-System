@@ -13,6 +13,7 @@ public class CourseSelectionListVO {
     private String courseName;      // 课程名称
     private BigDecimal credit;      // 学分
     private String semesterName;    // 学期名称
+    private Long semesterId;        // 学期ID
     private String status;          // 状态
     private BigDecimal score;       // 最终成绩
     private BigDecimal scorePoint;  // 绩点

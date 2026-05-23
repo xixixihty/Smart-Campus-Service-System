@@ -2,6 +2,8 @@ package com.hxq.smart_campus.service.impl;
 
 import com.hxq.smart_campus.mapper.BookMapper;
 import com.hxq.smart_campus.mapper.BorrowRecordMapper;
+import com.hxq.smart_campus.mapper.StudentMapper;
+import com.hxq.smart_campus.mapper.TeacherMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ public class RedisBorrowService {
     private final StringRedisTemplate redisTemplate;
     private final BookMapper bookMapper;
     private final BorrowRecordMapper borrowRecordMapper;
+    private final StudentMapper studentMapper;
+    private final TeacherMapper teacherMapper;
 
     private RBloomFilter<String> bookFilter;
     private RBloomFilter<String> userFilter;
@@ -39,6 +43,7 @@ public class RedisBorrowService {
         userFilter.tryInit(20000L, 0.03);
 
         loadBookIdsToFilter();
+        loadUserIdsToFilter();
         initBorrowCache();
         log.info("图书借阅布隆过滤器初始化完成");
     }
@@ -47,6 +52,17 @@ public class RedisBorrowService {
         List<Long> bookIds = bookMapper.selectAllBookIds();
         bookIds.forEach(id -> bookFilter.add("book:" + id));
         log.info("图书布隆过滤器加载完成，共 {} 个图书ID", bookIds.size());
+    }
+
+    private void loadUserIdsToFilter() {
+        List<Long> studentIds = studentMapper.selectAllStudentIds();
+        studentIds.forEach(id -> userFilter.add("user:" + id));
+
+        List<Long> teacherIds = teacherMapper.selectAllTeacherIds();
+        teacherIds.forEach(id -> userFilter.add("user:" + id));
+
+        log.info("用户布隆过滤器加载完成，学生{}人，教师{}人",
+                studentIds.size(), teacherIds.size());
     }
 
     /**

@@ -20,18 +20,24 @@
     </insert>
     <!-- 获取借阅记录详情 -->
     <select id="getBorrowRecordDetail" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO">
-        select r.id, r.borrow_no as borrowNo, r.user_id as userId, s.name as userName, r.book_id as bookId, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
+        select r.id, r.borrow_no as borrowNo, r.user_id as userId,
+               COALESCE(s.name, t.name) as userName,
+               r.book_id as bookId, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
                r.due_date as dueDate, r.return_date as returnDate, r.status, r.create_time as createTime, r.update_time as updateTime
         from borrow_record r
         left join student s on r.user_id = s.id
+        left join teacher t on r.user_id = t.id
         left join book b on r.book_id = b.id
         where r.id = #{id}
     </select>
     <!-- 获取借阅记录列表 -->
     <select id="getBorrowRecordList" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordListVO">
-        select r.id, r.borrow_no as borrowNo, s.name as userName, b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
+        select r.id, r.borrow_no as borrowNo,
+               COALESCE(s.name, t.name) as userName,
+               b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
         from borrow_record r
         left join student s on r.user_id = s.id
+        left join teacher t on r.user_id = t.id
         left join book b on r.book_id = b.id
         <where>
             <if test="userId != null">and r.user_id = #{userId}</if>

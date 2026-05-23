@@ -12,17 +12,35 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SeatReservationProducer {
 
-    private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate seatRabbitTemplate;
 
     public void sendReserveMessage(SeatReservationMessage message) {
         log.info("发送预约消息: reservationNo={}", message.getReservationNo());
-        rabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
+        seatRabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
                 SeatRabbitMQConfig.SEAT_ROUTING_KEY, message);
     }
 
     public void sendCancelMessage(SeatReservationMessage message) {
         log.info("发送取消预约消息: reservationNo={}", message.getReservationNo());
-        rabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
+        seatRabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
+                SeatRabbitMQConfig.SEAT_ROUTING_KEY, message);
+    }
+
+    public void sendCheckInMessage(SeatReservationMessage message) {
+        log.info("发送签到消息: reservationNo={}", message.getReservationNo());
+        seatRabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
+                SeatRabbitMQConfig.SEAT_ROUTING_KEY, message);
+    }
+
+    public void sendCheckOutMessage(SeatReservationMessage message) {
+        log.info("发送签退消息: reservationNo={}", message.getReservationNo());
+        seatRabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
+                SeatRabbitMQConfig.SEAT_ROUTING_KEY, message);
+    }
+
+    public void sendLeaveMessage(SeatReservationMessage message) {
+        log.info("发送暂离消息: reservationNo={}", message.getReservationNo());
+        seatRabbitTemplate.convertAndSend(SeatRabbitMQConfig.SEAT_EXCHANGE,
                 SeatRabbitMQConfig.SEAT_ROUTING_KEY, message);
     }
 }

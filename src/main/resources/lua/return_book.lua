@@ -18,9 +18,9 @@ redis.call('INCR', KEYS[1])
 local waiters = redis.call('ZPOPMIN', KEYS[3], 1)
 if waiters and #waiters > 0 then
     local nextUser = waiters[1]
-    -- 自动补位：扣库存 + 标记已借
+    -- 自动补位：扣库存 + 标记候补用户已借
     redis.call('DECR', KEYS[1])
-    redis.call('SADD', KEYS[2], ARGV[1])
+    redis.call('SADD', 'book:borrowed:' .. nextUser, ARGV[1])
     return nextUser   -- 返回候补成功者userId
 end
 return 1   -- 归还成功，无排队

@@ -118,4 +118,22 @@ public interface SeatReservationMapper {
      */
     @Update("update seat_reservation set status = #{status} where reservation_no = #{reservationNo}")
     int updateStatusByReservationNo(@Param("reservationNo") String reservationNo, @Param("status") String status);
+
+    /**
+     * 根据预约编号签到
+     */
+    @Update("update seat_reservation set status = '使用中', update_time = now() where reservation_no = #{reservationNo}")
+    int checkInByReservationNo(@Param("reservationNo") String reservationNo);
+
+    /**
+     * 根据预约编号签退
+     */
+    @Update("update seat_reservation set status = '已完成', leave_time = now(), update_time = now() where reservation_no = #{reservationNo}")
+    int checkOutByReservationNo(@Param("reservationNo") String reservationNo);
+
+    /**
+     * 根据预约编号暂离
+     */
+    @Update("update seat_reservation set status = '暂离', leave_time = now(), update_time = now() where reservation_no = #{reservationNo}")
+    int leaveByReservationNo(@Param("reservationNo") String reservationNo);
 }

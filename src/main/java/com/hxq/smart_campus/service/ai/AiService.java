@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,7 +55,21 @@ public class AiService {
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
                 .doOnComplete(() -> log.info("AI用户端流式响应完成: sessionId={}, response={}",
-                        effectiveSessionId, fullResponse.toString()));
+                        effectiveSessionId, fullResponse.toString()))
+                .onErrorResume(e -> {
+                    log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, userId={}, error={}",
+                            effectiveSessionId, userId, e.getMessage());
+                    try {
+                        String result = chatWithUserTools(systemPrompt, userMessage, effectiveSessionId, userId);
+                        if (StringUtils.hasText(result)) {
+                            fullResponse.append(result);
+                            return Flux.just(result);
+                        }
+                    } catch (Exception ex) {
+                        log.error("AI非流式降级也失败了: sessionId={}, userId={}", effectiveSessionId, userId, ex);
+                    }
+                    return Flux.error(new RuntimeException("AI服务调用失败，流式和非流式均不可用", e));
+                });
 
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
                 chatWithUserTools(systemPrompt, userMessage, effectiveSessionId, userId));
@@ -83,7 +98,21 @@ public class AiService {
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
                 .doOnComplete(() -> log.info("AI管理端流式响应完成: sessionId={}, response={}",
-                        effectiveSessionId, fullResponse.toString()));
+                        effectiveSessionId, fullResponse.toString()))
+                .onErrorResume(e -> {
+                    log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, error={}",
+                            effectiveSessionId, e.getMessage());
+                    try {
+                        String result = chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId);
+                        if (StringUtils.hasText(result)) {
+                            fullResponse.append(result);
+                            return Flux.just(result);
+                        }
+                    } catch (Exception ex) {
+                        log.error("AI非流式降级也失败了: sessionId={}", effectiveSessionId, ex);
+                    }
+                    return Flux.error(new RuntimeException("AI服务调用失败，流式和非流式均不可用", e));
+                });
 
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
                 chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId));
@@ -133,12 +162,19 @@ public class AiService {
                         .data(content)
                         .build());
 
+        Flux<ServerSentEvent<String>> heartbeatFlux = Flux.interval(Duration.ofSeconds(15))
+                .map(tick -> ServerSentEvent.<String>builder()
+                        .event("heartbeat")
+                        .data("")
+                        .build())
+                .takeUntilOther(messageEvents.then(Mono.just(true)));
+
         Flux<ServerSentEvent<String>> stream = Flux.concat(
                 Flux.just(ServerSentEvent.<String>builder()
                         .event("status")
                         .data("正在分析您的问题...")
                         .build()),
-                messageEvents,
+                Flux.merge(messageEvents, heartbeatFlux),
                 Flux.just(ServerSentEvent.<String>builder()
                         .event("done")
                         .data("[DONE]")

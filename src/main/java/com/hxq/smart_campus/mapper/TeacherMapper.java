@@ -91,4 +91,7 @@ public interface TeacherMapper {
      * @return
      */
     MyInfo getTeacherInfo(Long userId);
+
+    @Select("SELECT id FROM teacher")
+    java.util.List<Long> selectAllTeacherIds();
 }

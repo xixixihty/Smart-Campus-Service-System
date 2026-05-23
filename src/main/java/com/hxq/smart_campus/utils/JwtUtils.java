@@ -25,7 +25,7 @@ public class JwtUtils {
     private static String secretStatic;
     private static long expirationTimeStatic;
 
-    @Value("${jwt.secret:hxq-smart-campus-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}")
+    @Value("${jwt.secret:}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}")
@@ -33,6 +33,14 @@ public class JwtUtils {
 
     @PostConstruct
     public void init() {
+        if (this.secret == null || this.secret.isBlank()
+                || this.secret.contains("must-be-at-least")) {
+            throw new IllegalStateException(
+                    "JWT密钥未配置或使用了不安全默认值，请在application.yaml中配置 jwt.secret");
+        }
+        if (this.secret.getBytes(java.nio.charset.StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT密钥长度不足32字节，请使用至少256位的密钥");
+        }
         secretStatic = this.secret;
         expirationTimeStatic = this.expirationTime;
     }

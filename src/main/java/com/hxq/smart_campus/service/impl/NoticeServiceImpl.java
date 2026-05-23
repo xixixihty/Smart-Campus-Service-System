@@ -180,10 +180,10 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String targetType, String status) {
-        String cacheKey = NOTICE_KEY_PREFIX + "list:" + pageNum + ":" + pageSize + ":" +
-                (title != null ? title : "") + ":" +
-                (targetType != null ? targetType : "") + ":" +
-                (status != null ? status : "");
+        String cacheKey = NOTICE_KEY_PREFIX + "list:" +
+                (title != null ? title : "all") + ":" +
+                (targetType != null ? targetType : "all") + ":" +
+                (status != null ? status : "all");
 
         List<NoticeListVO> noticeListVOList = (List<NoticeListVO>) redisTemplate.opsForValue().get(cacheKey);
         if (noticeListVOList != null && !noticeListVOList.isEmpty()) {
@@ -207,8 +207,8 @@ public class NoticeServiceImpl implements NoticeService {
         noticeListVOList = noticeMapper.getNoticeList(title, targetType, status);
         PageInfo<NoticeListVO> pageInfo = new PageInfo<>(noticeListVOList);
 
-        if (noticeListVOList != null && !noticeListVOList.isEmpty()) {
-            redisTemplate.opsForValue().set(cacheKey, noticeListVOList, 1, TimeUnit.DAYS);
+        if (noticeListVOList != null && !noticeListVOList.isEmpty() && pageNum == 1) {
+            redisTemplate.opsForValue().set(cacheKey, noticeListVOList, 5, TimeUnit.MINUTES);
         }
 
         return pageInfo;

@@ -136,7 +136,6 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean checkInSeatReservation(Long id) {
         log.info("签到，参数：id={}", id);
         if (id == null) {
@@ -149,16 +148,16 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (!"待签到".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是待签到，无法签到");
         }
-        int result = seatReservationMapper.checkInSeatReservation(id);
-        if (result <= 0) {
-            throw new RuntimeException("签到失败");
-        }
-        log.info("签到成功，ID：{}", id);
+        SeatReservationMessage msg = new SeatReservationMessage(
+                existing.getSeatId(), existing.getUserId(), existing.getDate(),
+                existing.getStartTime(), existing.getEndTime(),
+                existing.getReservationNo(), "CHECK_IN");
+        seatReservationProducer.sendCheckInMessage(msg);
+        log.info("签到消息已发送，ID：{}", id);
         return true;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean checkOutSeatReservation(Long id) {
         log.info("签退，参数：id={}", id);
         if (id == null) {
@@ -171,16 +170,16 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (!"使用中".equals(existing.getStatus()) && !"暂离".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是使用中或暂离，无法签退");
         }
-        int result = seatReservationMapper.checkOutSeatReservation(id);
-        if (result <= 0) {
-            throw new RuntimeException("签退失败");
-        }
-        log.info("签退成功，ID：{}", id);
+        SeatReservationMessage msg = new SeatReservationMessage(
+                existing.getSeatId(), existing.getUserId(), existing.getDate(),
+                existing.getStartTime(), existing.getEndTime(),
+                existing.getReservationNo(), "CHECK_OUT");
+        seatReservationProducer.sendCheckOutMessage(msg);
+        log.info("签退消息已发送，ID：{}", id);
         return true;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean leaveSeatReservation(Long id) {
         log.info("暂离，参数：id={}", id);
         if (id == null) {
@@ -193,11 +192,12 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (!"使用中".equals(existing.getStatus())) {
             throw new IllegalArgumentException("当前状态不是使用中，无法暂离");
         }
-        int result = seatReservationMapper.leaveSeatReservation(id);
-        if (result <= 0) {
-            throw new RuntimeException("暂离失败");
-        }
-        log.info("暂离成功，ID：{}", id);
+        SeatReservationMessage msg = new SeatReservationMessage(
+                existing.getSeatId(), existing.getUserId(), existing.getDate(),
+                existing.getStartTime(), existing.getEndTime(),
+                existing.getReservationNo(), "LEAVE");
+        seatReservationProducer.sendLeaveMessage(msg);
+        log.info("暂离消息已发送，ID：{}", id);
         return true;
     }
 
@@ -262,7 +262,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
             LocalTime slotTime = LocalTime.parse(time);
             
             for (SeatReservationListVO res : reservations) {
-                if (slotTime.isAfter(res.getStartTime()) && slotTime.isBefore(res.getEndTime())) {
+                if (!slotTime.isBefore(res.getStartTime()) && slotTime.isBefore(res.getEndTime())) {
                     slot.setAvailable(false);
                     slot.setReservedBy(res.getUserName());
                     break;

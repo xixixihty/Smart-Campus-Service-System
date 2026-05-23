@@ -12,18 +12,13 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
-  # 排除未使用的 Spring AI 自动配置（仅使用 Chat，不用语音/图像/嵌入）
-  autoconfigure:
-    exclude:
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+
+
 
   datasource:
-    username: ${DB_USERNAME:root}
+    username: root
     password: 1234
-    url: jdbc:mysql://localhost:3306/smart_campus?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/smart_campus?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -35,7 +30,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password:              # ????????
       database: 0
       timeout: 5000ms
       lettuce:
@@ -45,12 +39,8 @@ spring:
           min-idle: 5
           max-wait: 3000ms
 
-  # Spring AI ???Ollama ?????
+  # Spring AI ???
   ai:
-    ollama:
-      base-url: http://localhost:11434
-      chat:
-        model: deepseek-r1:1.5b     # ????????????
     openai:
       api-key: ${OPENAI_API_KEY}
       base-url: https://dashscope.aliyuncs.com/compatible-mode
@@ -63,7 +53,7 @@ spring:
 
   # Redisson配置
   redisson:
-    config: |
+    config:
       singleServerConfig:
         address: "redis://localhost:6379"
         database: 0
@@ -77,8 +67,8 @@ spring:
       lock:
         leaseTime: 30000
         waitTime: 3000
-    
-    
+
+
 
 
   # RabbitMQ配置
@@ -103,10 +93,10 @@ spring:
 # 阿里云OSS配置
 aliyun:
   oss:
-    endpoint: https://oss-cn-hangzhou.aliyuncs.com
-    access-key-id: ${ALIBABA_CLOUD_ACCESS_KEY_ID}
-    access-key-secret: ${ALIBABA_CLOUD_ACCESS_KEY_SECRET}
-    bucket-name: hexiongqi
+    endpoint: ${endpoint}
+    access-key-id: ${access-key-id}
+    access-key-secret: ${access-key-secret}
+    bucket-name: ${bucket-name}
 
 # MyBatis ??
 mybatis:
@@ -139,4 +129,5 @@ logging:
 smartcampus:
   rabbitmq:
     enabled: true
+
 

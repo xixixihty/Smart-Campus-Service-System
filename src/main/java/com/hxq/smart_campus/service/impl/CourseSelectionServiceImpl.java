@@ -17,15 +17,16 @@ import com.hxq.smart_campus.service.CourseService;
 import com.hxq.smart_campus.service.SemesterService;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import com.hxq.smart_campus.utils.TimeConflictUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.expression.spel.ast.Selection;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +38,8 @@ import java.util.stream.Collectors;
 
 import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
 import static com.hxq.smart_campus.constant.RedisConstant.*;
-import static com.hxq.smart_campus.utils.TimeConflictUtils.hasTimeConflict;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class CourseSelectionServiceImpl implements CourseSelectionService {
 
@@ -53,16 +52,46 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
 
     private final RedisTemplate redisTemplate;
 
+    private final StringRedisTemplate stringRedisTemplate;
+
     private final RedisCourseService redisCourseService;
 
     private final RedissonClient redissonClient;
 
     private final CourseCacheService courseCacheService;
 
+    private final RabbitTemplate rabbitTemplate;
 
+    public CourseSelectionServiceImpl(
+            CourseSelectionMapper courseSelectionMapper,
+            CourseSelectionPeriodService courseSelectionPeriodService,
+            CourseService courseService,
+            SemesterMapper semesterMapper,
+            CourseMapper courseMapper,
+            StudentMapper studentMapper,
+            RedisTemplate redisTemplate,
+            StringRedisTemplate stringRedisTemplate,
+            RedisCourseService redisCourseService,
+            RedissonClient redissonClient,
+            CourseCacheService courseCacheService,
+            @Qualifier("borrowRabbitTemplate") RabbitTemplate rabbitTemplate) {
+        this.courseSelectionMapper = courseSelectionMapper;
+        this.courseSelectionPeriodService = courseSelectionPeriodService;
+        this.courseService = courseService;
+        this.semesterMapper = semesterMapper;
+        this.courseMapper = courseMapper;
+        this.studentMapper = studentMapper;
+        this.redisTemplate = redisTemplate;
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.redisCourseService = redisCourseService;
+        this.redissonClient = redissonClient;
+        this.courseCacheService = courseCacheService;
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     private final String RLOCK_DROP_COURSE_NOT_EXIST = "0";
-    private final RabbitTemplate rabbitTemplate;
+
+    private static final String AVAILABLE_SUPPRESS_PREFIX = "available:suppress:";
 
 
     /**
@@ -72,52 +101,6 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      */
     @Override
     public CourseSelectionResponseDTO selectCourse(CourseSelectionCreateDTO courseSelectionCreateDTO) {
-//        log.info("学生选课，选课信息：{}", courseSelectionCreateDTO);
-//
-//        // 判断是否在选课时间段内
-//        boolean isInTimePeriod = isInCourseSelectionTimePeriod(courseSelectionCreateDTO.getSemesterId());
-//        if (!isInTimePeriod) {
-//            throw CourseSelectionException.outOfTimePeriod("不在选课时间段内");
-//        }
-//        // 判断判断课程是否存在
-//        boolean isCourseExist = isCourseExist(courseSelectionCreateDTO.getCourseId());
-//        if (!isCourseExist) {
-//            throw CourseSelectionException.courseNotExist("课程不存在");
-//        }
-//        // 判断是否已经选课过该课程
-//        boolean isCourseSelectionExist = isCourseSelectionExist(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
-//        if (isCourseSelectionExist) {
-//            throw CourseSelectionException.courseSelectionExist("已经选修过该课程");
-//        }
-//        // 判断课程的容量是否已满
-//        boolean isCourseSelectionFull = isCourseSelectionFull(courseSelectionCreateDTO.getCourseId());
-//        if (isCourseSelectionFull) {
-//            throw CourseSelectionException.courseSelectionFull("课程已满");
-//        }
-//        // 该课程可以选课
-//        int result = courseSelectionMapper.insertCourseSelection(courseSelectionCreateDTO);
-//        if (result <= 0) {
-//            throw CourseSelectionException.insertCourseSelectionFailed("选课失败，请稍后再试");
-//        }
-//        Long courseSelectionId = courseSelectionMapper.getLastInsertId();
-//        if (courseSelectionId == null) {
-//            throw CourseSelectionException.insertCourseSelectionFailed("选课失败，请稍后再试");
-//        }
-//        CourseSelectionListVO courseSelectionListVO = courseSelectionMapper.getCourseSelectionListVO(courseSelectionId);
-//        if (courseSelectionListVO == null) {
-//            throw CourseSelectionException.insertCourseSelectionFailed("选课失败，请稍后再试");
-//        }
-//        // TODO：插入成功需要减去相应的课程容量
-//        courseService.updateCourseCapacity(courseSelectionCreateDTO.getCourseId(), 1);
-//        // 先删除课程详情缓存
-//        redisTemplate.delete(COURSE_DETAIL_KEY_PREFIX + courseSelectionCreateDTO.getCourseId());
-//        // 刷新Redis中的课程列表
-//        redisTemplate.opsForValue().set(COURSE_DETAIL_KEY_PREFIX + courseSelectionCreateDTO.getCourseId(), courseSelectionListVO, 1, TimeUnit.DAYS);
-// 转换为响应对象        CourseSelectionResponseDTO courseSelectionResponseDTO = convertToCourseSelectionResponseDTO(courseSelectionListVO);
-//        courseSelectionResponseDTO.setStudentId(courseSelectionCreateDTO.getStudentId());
-//        courseSelectionResponseDTO.setCourseId(courseSelectionCreateDTO.getCourseId());
-//        courseSelectionResponseDTO.setSemesterId(courseSelectionCreateDTO.getSemesterId());
-//        return courseSelectionResponseDTO;
         // 判断是否在选课时间段内
         /**
          * 1. 判断是否在选课时间段内
@@ -151,9 +134,21 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                         courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getCourseId());
                 if (droppedRecord != null) {
                     String selectedKey = "course:selected:" + courseSelectionCreateDTO.getStudentId();
-                    redisTemplate.opsForSet().remove(selectedKey, String.valueOf(courseSelectionCreateDTO.getCourseId()));
+                    String courseIdStr = String.valueOf(courseSelectionCreateDTO.getCourseId());
+                    Boolean alreadySelected = stringRedisTemplate.opsForSet().isMember(selectedKey, courseIdStr);
+                    if (Boolean.TRUE.equals(alreadySelected)) {
+                        throw CourseSelectionException.courseSelectionExist("已经选修过该课程");
+                    }
+                    stringRedisTemplate.opsForSet().remove(selectedKey, courseIdStr);
                     log.info("检测到已退课记录，已清理Redis选课集合: studentId={}, courseId={}",
                             courseSelectionCreateDTO.getStudentId(), courseSelectionCreateDTO.getCourseId());
+                    String idempotentKey = MQ_PROCESSED_COURSE_SELECTION_PREFIX
+                            + courseSelectionCreateDTO.getStudentId() + ":"
+                            + courseSelectionCreateDTO.getCourseId() + ":"
+                            + courseSelectionCreateDTO.getSemesterId();
+                    stringRedisTemplate.delete(idempotentKey);
+                    String dropIdempotentKey = MQ_PROCESSED_COURSE_DROP_PREFIX + droppedRecord.getId();
+                    stringRedisTemplate.delete(dropIdempotentKey);
                 }
 
                 Long result = redisCourseService.executeSelection(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
@@ -167,6 +162,11 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                     return buildWaitingResponseDTO(courseSelectionCreateDTO);
                 } else if (result == 1) {
                     sendSelectionMessage(courseSelectionCreateDTO);
+                    invalidateMySelectionCache(courseSelectionCreateDTO.getStudentId());
+                    invalidateAvailableCourseCache(courseSelectionCreateDTO.getSemesterId(), courseSelectionCreateDTO.getStudentId());
+                    stringRedisTemplate.opsForValue().set(
+                            AVAILABLE_SUPPRESS_PREFIX + courseSelectionCreateDTO.getStudentId(),
+                            "1", Duration.ofSeconds(10));
                     return buildSuccessResponseDTO(courseSelectionCreateDTO);
                 }
                 throw CourseSelectionException.insertCourseSelectionFailed("选课失败，请稍后再试");
@@ -234,14 +234,21 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
                 String result = redisCourseService.executeDrop(selection.getCourseId(), selection.getStudentId());
                 if (RLOCK_DROP_COURSE_NOT_EXIST.equals(result)) {
-                    throw CourseSelectionException.courseSelectionNotExist("未选择该课程");
+                    if (!"已选".equals(selection.getStatus())) {
+                        throw CourseSelectionException.courseSelectionNotExist("未选择该课程");
+                    }
+                    log.warn("Redis选课集合不一致，修复中: studentId={}, courseId={}",
+                            selection.getStudentId(), selection.getCourseId());
+                    stringRedisTemplate.opsForSet().add(
+                            "course:selected:" + selection.getStudentId(),
+                            String.valueOf(selection.getCourseId()));
+                    result = redisCourseService.executeDrop(selection.getCourseId(), selection.getStudentId());
+                    if (RLOCK_DROP_COURSE_NOT_EXIST.equals(result)) {
+                        throw CourseSelectionException.courseSelectionNotExist("Redis修复后仍无法退课，请联系管理员");
+                    }
                 }
-                // 更新数据库
-                int updateResult = courseSelectionMapper.dropCourse( id);
-                if (updateResult <= 0) {
-                    throw CourseSelectionException.dropCourseFailed("退课失败，请稍后再试");
-                }
-                courseSelectionMapper.dropCourseByStudentAndCourse(selection.getStudentId(), selection.getCourseId());
+                // 发送MQ消息异步落库
+                sendDropMessage(id, selection.getStudentId(), selection.getCourseId(), selection.getSemesterId());
                 // 如果有候补用户，发送通知
                 if (!"1".equals(result)) {
                     sendWaitingNotification(selection.getCourseId(), Long.parseLong(result));
@@ -332,9 +339,14 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         }
         availableCourseList = courseService.getAvailableCourseList(semesterId, studentId);
         if (availableCourseList == null || availableCourseList.isEmpty()) {
-            throw CourseSelectionException.availableCourseListEmpty("可选课程列表为空");
+            return List.of();
         }
-        redisTemplate.opsForValue().set(cacheKey, availableCourseList, 30, TimeUnit.MINUTES);
+        Boolean suppressed = stringRedisTemplate.hasKey(AVAILABLE_SUPPRESS_PREFIX + studentId);
+        if (Boolean.TRUE.equals(suppressed)) {
+            redisTemplate.opsForValue().set(cacheKey, availableCourseList, 5, TimeUnit.SECONDS);
+        } else {
+            redisTemplate.opsForValue().set(cacheKey, availableCourseList, 30, TimeUnit.MINUTES);
+        }
         return availableCourseList;
     }
 
@@ -541,20 +553,46 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      * @param dto
      */
     private void sendSelectionMessage(CourseSelectionCreateDTO dto) {
-        // 发送选课消息
         Map<String, Object> message = new HashMap<>();
+        message.put("eventType", "SELECT");
         message.put("studentId", dto.getStudentId());
         message.put("courseId", dto.getCourseId());
         message.put("semesterId", dto.getSemesterId());
         message.put("timestamp", System.currentTimeMillis());
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, message);
     }
+
+    /**
+     * 发送退课消息
+     * @param id 选课记录ID
+     * @param studentId 学生ID
+     * @param courseId 课程ID
+     * @param semesterId 学期ID
+     */
+    private void sendDropMessage(Long id, Long studentId, Long courseId, Long semesterId) {
+        Map<String, Object> message = new HashMap<>();
+        message.put("eventType", "DROP");
+        message.put("id", id);
+        message.put("studentId", studentId);
+        message.put("courseId", courseId);
+        message.put("semesterId", semesterId);
+        message.put("timestamp", System.currentTimeMillis());
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, message);
+        log.info("发送退课消息: id={}, studentId={}, courseId={}", id, studentId, courseId);
+    }
     /**
      *
      */
     private void sendWaitingNotification(Long courseId, Long userId) {
-        // TODO: 发送候补成功通知
         log.info("候补用户 {} 成功选课课程 {}", userId, courseId);
+        Long semesterId = semesterMapper.getCurrentSemester().getId();
+        CourseSelectionCreateDTO dto = new CourseSelectionCreateDTO();
+        dto.setStudentId(userId);
+        dto.setCourseId(courseId);
+        dto.setSemesterId(semesterId);
+        sendSelectionMessage(dto);
+        invalidateMySelectionCache(userId);
+        invalidateAvailableCourseCache(semesterId, userId);
     }
 
 
@@ -565,6 +603,13 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
      */
     private CourseSelectionResponseDTO buildSuccessResponseDTO(CourseSelectionCreateDTO dto) {
         CourseDetailVO course = courseCacheService.getCourseDetail(dto.getCourseId());
+        if (course == null) {
+            log.error("构建选课响应时课程信息为空: courseId={}", dto.getCourseId());
+            course = courseService.getCourseDetail(dto.getCourseId());
+            if (course == null) {
+                throw CourseSelectionException.courseNotExist("课程信息丢失，请联系管理员");
+            }
+        }
         CourseSelectionResponseDTO responseDTO = new CourseSelectionResponseDTO();
         responseDTO.setStudentId(dto.getStudentId());
         responseDTO.setCourseId(dto.getCourseId());
@@ -633,12 +678,18 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
 
     @Override
     public void invalidateMySelectionCache(Long studentId) {
-        mySelectionCache.invalidateAll();
+        String prefix = "my:selection:" + studentId + ":";
+        java.util.Set<String> keysToInvalidate = mySelectionCache.asMap().keySet().stream()
+                .filter(key -> key.startsWith(prefix))
+                .collect(java.util.stream.Collectors.toSet());
+        keysToInvalidate.forEach(mySelectionCache::invalidate);
+
         Set<String> keys = redisTemplate.keys(MY_COURSE_SELECTION_KEY_PREFIX + studentId + ":*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
-            log.info("已失效我的选课缓存: studentId={}, keys={}", studentId, keys.size());
         }
+        log.info("已失效学生选课缓存: studentId={}, caffeineKeys={}, redisKeys={}",
+                studentId, keysToInvalidate.size(), keys != null ? keys.size() : 0);
     }
 
     @Override

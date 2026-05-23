@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             if (teacher == null) {
                 throw new IllegalArgumentException("教师不存在");
             }
-            if ("锁定".equals(teacher.getAccountStatus())) {
+            if (TEACHER_ACCOUNT_STATUS_LOCK.equals(teacher.getAccountStatus())) {
                 throw new IllegalArgumentException("账号已被锁定");
             }
             if (!BCryptUtils.checkPassword(loginDTO.getPassword(), teacher.getPassword())) {
