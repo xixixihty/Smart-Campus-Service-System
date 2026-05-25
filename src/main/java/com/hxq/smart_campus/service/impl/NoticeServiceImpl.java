@@ -214,6 +214,53 @@ public class NoticeServiceImpl implements NoticeService {
         return pageInfo;
     }
 
+    @Override
+    public Long getUnreadCount() {
+        String[] userContext = resolveUserContext();
+        return noticeMapper.countUnreadNotices(userContext[0], userContext[1], userContext[2]);
+    }
+
+    private String[] resolveUserContext() {
+        String userType = SecurityUtils.getCurrentUserType();
+        if (userType == null) {
+            throw new BusinessException("请用户先登陆");
+        }
+
+        String className = null;
+        String majorName = null;
+        String collegeName = null;
+
+        if ("student".equals(userType)) {
+            Long studentId = SecurityUtils.getCurrentUserId();
+            if (studentId == null) {
+                throw new BusinessException("请用户先登陆");
+            }
+            StudentDetailVO studentDetailVO = studentMapper.getStudentDetail(studentId);
+            if (studentDetailVO == null) {
+                throw new BusinessException("学生不存在");
+            }
+            MajorDetailVO majorDetailVO = majorMapper.getMajorIdByClassId(studentDetailVO.getClassId());
+            if (majorDetailVO == null) {
+                throw new BusinessException("专业不存在");
+            }
+            className = studentDetailVO.getClassName();
+            majorName = majorDetailVO.getMajorName();
+            collegeName = majorDetailVO.getCollegeName();
+        } else if ("teacher".equals(userType)) {
+            Long teacherId = SecurityUtils.getCurrentUserId();
+            if (teacherId == null) {
+                throw new BusinessException("请用户先登陆");
+            }
+            TeacherDetailVO teacherDetailVO = teacherMapper.getTeacherDetail(teacherId);
+            if (teacherDetailVO == null) {
+                throw new BusinessException("教师不存在");
+            }
+            collegeName = teacherDetailVO.getCollegeName();
+        }
+
+        return new String[]{className, majorName, collegeName};
+    }
+
     /**
      * 获取通知详情
      * @param id

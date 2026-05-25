@@ -82,4 +82,22 @@
           )
         order by n.publish_time desc
     </select>
+
+    <select id="countUnreadNotices" resultType="java.lang.Long">
+        select count(*)
+        from notice n
+        where n.status = '发布'
+          and (
+              n.target_type = '全部'
+              <if test="className != null and className != ''">
+                  or n.target_name = #{className}
+              </if>
+              <if test="majorName != null and majorName != ''">
+                  or n.target_name = #{majorName}
+              </if>
+              <if test="collegeName != null and collegeName != ''">
+                  or n.target_name = #{collegeName}
+              </if>
+          )
+    </select>
 </mapper>

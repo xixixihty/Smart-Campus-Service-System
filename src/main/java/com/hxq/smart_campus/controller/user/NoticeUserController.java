@@ -48,4 +48,16 @@ public class NoticeUserController {
         PageInfo<MyNoticeVO> myNoticeVO = noticeService.getMyNoticeList(pageNum, pageSize);
         return Result.success(myNoticeVO);
     }
+
+    /**
+     * 获取未读通知数量
+     * @return
+     */
+    @GetMapping("/unread-count")
+    @Operation(summary = "获取未读通知数量")
+    public Result<Long> getUnreadCount() {
+        log.info("获取未读通知数量");
+        Long count = noticeService.getUnreadCount();
+        return Result.success(count);
+    }
 }

@@ -84,7 +84,7 @@
           <div class="card-footer">
             <div class="test-account">
               <el-icon :size="14"><InfoFilled /></el-icon>
-              <span>测试账号：S2021001 / Password123!</span>
+              <span>测试账号：2023001001 / Password123!</span>
             </div>
           </div>
         </div>
@@ -310,24 +310,38 @@ const handleLogin = async () => {
   top: 5%;
   left: 50%;
   transform: translateX(-50%);
+  animation: floatA 3.5s ease-in-out infinite;
 }
 
 .card-2 {
   top: 50%;
   right: 2%;
   transform: translateY(-50%);
+  animation: floatB 4s ease-in-out infinite 0.5s;
 }
 
 .card-3 {
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
+  animation: floatA 3.5s ease-in-out infinite 1s;
 }
 
 .card-4 {
   top: 50%;
   left: 2%;
   transform: translateY(-50%);
+  animation: floatB 4s ease-in-out infinite 1.5s;
+}
+
+@keyframes floatA {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes floatB {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(6px); }
 }
 
 .login-right {

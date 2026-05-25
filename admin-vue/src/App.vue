@@ -11,6 +11,7 @@
           <el-badge :value="noticeCount" :hidden="noticeCount === 0">
             <el-icon :size="22"><Bell /></el-icon>
           </el-badge>
+          <el-button :icon="isDark ? Sunny : Moon" circle size="small" class="theme-toggle" @click="toggleTheme" />
           <el-dropdown @command="handleUserCommand">
             <span class="user-info">
               <el-icon><UserFilled /></el-icon>
@@ -180,9 +181,13 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { validateToken } from '@/api/auth'
+import { useTheme } from '@/composables/useTheme'
+import { Sunny, Moon } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
+
+const { isDark, toggleTheme } = useTheme()
 
 const username = ref(localStorage.getItem('username') || '管理员')
 const noticeCount = ref(0)
@@ -304,5 +309,24 @@ html, body, #app {
   background-color: #f0f2f5;
   padding: 20px;
   min-height: 0;
+}
+
+.theme-toggle {
+  margin-left: 6px;
+  background: rgba(255,255,255,0.12) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.25) !important;
+}
+
+html.dark .theme-toggle {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+html.dark .theme-toggle:hover {
+  background: rgba(255,255,255,0.15) !important;
 }
 </style>

@@ -40,24 +40,18 @@
             <el-table-column prop="id" label="ID" width="70" align="center" />
             <el-table-column prop="courseName" label="课程名称" min-width="160" />
             <el-table-column prop="courseCode" label="课程代码" width="110" />
-            <el-table-column prop="collegeName" label="开课学院" width="120" />
-            <el-table-column prop="courseType" label="类型" width="80" align="center">
+            <el-table-column prop="hours" label="总学时" width="100" />
+            <el-table-column prop="credit" label="学分" width="70" align="center" />
+            <el-table-column prop="teacherName" label="授课教师" width="100" />
+                        <el-table-column prop="type" label="类型" width="80" align="center">
               <template #default="{ row }">
-                <el-tag :type="row.courseType === '必修' ? 'danger' : row.courseType === '选修' ? 'warning' : ''" size="small">
-                  {{ row.courseType }}
+                <el-tag :type="row.type === '选修' ? 'danger' : 'info'" size="small">
+                  {{ row.type }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="teacherName" label="授课教师" width="100" />
-            <el-table-column prop="credit" label="学分" width="70" align="center" />
-            <el-table-column prop="schedule" label="上课时间" width="160" show-overflow-tooltip />
-            <el-table-column label="容量" width="120" align="center">
-              <template #default="{ row }">
-                <el-progress :percentage="Math.round((row.selectedCount / row.maxCapacity) * 100)" :stroke-width="8"
-                  :color="row.selectedCount >= row.maxCapacity ? '#F56C6C' : '#67C23A'" />
-                <span style="font-size: 12px; color: #909399">{{ row.selectedCount }}/{{ row.maxCapacity }}</span>
-              </template>
-            </el-table-column>
+            <el-table-column prop="selectedCount" label="已选人数" width="140" />
+            <el-table-column prop="capacity" label="容量" width="100" />
             <el-table-column label="操作" width="100" align="center" fixed="right">
               <template #default="{ row }">
                 <el-button

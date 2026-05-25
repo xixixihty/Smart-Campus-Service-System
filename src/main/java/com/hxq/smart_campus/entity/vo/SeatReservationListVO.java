@@ -13,6 +13,7 @@ public class SeatReservationListVO {
     private Long seatId;            // 座位ID
     private String seatNumber;      // 座位编号
     private Long roomId;            // 阅览室ID
+    private String areaName;         // 区域名称
     private LocalDate date;         // 预约日期
     private LocalTime startTime;    // 开始时间
     private LocalTime endTime;      // 结束时间

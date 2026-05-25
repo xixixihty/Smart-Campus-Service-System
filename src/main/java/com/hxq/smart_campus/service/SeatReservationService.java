@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
 import com.hxq.smart_campus.entity.vo.SeatListVO;
+import com.hxq.smart_campus.entity.vo.SeatReservationDetailVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 
@@ -87,4 +88,11 @@ public interface SeatReservationService {
      * @return
      */
     SeatScheduleVO getSeatSchedule(Long seatId, LocalDate date);
+
+    /**
+     * 获取座位预约详情
+     * @param id 预约ID
+     * @return
+     */
+    SeatReservationDetailVO getSeatReservationDetail(Long id);
 }

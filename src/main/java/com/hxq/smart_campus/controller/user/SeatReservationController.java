@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.dto.SeatReservationResponseDTO;
 import com.hxq.smart_campus.entity.vo.SeatListVO;
+import com.hxq.smart_campus.entity.vo.SeatReservationDetailVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 import com.hxq.smart_campus.result.Result;
@@ -154,6 +155,19 @@ public class SeatReservationController {
         log.info("获取可预约的座位列表，参数：areaId={}, date={}", areaId, date);
         List<SeatListVO> seatListVO = seatReservationService.getAvailableSeatList(areaId, date);
         return Result.success(seatListVO);
+    }
+
+    /**
+     * 获取座位预约详情
+     * @param id 预约ID
+     * @return
+     */
+    @GetMapping("/detail/{id}")
+    @Operation(summary = "获取座位预约详情")
+    public Result<SeatReservationDetailVO> getSeatReservationDetail(@PathVariable Long id) {
+        log.info("获取座位预约详情，ID：{}", id);
+        SeatReservationDetailVO detail = seatReservationService.getSeatReservationDetail(id);
+        return Result.success(detail);
     }
 
     /**

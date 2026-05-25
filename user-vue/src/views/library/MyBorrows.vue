@@ -67,9 +67,6 @@
           </el-tag>
         </el-descriptions-item>
       </el-descriptions>
-      <template #footer>
-        <el-button @click="detailVisible = false">关闭</el-button>
-      </template>
     </el-dialog>
   </div>
 </template>

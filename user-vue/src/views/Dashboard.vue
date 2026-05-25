@@ -6,53 +6,53 @@
     </div>
 
     <el-row :gutter="20" class="stats-row">
-      <el-col :span="6">
-        <el-card shadow="hover" class="stat-card" @click="$router.push('/my-courses')">
+      <el-col :xs="12" :sm="12" :md="6">
+        <el-card shadow="hover" class="stat-card shimmer" @click="$router.push('/my-courses')">
           <div class="stat-content">
             <div class="stat-icon" style="background: #e6f7ff">
               <el-icon :size="28" color="#1890ff"><Notebook /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.courseCount }}</div>
+              <div class="stat-value" ref="countCourse">{{ stats.courseCount }}</div>
               <div class="stat-label">已选课程</div>
             </div>
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover" class="stat-card" @click="$router.push('/my-borrows')">
+      <el-col :xs="12" :sm="12" :md="6">
+        <el-card shadow="hover" class="stat-card shimmer" @click="$router.push('/my-borrows')">
           <div class="stat-content">
             <div class="stat-icon" style="background: #fff7e6">
               <el-icon :size="28" color="#fa8c16"><CollectionTag /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.borrowCount }}</div>
+              <div class="stat-value" ref="countBorrow">{{ stats.borrowCount }}</div>
               <div class="stat-label">借阅中</div>
             </div>
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover" class="stat-card" @click="$router.push('/my-reservations')">
+      <el-col :xs="12" :sm="12" :md="6">
+        <el-card shadow="hover" class="stat-card shimmer" @click="$router.push('/my-reservations')">
           <div class="stat-content">
             <div class="stat-icon" style="background: #f6ffed">
               <el-icon :size="28" color="#52c41a"><Chair /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.reservationCount }}</div>
+              <div class="stat-value" ref="countReserve">{{ stats.reservationCount }}</div>
               <div class="stat-label">座位预约</div>
             </div>
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover" class="stat-card" @click="$router.push('/my-scores')">
+      <el-col :xs="12" :sm="12" :md="6">
+        <el-card shadow="hover" class="stat-card shimmer" @click="$router.push('/my-scores')">
           <div class="stat-content">
             <div class="stat-icon" style="background: #fff0f6">
               <el-icon :size="28" color="#eb2f96"><Tickets /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.gpa }}</div>
+              <div class="stat-value" ref="countGpa">{{ stats.gpa }}</div>
               <div class="stat-label">平均绩点</div>
             </div>
           </div>
@@ -99,9 +99,7 @@
           <div v-if="recentNotices.length > 0" class="notice-list">
             <div v-for="item in recentNotices" :key="item.id" class="notice-item" @click="$router.push('/notice')">
               <div class="notice-title">
-                <el-tag :type="item.noticeType === 'URGENT' ? 'danger' : ''" size="small" class="notice-tag">
-                  {{ item.noticeType === 'URGENT' ? '紧急' : item.noticeType === 'TEACHING' ? '教学' : item.noticeType === 'ACTIVITY' ? '活动' : '系统' }}
-                </el-tag>
+                <span class="notice-dot" :class="{ 'dot-unread': isRecentNotice(item.publishTime) }"></span>
                 <span>{{ item.title }}</span>
               </div>
               <div class="notice-time">{{ item.publishTime }}</div>
@@ -120,11 +118,13 @@
               <span><el-icon><Cpu /></el-icon> AI 智能助手</span>
             </div>
           </template>
-          <el-row :gutter="12">
-            <el-col :span="4" v-for="item in aiActions" :key="item.path">
-              <div class="quick-action" @click="$router.push(item.path)">
-                <el-icon :size="28" :color="item.color"><component :is="item.icon" /></el-icon>
-                <span>{{ item.label }}</span>
+          <el-row :gutter="16">
+            <el-col :span="6" v-for="item in aiActions" :key="item.path">
+              <div class="ai-card" @click="$router.push(item.path)">
+                <div class="ai-card-icon" :style="{ background: item.bg }">
+                  <el-icon :size="32" :color="item.color"><component :is="item.icon" /></el-icon>
+                </div>
+                <div class="ai-card-label">{{ item.label }}</div>
               </div>
             </el-col>
           </el-row>
@@ -135,9 +135,44 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { getTimetable } from '@/api/courseSchedule'
+import { getMyCourses } from '@/api/courseSelection'
+import { getMyBorrows } from '@/api/borrowRecord'
+import { getReservationList } from '@/api/seatReservation'
+import { getMyGPA } from '@/api/scoreEntry'
+import { getMyNotices } from '@/api/notice'
 
 const username = ref(localStorage.getItem('username') || '同学')
+const loading = ref(true)
+
+const countCourse = ref(null)
+const countBorrow = ref(null)
+const countReserve = ref(null)
+const countGpa = ref(null)
+
+const animateCount = (el, target) => {
+  if (!el || target === '--') return
+  const isFloat = typeof target === 'number' && target % 1 !== 0
+  const start = 0
+  const end = parseFloat(target)
+  if (isNaN(end)) return
+  const duration = 600
+  const startTime = performance.now()
+  const animate = (now) => {
+    const elapsed = now - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    const eased = 1 - Math.pow(1 - progress, 3)
+    const current = start + (end - start) * eased
+    el.textContent = isFloat ? current.toFixed(2) : Math.floor(current)
+    if (progress < 1) {
+      requestAnimationFrame(animate)
+    } else {
+      el.textContent = target
+    }
+  }
+  requestAnimationFrame(animate)
+}
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
@@ -156,26 +191,76 @@ const today = computed(() => {
 })
 
 const stats = reactive({
-  courseCount: 5,
-  borrowCount: 2,
-  reservationCount: 1,
-  gpa: '3.6'
+  courseCount: '--',
+  borrowCount: '--',
+  reservationCount: '--',
+  gpa: '--'
 })
 
-const todayCourses = ref([
-  { id: 1, courseName: '高等数学', classroomName: '教学楼A-301', teacherName: '张教授', startPeriod: 1, endPeriod: 2 },
-  { id: 2, courseName: '大学英语', classroomName: '教学楼B-205', teacherName: '李老师', startPeriod: 3, endPeriod: 4 }
-])
-
-const recentNotices = ref([
-  { id: 1, title: '关于2025年春季学期选课通知', noticeType: 'TEACHING', publishTime: '2025-03-01 10:00' },
-  { id: 2, title: '图书馆开放时间调整通知', noticeType: 'SYSTEM', publishTime: '2025-02-28 14:30' },
-  { id: 3, title: '校园运动会报名通知', noticeType: 'ACTIVITY', publishTime: '2025-02-27 09:00' }
-])
+const todayCourses = ref([])
+const recentNotices = ref([])
 
 const aiActions = [
-  { label: 'AI 学习助手', path: '/ai-assistant', icon: 'Cpu', color: '#409EFF' }
+  { label: 'AI 学习助手', path: '/ai-assistant', icon: 'Cpu', bg: 'linear-gradient(135deg, #e6f7ff, #bae7ff)', color: '#1890ff' },
+  { label: '成绩分析', path: '/ai-assistant', icon: 'TrendCharts', bg: 'linear-gradient(135deg, #f6ffed, #d9f7be)', color: '#52c41a' },
+  { label: '图书推荐', path: '/ai-assistant', icon: 'Reading', bg: 'linear-gradient(135deg, #fff7e6, #ffe7ba)', color: '#fa8c16' },
+  { label: '选课建议', path: '/ai-assistant', icon: 'EditPen', bg: 'linear-gradient(135deg, #fff0f6, #ffd6e7)', color: '#eb2f96' }
 ]
+
+const isRecentNotice = (publishTime) => {
+  if (!publishTime) return false
+  const pubDate = new Date(publishTime)
+  const now = new Date()
+  return (now - pubDate) < 24 * 60 * 60 * 1000
+}
+
+const fetchData = async () => {
+  loading.value = true
+  try {
+    const todayWeekDay = new Date().getDay() === 0 ? 7 : new Date().getDay()
+
+    const [courseRes, timetableRes, borrowRes, reserveRes, gpaRes, noticeRes] = await Promise.allSettled([
+      getMyCourses({ pageNum: 1, pageSize: 1 }),
+      getTimetable(),
+      getMyBorrows({ status: '借出中', pageNum: 1, pageSize: 1 }),
+      getReservationList({ status: 'RESERVED', pageNum: 1, pageSize: 1 }),
+      getMyGPA(),
+      getMyNotices({ pageNum: 1, pageSize: 5 })
+    ])
+
+    stats.courseCount = courseRes.status === 'fulfilled' ? (courseRes.value.data?.total ?? '--') : '--'
+    stats.borrowCount = borrowRes.status === 'fulfilled' ? (borrowRes.value.data?.total ?? '--') : '--'
+    stats.reservationCount = reserveRes.status === 'fulfilled' ? (reserveRes.value.data?.total ?? '--') : '--'
+    stats.gpa = gpaRes.status === 'fulfilled' ? (gpaRes.value.data?.gpa ?? gpaRes.value.data ?? '--') : '--'
+
+    await nextTick()
+    animateCount(countCourse.value, stats.courseCount)
+    animateCount(countBorrow.value, stats.borrowCount)
+    animateCount(countReserve.value, stats.reservationCount)
+    animateCount(countGpa.value, stats.gpa)
+
+    if (timetableRes.status === 'fulfilled') {
+      const allCourses = timetableRes.value.data || []
+      todayCourses.value = allCourses
+        .filter(item => item.weekDay === todayWeekDay)
+        .sort((a, b) => a.startSection - b.startSection)
+        .map(item => ({
+          ...item,
+          startPeriod: item.startSection,
+          endPeriod: item.endSection
+        }))
+    }
+
+    if (noticeRes.status === 'fulfilled') {
+      const notices = noticeRes.value.data?.list || noticeRes.value.data || []
+      recentNotices.value = notices.slice(0, 5)
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchData)
 </script>
 
 <style scoped>
@@ -202,11 +287,31 @@ const aiActions = [
 
 .stat-card {
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.25s, box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s;
+}
+
+.shimmer:hover::after {
+  left: 150%;
 }
 
 .stat-content {
@@ -301,23 +406,61 @@ const aiActions = [
   margin-left: 50px;
 }
 
-.quick-action {
+.notice-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dcdfe6;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.dot-unread {
+  background: #409EFF;
+  box-shadow: 0 0 6px rgba(64, 158, 255, 0.4);
+}
+
+.ai-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 8px;
-  border-radius: 8px;
+  gap: 12px;
+  padding: 24px 16px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.25s, box-shadow 0.25s;
+  background: #fff;
+  border: 1px solid #ebeef5;
 }
 
-.quick-action:hover {
-  background: #f5f7fa;
+.ai-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
 }
 
-.quick-action span {
-  font-size: 13px;
-  color: #606266;
+.ai-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.ai-card:hover .ai-card-icon {
+  transform: scale(1.1);
+}
+
+.ai-card-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+@media (max-width: 768px) {
+  .welcome-section h2 { font-size: 18px; }
+  .stat-value { font-size: 20px; }
+  .stat-icon { width: 44px; height: 44px; }
 }
 </style>

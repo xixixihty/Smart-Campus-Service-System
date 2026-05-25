@@ -63,4 +63,10 @@ public interface NoticeService {
      * @return
      */
     PageInfo<MyNoticeVO> getMyNoticeList(Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取未读通知数
+     * @return
+     */
+    Long getUnreadCount();
 }

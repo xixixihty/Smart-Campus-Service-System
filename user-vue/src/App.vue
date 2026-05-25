@@ -11,6 +11,7 @@
           <el-badge :value="unreadNoticeCount" :hidden="unreadNoticeCount === 0">
             <el-icon :size="22" style="cursor: pointer" @click="$router.push('/notice')"><Bell /></el-icon>
           </el-badge>
+          <el-button :icon="isDark ? Sunny : Moon" circle size="small" class="theme-toggle" @click="toggleTheme" />
           <el-dropdown @command="handleUserCommand">
             <span class="user-info">
               <el-icon><UserFilled /></el-icon>
@@ -130,7 +131,11 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <transition name="fade-slide" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -140,11 +145,16 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { UserFilled, Position } from '@element-plus/icons-vue'
+import { UserFilled } from '@element-plus/icons-vue'
 import { validateToken } from '@/api/auth'
+import { getUnreadCount } from '@/api/notice'
+import { useTheme } from '@/composables/useTheme'
+import { Sunny, Moon } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
+
+const { isDark, toggleTheme } = useTheme()
 
 const username = ref(localStorage.getItem('username') || '同学')
 const unreadNoticeCount = ref(0)
@@ -169,7 +179,17 @@ onMounted(async () => {
       }
     }
   }
+  fetchUnreadCount()
 })
+
+const fetchUnreadCount = async () => {
+  try {
+    const res = await getUnreadCount()
+    unreadNoticeCount.value = res.data || res || 0
+  } catch {
+    unreadNoticeCount.value = 0
+  }
+}
 
 const handleUserCommand = (command) => {
   if (command === 'logout') {
@@ -258,5 +278,39 @@ html, body, #app {
   background-color: #f0f2f5;
   padding: 20px;
   min-height: 0;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.theme-toggle {
+  margin-left: 6px;
+  background: rgba(255,255,255,0.12) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.25) !important;
+}
+
+html.dark .theme-toggle {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+html.dark .theme-toggle:hover {
+  background: rgba(255,255,255,0.15) !important;
 }
 </style>

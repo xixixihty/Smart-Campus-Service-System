@@ -7,12 +7,12 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="区域">
-          <el-select v-model="queryForm.areaId" placeholder="请选择区域" clearable @change="handleSearch">
+          <el-select v-model="queryForm.areaId" placeholder="请选择区域" clearable style="width: 200px" @change="handleSearch">
             <el-option v-for="a in areaOptions" :key="a.id" :label="a.name" :value="a.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="日期">
-          <el-date-picker v-model="queryForm.date" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" @change="handleSearch" />
+          <el-date-picker v-model="queryForm.date" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" style="width: 200px" @change="handleSearch" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch"><el-icon><Search /></el-icon>搜索</el-button>
@@ -22,6 +22,12 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px" v-loading="loading">
+      <div class="seat-legend">
+        <span class="legend-item"><span class="legend-dot dot-available"></span> 可预约</span>
+        <span class="legend-item"><span class="legend-dot dot-occupied"></span> 使用中</span>
+        <span class="legend-item"><span class="legend-dot dot-reserved"></span> 暂离</span>
+        <span class="legend-item"><span class="legend-dot dot-maintenance"></span> 维修中</span>
+      </div>
       <div class="seat-grid">
         <div v-for="seat in seatList" :key="seat.id" class="seat-item" :class="{
           'seat-available': seat.status === '空闲',
@@ -184,6 +190,36 @@ onMounted(() => { loadAreas(); fetchSeats() })
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
 }
+
+.seat-legend {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #606266;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.dot-available { background: #b7eb8f; border: 1px solid #52c41a; }
+.dot-occupied { background: #ffe58f; border: 1px solid #fa8c16; }
+.dot-reserved { background: #ffd591; border: 1px solid #fa8c16; }
+.dot-maintenance { background: #d9d9d9; border: 1px solid #8c8c8c; }
 
 .seat-item {
   display: flex;

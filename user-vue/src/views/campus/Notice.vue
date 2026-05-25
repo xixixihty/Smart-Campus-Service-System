@@ -8,13 +8,6 @@
       <el-table :data="tableData" stripe border @row-click="showDetail">
         <el-table-column prop="id" label="ID" width="70" align="center" />
         <el-table-column prop="title" label="标题" min-width="300" show-overflow-tooltip />
-        <el-table-column prop="noticeType" label="类型" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.noticeType === 'URGENT' ? 'danger' : row.noticeType === 'TEACHING' ? 'warning' : row.noticeType === 'ACTIVITY' ? 'success' : ''" size="small">
-              {{ row.noticeType === 'URGENT' ? '紧急' : row.noticeType === 'TEACHING' ? '教学' : row.noticeType === 'ACTIVITY' ? '活动' : '系统' }}
-            </el-tag>
-          </template>
-        </el-table-column>
         <el-table-column prop="publisherName" label="发布人" width="100" />
         <el-table-column prop="publishTime" label="发布时间" width="170" />
       </el-table>
@@ -29,13 +22,8 @@
       <template v-if="currentNotice">
         <h3 style="margin-bottom: 16px">{{ currentNotice.title }}</h3>
         <el-descriptions :column="2" border size="small">
-          <el-descriptions-item label="类型">
-            <el-tag :type="currentNotice.noticeType === 'URGENT' ? 'danger' : ''" size="small">
-              {{ currentNotice.noticeType === 'URGENT' ? '紧急' : currentNotice.noticeType === 'TEACHING' ? '教学' : currentNotice.noticeType === 'ACTIVITY' ? '活动' : '系统' }}
-            </el-tag>
-          </el-descriptions-item>
           <el-descriptions-item label="发布人">{{ currentNotice.publisherName }}</el-descriptions-item>
-          <el-descriptions-item label="发布时间" :span="2">{{ currentNotice.publishTime }}</el-descriptions-item>
+          <el-descriptions-item label="发布时间">{{ currentNotice.publishTime }}</el-descriptions-item>
         </el-descriptions>
         <div style="margin-top: 20px; line-height: 1.8; white-space: pre-wrap">{{ currentNotice.content }}</div>
       </template>
@@ -45,7 +33,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getMyNotices } from '@/api/notice'
+import { getMyNotices, getNoticeDetail } from '@/api/notice'
 
 const loading = ref(false)
 const detailVisible = ref(false)
@@ -64,9 +52,15 @@ const fetchData = async () => {
   } finally { loading.value = false }
 }
 
-const showDetail = (row) => {
-  currentNotice.value = row
-  detailVisible.value = true
+const showDetail = async (row) => {
+  try {
+    const res = await getNoticeDetail(row.id)
+    currentNotice.value = res.data || res
+    detailVisible.value = true
+  } catch {
+    currentNotice.value = row
+    detailVisible.value = true
+  }
 }
 
 onMounted(fetchData)

@@ -31,8 +31,16 @@
         <el-table-column prop="semesterName" label="学期" width="180" />
         <el-table-column prop="usualScore" label="平时成绩" width="100" align="center" />
         <el-table-column prop="finalScore" label="期末成绩" width="100" align="center" />
-        <el-table-column prop="totalScore" label="总成绩" width="100" align="center" />
-        <el-table-column prop="scorePoint" label="绩点" width="80" align="center" />
+        <el-table-column prop="totalScore" label="总成绩" width="100" align="center">
+          <template #default="{ row }">
+            <span :class="getScoreClass(row.totalScore)">{{ row.totalScore }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="scorePoint" label="绩点" width="80" align="center">
+          <template #default="{ row }">
+            <span :class="getGpaClass(row.scorePoint)">{{ row.scorePoint }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="credit" label="学分" width="70" align="center" />
         <el-table-column prop="examStatus" label="考试状态" width="100" align="center">
           <template #default="{ row }">
@@ -65,8 +73,6 @@
         <el-descriptions-item label="考试状态">{{ currentScore.examStatus }}</el-descriptions-item>
         <el-descriptions-item label="总成绩">{{ currentScore.totalScore }}</el-descriptions-item>
         <el-descriptions-item label="绩点">{{ currentScore.scorePoint }}</el-descriptions-item>
-        <el-descriptions-item label="学分">{{ currentScore.credit }}</el-descriptions-item>
-        <el-descriptions-item label="补考安排">{{ currentScore.ExamupExamId }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -94,9 +100,9 @@ const fetchData = async () => {
       getMyGPA().catch(() => ({ data: null }))
     ])
     tableData.value = scoreRes.data.list || scoreRes.data || []
-    total.value = scoreRes.data.total || 0
+    total.value = Array.isArray(tableData.value) ? tableData.value.length : 0
     if (gpaRes.data) {
-      gpa.value = gpaRes.data.gpa || gpaRes.data || '--'
+      gpa.value = gpaRes.data.gpa != null ? gpaRes.data.gpa : (typeof gpaRes.data === 'object' ? '--' : gpaRes.data)
     }
   } finally { loading.value = false }
 }
@@ -109,6 +115,20 @@ const showDetail = (row) => {
   detailVisible.value = true
 }
 
+const getScoreClass = (score) => {
+  if (score == null) return ''
+  if (score >= 90) return 'score-excellent'
+  if (score >= 60) return 'score-pass'
+  return 'score-fail'
+}
+
+const getGpaClass = (gpa) => {
+  if (gpa == null) return ''
+  if (gpa >= 3.5) return 'gpa-high'
+  if (gpa >= 2.0) return 'gpa-mid'
+  return 'gpa-low'
+}
+
 onMounted(fetchData)
 </script>
 
@@ -118,4 +138,11 @@ onMounted(fetchData)
 .page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
 .header-actions { display: flex; gap: 8px; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
+
+.score-excellent { color: #52c41a; font-weight: 700; }
+.score-pass { color: #1890ff; font-weight: 600; }
+.score-fail { color: #f5222d; font-weight: 700; }
+.gpa-high { color: #52c41a; font-weight: 700; }
+.gpa-mid { color: #1890ff; font-weight: 600; }
+.gpa-low { color: #909399; }
 </style>

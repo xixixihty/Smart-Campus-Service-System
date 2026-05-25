@@ -34,4 +34,8 @@ public interface NoticeMapper {
     List<MyNoticeVO> getMyNoticeList(@Param("className") String className,
                                       @Param("majorName") String majorName,
                                       @Param("collegeName") String collegeName);
+
+    Long countUnreadNotices(@Param("className") String className,
+                            @Param("majorName") String majorName,
+                            @Param("collegeName") String collegeName);
 }

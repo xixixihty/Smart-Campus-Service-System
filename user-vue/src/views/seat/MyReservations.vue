@@ -7,7 +7,7 @@
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable>
+          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 200px">
             <el-option label="已预约" value="RESERVED" />
             <el-option label="已签到" value="CHECKED_IN" />
             <el-option label="已签退" value="CHECKED_OUT" />
@@ -36,8 +36,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="260" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="info" size="small" @click="handleDetail(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button v-if="row.status === 'RESERVED'" type="success" size="small" @click="handleCheckIn(row)">
               签到
             </el-button>
@@ -60,6 +61,24 @@
           @size-change="fetchData" @current-change="fetchData" />
       </div>
     </el-card>
+
+    <el-dialog v-model="detailVisible" title="预约详情" width="480px">
+      <el-descriptions :column="1" border v-if="currentReservation">
+        <el-descriptions-item label="预约编号">{{ currentReservation.reservationNo || currentReservation.id }}</el-descriptions-item>
+        <el-descriptions-item label="预约人">{{ currentReservation.userName }}</el-descriptions-item>
+        <el-descriptions-item label="座位编号">{{ currentReservation.seatNumber }}</el-descriptions-item>
+        <el-descriptions-item label="区域">{{ currentReservation.areaName }}</el-descriptions-item>
+        <el-descriptions-item label="日期">{{ currentReservation.date }}</el-descriptions-item>
+        <el-descriptions-item label="开始时间">{{ currentReservation.startTime }}</el-descriptions-item>
+        <el-descriptions-item label="结束时间">{{ currentReservation.endTime }}</el-descriptions-item>
+        <el-descriptions-item label="签退/暂离时间">{{ currentReservation.leaveTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="currentReservation.status === 'RESERVED' ? 'warning' : currentReservation.status === 'CHECKED_IN' ? 'success' : currentReservation.status === 'CHECKED_OUT' ? 'info' : 'danger'" size="small">
+            {{ currentReservation.status === 'RESERVED' ? '已预约' : currentReservation.status === 'CHECKED_IN' ? '已签到' : currentReservation.status === 'CHECKED_OUT' ? '已签退' : '已取消' }}
+          </el-tag>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -71,6 +90,8 @@ import { getReservationList, checkIn, checkOut, cancelReservation, leaveSeat } f
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
+const detailVisible = ref(false)
+const currentReservation = ref(null)
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, status: '' })
 
@@ -112,6 +133,11 @@ const handleCancel = (row) => {
     ElMessage.success('已取消')
     fetchData()
   }).catch(() => {})
+}
+
+const handleDetail = (row) => {
+  currentReservation.value = row
+  detailVisible.value = true
 }
 
 onMounted(fetchData)

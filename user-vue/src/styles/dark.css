@@ -1,0 +1,269 @@
+html.dark {
+  --bg-dark-custom: #141414;
+  --bg-dark-elevated: #1d1d1d;
+  --bg-dark-hover: #262626;
+  --text-dark-primary: #e5e5e5;
+  --text-dark-secondary: #a3a3a3;
+  --text-dark-tertiary: #737373;
+  --border-dark: #333333;
+}
+
+html.dark .common-layout .el-main {
+  background-color: #0f0f0f;
+}
+
+html.dark .el-header {
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .el-aside {
+  background-color: #1a1a2e !important;
+}
+
+html.dark .el-aside .el-menu {
+  background-color: #1a1a2e !important;
+  --el-menu-bg-color: #1a1a2e;
+  --el-menu-hover-bg-color: #262638;
+}
+
+html.dark .welcome-section {
+  background: linear-gradient(135deg, #0d2137 0%, #162447 100%) !important;
+}
+
+html.dark .welcome-section h2 {
+  color: #e0e8f0 !important;
+}
+
+html.dark .welcome-section p {
+  color: #8899aa !important;
+}
+
+html.dark .stat-card {
+  background: #1d1d1d !important;
+}
+
+html.dark .stat-value {
+  color: #e5e5e5 !important;
+}
+
+html.dark .stat-label {
+  color: #a3a3a3 !important;
+}
+
+html.dark .shimmer::after {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent) !important;
+}
+
+html.dark .course-card {
+  background: #1d1d1d !important;
+  border-color: #333 !important;
+}
+
+html.dark .course-name {
+  color: #e5e5e5 !important;
+}
+
+html.dark .course-info {
+  color: #a3a3a3 !important;
+}
+
+html.dark .notice-item:hover {
+  background: #1d1d1d !important;
+}
+
+html.dark .notice-title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .notice-time {
+  color: #737373 !important;
+}
+
+html.dark .ai-card {
+  background: #1d1d1d !important;
+  border-color: #333 !important;
+}
+
+html.dark .ai-card-label {
+  color: #e5e5e5 !important;
+}
+
+html.dark .timetable {
+  border-color: #333 !important;
+}
+
+html.dark .timetable-header {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+}
+
+html.dark .day-name {
+  color: #e5e5e5 !important;
+}
+
+html.dark .day-col {
+  border-color: #333 !important;
+}
+
+html.dark .today-col {
+  background: #0d2137 !important;
+}
+
+html.dark .period-col {
+  color: #a3a3a3 !important;
+  border-color: #333 !important;
+}
+
+html.dark .period-cell {
+  color: #737373 !important;
+  border-color: #333 !important;
+  background: #141414 !important;
+}
+
+html.dark .course-cell {
+  border-color: #333 !important;
+}
+
+html.dark .today-course-cell {
+  background: #0a1628 !important;
+}
+
+html.dark .timetable-row {
+  border-color: #333 !important;
+}
+
+html.dark .page-header h2 {
+  color: #e5e5e5 !important;
+}
+
+html.dark .seat-legend {
+  background: #1a1a1a !important;
+}
+
+html.dark .legend-item {
+  color: #a3a3a3 !important;
+}
+
+html.dark .seat-available {
+  background: #0d2818 !important;
+  border-color: #1a4d2e !important;
+}
+
+html.dark .seat-available:hover {
+  background: #0f331e !important;
+}
+
+html.dark .seat-occupied {
+  background: #2d1f0a !important;
+  border-color: #4d3a1a !important;
+}
+
+html.dark .seat-occupied:hover {
+  background: #33240d !important;
+}
+
+html.dark .seat-reserved {
+  background: #2d200a !important;
+  border-color: #4d361a !important;
+}
+
+html.dark .seat-maintenance {
+  background: #1a1a1a !important;
+  border-color: #444 !important;
+}
+
+html.dark .seat-number {
+  color: #e5e5e5 !important;
+}
+
+html.dark .time-slot {
+  background: #1a1a1a !important;
+}
+
+html.dark .time-slot.slot-occupied {
+  background: #2d1111 !important;
+}
+
+html.dark .slot-time {
+  color: #a3a3a3 !important;
+}
+
+html.dark .slot-status {
+  color: #737373 !important;
+}
+
+html.dark .login-wrapper {
+  background: #0a0a0a;
+}
+
+html.dark .login-bg {
+  background: linear-gradient(160deg, #0d1b2a 0%, #0f2436 20%, #112233 40%, #0d1f18 60%, #1a1f10 80%, #1f180a 100%) !important;
+}
+
+html.dark .bg-circle {
+  opacity: 0.08 !important;
+}
+
+html.dark .bg-grid {
+  background-image:
+    linear-gradient(rgba(64, 158, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(64, 158, 255, 0.03) 1px, transparent 1px) !important;
+}
+
+html.dark .login-card {
+  background: rgba(20, 20, 30, 0.85) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark .card-header h2 {
+  color: #e0e8f0 !important;
+}
+
+html.dark .header-sub {
+  color: #8899aa !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper) {
+  background: #1a1a2e !important;
+  box-shadow: 0 0 0 1px #333 inset !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper:hover) {
+  background: #222240 !important;
+  box-shadow: 0 0 0 1px #555 inset !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px #409EFF inset !important;
+  background: #222240 !important;
+}
+
+html.dark .illu-card {
+  background: rgba(30, 30, 45, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #e5e5e5 !important;
+}
+
+html.dark .login-footer {
+  color: #555 !important;
+}
+
+html.dark .test-account {
+  color: #737373 !important;
+}
+
+html.dark .el-dialog {
+  --el-dialog-bg-color: #1d1d1d;
+}
+
+html.dark .el-descriptions {
+  --el-descriptions-item-bordered-label-background: #252525;
+}
+
+html.dark .el-empty__description p {
+  color: #737373 !important;
+}
+
+html.dark .score-excellent { color: #73d13d !important; }
+html.dark .gpa-high { color: #73d13d !important; }

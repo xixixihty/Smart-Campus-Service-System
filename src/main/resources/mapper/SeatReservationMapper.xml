@@ -13,7 +13,6 @@
             <if test="date != null">date</if>
             <if test="startTime != null">start_time</if>
             <if test="endTime != null">end_time</if>
-            <if test="reservationNo != null">reservation_no</if>
         </trim>
             values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -22,15 +21,14 @@
                 <if test="date != null">#{date}</if>
                 <if test="startTime != null">#{startTime}</if>
                 <if test="endTime != null">#{endTime}</if>
-                <if test="reservationNo != null">#{reservationNo}</if>
         </trim>
     </insert>
 
     <!-- 获取座位预约详情 -->
     <select id="getSeatReservationDetail" resultType="com.hxq.smart_campus.entity.vo.SeatReservationDetailVO">
         select r.id, r.user_id, stu.name as userName, r.seat_id, s.seat_number,
-            r.date, r.start_time, r.end_time, r.leave_time, r.status, r.reservation_no as reservationNo,
-            r.create_time, r.update_time, s.room_id, r.room_name
+            r.date, r.start_time, r.end_time, r.leave_time, r.status,
+            r.create_time, r.update_time, s.room_id, CONCAT('阅览室', s.room_id) as roomName
         from seat_reservation r
         left join student stu on r.user_id = stu.id
         left join seat s on r.seat_id = s.id
@@ -41,14 +39,14 @@
     <select id="getSeatReservationList" resultType="com.hxq.smart_campus.entity.vo.SeatReservationListVO">
         select r.id, stu.name as userName, r.seat_id as seatId, s.seat_number as seatNumber,
                r.date, r.start_time as startTime, r.end_time as endTime, r.leave_time as leaveTime, r.status,
-               s.room_id as roomId
+               s.room_id as roomId, CONCAT('阅览室', s.room_id) as areaName
         from seat_reservation r
         left join student stu on r.user_id = stu.id
         left join seat s on r.seat_id = s.id
         <where>
             <if test="userId != null">and r.user_id = #{userId}</if>
             <if test="seatId != null">and r.seat_id = #{seatId}</if>
-            <if test="date != null and date != ''">and r.date = #{date}</if>
+            <if test="date != null ">and r.date = #{date}</if>
             <if test="status != null and status != ''">and r.status = #{status}</if>
         </where>
     </select>

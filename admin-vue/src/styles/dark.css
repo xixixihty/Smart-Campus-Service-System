@@ -1,0 +1,158 @@
+html.dark .common-layout .el-main {
+  background-color: #0f0f0f;
+}
+
+html.dark .el-header {
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .el-aside {
+  background-color: #1a1a2e !important;
+}
+
+html.dark .el-aside .el-menu {
+  background-color: #1a1a2e !important;
+  --el-menu-bg-color: #1a1a2e;
+  --el-menu-hover-bg-color: #262638;
+}
+
+/* Dashboard */
+html.dark .dashboard .page-title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .loading-area,
+html.dark .error-area {
+  background: #1d1d1d !important;
+}
+
+html.dark .stat-card {
+  background: #1d1d1d !important;
+}
+
+html.dark .stat-value {
+  color: #e5e5e5 !important;
+}
+
+html.dark .stat-label {
+  color: #a3a3a3 !important;
+}
+
+html.dark .card-header {
+  color: #e5e5e5 !important;
+}
+
+html.dark .quick-action {
+  background: #1a1a1a !important;
+}
+
+html.dark .quick-action span {
+  color: #a3a3a3 !important;
+}
+
+html.dark .quick-action:hover {
+  background: #262626 !important;
+}
+
+html.dark .chart-container canvas {
+  filter: brightness(0.9);
+}
+
+/* Login */
+html.dark .login-wrapper {
+  background: #0a0a0a;
+}
+
+html.dark .login-bg {
+  background: linear-gradient(135deg, #060d15 0%, #0a1520 30%, #0d1b2a 60%, #0f2338 100%) !important;
+}
+
+html.dark .bg-shape {
+  opacity: 0.05 !important;
+}
+
+html.dark .bg-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+}
+
+html.dark .login-card {
+  background: rgba(20, 20, 30, 0.9) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark .card-header h2 {
+  color: #e0e8f0 !important;
+}
+
+html.dark .card-header p {
+  color: #a3a3a3 !important;
+}
+
+html.dark .brand-title {
+  color: #e0e8f0 !important;
+}
+
+html.dark .brand-subtitle,
+html.dark .brand-desc {
+  color: rgba(200, 200, 200, 0.6) !important;
+}
+
+html.dark .feature-item {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(200, 200, 200, 0.7) !important;
+}
+
+html.dark .feature-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper) {
+  background: #1a1a2e !important;
+  box-shadow: 0 0 0 1px #333 inset !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper:hover) {
+  background: #222240 !important;
+  box-shadow: 0 0 0 1px #555 inset !important;
+}
+
+html.dark .login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px #409EFF inset !important;
+  background: #222240 !important;
+}
+
+html.dark .test-account {
+  background: #1a1a2e !important;
+  color: #a3a3a3 !important;
+}
+
+html.dark .login-footer {
+  color: rgba(150, 150, 150, 0.3) !important;
+}
+
+/* Global overrides for admin CRUD pages */
+html.dark .el-dialog {
+  --el-dialog-bg-color: #1d1d1d;
+}
+
+html.dark .el-descriptions {
+  --el-descriptions-item-bordered-label-background: #252525;
+}
+
+html.dark .el-empty__description p {
+  color: #737373 !important;
+}
+
+html.dark .el-result__title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .el-result__subtitle {
+  color: #a3a3a3 !important;
+}
+
+html.dark .search-form .el-card {
+  background: #1d1d1d !important;
+}

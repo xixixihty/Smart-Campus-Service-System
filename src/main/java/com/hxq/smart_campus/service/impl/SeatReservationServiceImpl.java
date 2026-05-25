@@ -279,4 +279,13 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     private String generateReservationNo() {
         return "SEAT" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
+
+    @Override
+    public SeatReservationDetailVO getSeatReservationDetail(Long id) {
+        SeatReservationDetailVO detail = seatReservationMapper.getSeatReservationDetail(id);
+        if (detail == null) {
+            throw new IllegalArgumentException("预约记录不存在");
+        }
+        return detail;
+    }
 }
