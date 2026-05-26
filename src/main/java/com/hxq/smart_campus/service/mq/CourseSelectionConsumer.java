@@ -93,7 +93,7 @@ public class CourseSelectionConsumer {
         stringRedisTemplate.opsForSet().add("course:selected:" + studentId, String.valueOf(courseId));
 
         courseSelectionService.invalidateMySelectionCache(studentId);
-        courseSelectionService.invalidateAvailableCourseCache(semesterId, studentId);
+        courseSelectionService.invalidateAvailableCourseCache(studentId);
 
         channel.basicAck(deliveryTag, false);
     }
@@ -116,7 +116,7 @@ public class CourseSelectionConsumer {
         log.info("退课记录已写入数据库: id={}, studentId={}, courseId={}", id, studentId, courseId);
 
         courseSelectionService.invalidateMySelectionCache(studentId);
-        courseSelectionService.invalidateAvailableCourseCache(semesterId, studentId);
+        courseSelectionService.invalidateAvailableCourseCache(studentId);
 
         channel.basicAck(deliveryTag, false);
     }

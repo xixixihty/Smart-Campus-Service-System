@@ -163,7 +163,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                 } else if (result == 1) {
                     sendSelectionMessage(courseSelectionCreateDTO);
                     invalidateMySelectionCache(courseSelectionCreateDTO.getStudentId());
-                    invalidateAvailableCourseCache(courseSelectionCreateDTO.getSemesterId(), courseSelectionCreateDTO.getStudentId());
+                    invalidateAvailableCourseCache(courseSelectionCreateDTO.getStudentId());
                     stringRedisTemplate.opsForValue().set(
                             AVAILABLE_SUPPRESS_PREFIX + courseSelectionCreateDTO.getStudentId(),
                             "1", Duration.ofSeconds(10));
@@ -263,7 +263,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         } finally {
             if (selection != null) {
                 invalidateMySelectionCache(selection.getStudentId());
-                invalidateAvailableCourseCacheForStudent(selection.getStudentId());
+                invalidateAvailableCourseCache(selection.getStudentId());
             }
             if (lock.isHeldByCurrentThread()){
                 lock.unlock();
@@ -592,7 +592,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         dto.setSemesterId(semesterId);
         sendSelectionMessage(dto);
         invalidateMySelectionCache(userId);
-        invalidateAvailableCourseCache(semesterId, userId);
+        invalidateAvailableCourseCache(userId);
     }
 
 
@@ -693,15 +693,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
     }
 
     @Override
-    public void invalidateAvailableCourseCache(Long semesterId, Long studentId) {
-        Set<String> keys = redisTemplate.keys(AVAILABLE_COURSE_KEY_PREFIX + "*:" + studentId);
-        if (keys != null && !keys.isEmpty()) {
-            redisTemplate.delete(keys);
-            log.info("已失效可选课程缓存: studentId={}, keys={}", studentId, keys.size());
-        }
-    }
-
-    private void invalidateAvailableCourseCacheForStudent(Long studentId) {
+    public void invalidateAvailableCourseCache(Long studentId) {
         Set<String> keys = redisTemplate.keys(AVAILABLE_COURSE_KEY_PREFIX + "*:" + studentId);
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);

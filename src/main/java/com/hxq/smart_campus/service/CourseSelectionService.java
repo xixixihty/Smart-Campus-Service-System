@@ -59,8 +59,7 @@ public interface CourseSelectionService {
 
     /**
      * 清除可选课程缓存
-     * @param semesterId 学期ID
      * @param studentId 学生ID
      */
-    void invalidateAvailableCourseCache(Long semesterId, Long studentId);
+    void invalidateAvailableCourseCache(Long studentId);
 }
