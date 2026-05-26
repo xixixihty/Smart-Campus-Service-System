@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(find ~/.m2/repository/org/springframework/ai -name \"openai-*-sources.jar\" 2>/dev/null | head -3)",
-      "Read(//c/Users/22118/.m2/repository/org/springframework/ai/**)"
-    ]
-  }
-}
