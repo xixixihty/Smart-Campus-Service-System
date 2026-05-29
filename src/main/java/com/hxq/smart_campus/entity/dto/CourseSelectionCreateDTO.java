@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class CourseSelectionCreateDTO {
-    private Long studentId;         // 学生ID，必填
-    private Long courseId;          // 课程ID，必填
-    private Long semesterId;        // 学期ID，必填
+    private Long studentId;
+    private Long courseId;
+    private Long semesterId;
+    private String status;
 }

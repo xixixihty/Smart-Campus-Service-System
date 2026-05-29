@@ -71,4 +71,10 @@ public interface CourseSelectionMapper {
     CourseSelectionListVO selectDroppedRecord(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
 
     int reactivateCourseSelection(@Param("id") Long id);
+
+    Integer countWaitingByStudent(@Param("studentId") Long studentId);
+
+    int cancelWaiting(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
+
+    CourseSelectionListVO selectWaitingRecord(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
 }

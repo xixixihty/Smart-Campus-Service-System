@@ -36,6 +36,7 @@
                   @click="showCourseDetail(item)"
                 >
                   <div class="block-name">{{ item.courseName }}</div>
+                  <div class="block-class">{{ item.classNames }}</div>
                   <div class="block-room">{{ item.classroomName }}</div>
                   <div class="block-teacher">{{ item.teacherName }}</div>
                 </div>
@@ -49,6 +50,7 @@
     <el-dialog v-model="detailVisible" title="课程详情" width="450px">
       <el-descriptions :column="1" border v-if="currentCourse">
         <el-descriptions-item label="课程名称">{{ currentCourse.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="授课班级">{{ currentCourse.classNames }}</el-descriptions-item>
         <el-descriptions-item label="授课教师">{{ currentCourse.teacherName }}</el-descriptions-item>
         <el-descriptions-item label="上课地点">{{ currentCourse.classroomName }}</el-descriptions-item>
         <el-descriptions-item label="上课时间">
@@ -62,12 +64,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { getTimetable } from '@/api/courseSchedule'
 import { getCurrentSemester } from '@/api/semester'
 
 const loading = ref(false)
-const currentWeek = ref(1)
+const currentWeek = ref(null)
+const currentSemesterId = ref(null)
 const detailVisible = ref(false)
 const currentCourse = ref(null)
 const weekDays = ['一', '二', '三', '四', '五', '六', '日']
@@ -91,9 +94,15 @@ const getCourseColor = (name) => {
 }
 
 const getCellCourses = (day, period) => {
-  return timetableData.value.filter(
-    (item) => item.weekDay === day && item.startSection <= period && item.endSection >= period
-  )
+  return timetableData.value.filter((item) => {
+    if (item.weekDay !== day) return false
+    if (item.startSection > period || item.endSection < period) return false
+    const { startWeek, endWeek } = parseWeekRange(item.weekRange)
+    if (currentWeek.value && startWeek > 0 && endWeek > 0) {
+      if (currentWeek.value < startWeek || currentWeek.value > endWeek) return false
+    }
+    return true
+  })
 }
 
 const parseWeekRange = (weekRange) => {
@@ -131,18 +140,19 @@ const calculateCurrentWeek = async () => {
       const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24))
       const week = Math.max(1, Math.floor(diffDays / 7) + 1)
       todayWeek.value = week
-      currentWeek.value = week
+    }
+    if (semester && semester.id) {
+      currentSemesterId.value = semester.id
     }
   } catch {
     todayWeek.value = 1
-    currentWeek.value = 1
   }
 }
 
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getTimetable({ week: currentWeek.value })
+    const res = await getTimetable({ semesterId: currentSemesterId.value })
     const rawData = res.data || []
     timetableData.value = rawData.map(item => ({
       ...item,
@@ -154,10 +164,6 @@ const fetchData = async () => {
     loading.value = false
   }
 }
-
-watch(currentWeek, () => {
-  fetchData()
-})
 
 onMounted(async () => {
   await calculateCurrentWeek()
@@ -209,6 +215,7 @@ onMounted(async () => {
 }
 
 .block-name { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; }
+.block-class { font-size: 10px; color: rgba(255, 255, 255, 0.9); margin-top: 1px; }
 .block-room { font-size: 11px; color: rgba(255, 255, 255, 0.85); margin-top: 2px; }
 .block-teacher { font-size: 11px; color: rgba(255, 255, 255, 0.75); }
 </style>

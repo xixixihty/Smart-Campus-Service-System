@@ -1,8 +1,10 @@
 package com.hxq.smart_campus.controller.user;
 
+import com.hxq.smart_campus.entity.vo.StudentCourseVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.CourseScheduleService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +38,34 @@ public class CourseScheduleUserController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String userType
     ) {
+        if (userId == null) {
+            userId = SecurityUtils.getCurrentUserId();
+        }
+        if (userType == null) {
+            userType = SecurityUtils.getCurrentUserType();
+        }
         log.info("获取课表: semesterId={}, userId={}, userType={}", semesterId, userId, userType);
         List<TimetableVO> result = courseScheduleService.queryTimetable(semesterId, userId, userType);
+        return Result.success(result);
+    }
+
+    /**
+     * 获取学生的全部课程（课表课程 + 选课课程合并去重）
+     * @param semesterId 学期ID
+     * @param studentId 学生ID
+     * @return
+     */
+    @GetMapping("/my-courses")
+    @Operation(summary = "获取我的全部课程")
+    public Result<List<StudentCourseVO>> getMyAllCourses(
+            @RequestParam(required = false) Long semesterId,
+            @RequestParam(required = false) Long studentId
+    ) {
+        if (studentId == null) {
+            studentId = SecurityUtils.getCurrentUserId();
+        }
+        log.info("获取我的全部课程: semesterId={}, studentId={}", semesterId, studentId);
+        List<StudentCourseVO> result = courseScheduleService.getStudentAllCourses(semesterId, studentId);
         return Result.success(result);
     }
 }

@@ -6,100 +6,155 @@
         <p class="header-subtitle">成绩分析 · 图书推荐 · 阅读指导 · 选课建议</p>
       </div>
       <div class="header-actions">
+        <el-button @click="toggleSidebar" :icon="sidebarCollapsed ? Expand : Fold" text>
+          {{ sidebarCollapsed ? '展开历史' : '折叠历史' }}
+        </el-button>
+        <el-button @click="newChat" :icon="Plus" :disabled="loading">新建对话</el-button>
         <el-button @click="clearChat" :icon="Delete">清空对话</el-button>
       </div>
     </div>
 
-    <el-card shadow="never" class="chat-card">
-      <div class="chat-container">
-        <div class="chat-messages" ref="chatMessagesRef">
-          <div v-if="chatMessages.length === 0 && !chatLoading" class="chat-welcome">
-            <div class="welcome-icon">
-              <el-icon :size="48"><Cpu /></el-icon>
+    <el-card shadow="never" class="main-card">
+      <div class="main-layout">
+        <transition name="slide">
+          <div v-show="!sidebarCollapsed" class="history-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-title">
+                <el-icon><ChatLineRound /></el-icon> 对话历史
+              </span>
+              <el-button text size="small" @click="loadSessions" :loading="sessionLoading" :icon="Refresh" />
             </div>
-            <h3>你好，我是你的AI学习助手</h3>
-            <p>我可以帮你查询成绩、推荐图书、分析阅读习惯、提供选课建议</p>
-            <div class="quick-questions">
-              <el-tag
-                v-for="q in quickQuestions"
-                :key="q"
-                class="quick-tag"
-                @click="sendQuickQuestion(q)"
-              >{{ q }}</el-tag>
-            </div>
-          </div>
-
-          <div v-for="(msg, index) in chatMessages" :key="index" :class="['chat-message', msg.role]">
-            <div class="chat-avatar">
-              <el-icon v-if="msg.role === 'user'"><User /></el-icon>
-              <el-icon v-else><Cpu /></el-icon>
-            </div>
-            <div class="chat-bubble" v-html="msg.content"></div>
-          </div>
-
-          <div v-if="chatLoading && streamingContent" class="chat-message assistant">
-            <div class="chat-avatar">
-              <el-icon><Cpu /></el-icon>
-            </div>
-            <div class="chat-bubble streaming">
-              <span v-html="streamingContent"></span>
-              <span class="cursor-blink">|</span>
+            <div v-loading="sessionLoading" class="session-list">
+              <div
+                v-for="session in sessions"
+                :key="session.sessionId"
+                :class="['session-item', { active: currentSessionId === session.sessionId }]"
+                @click="selectSession(session)"
+              >
+                <div class="session-title">{{ session.title || '新对话' }}</div>
+                <div class="session-meta">
+                  <span>{{ session.messageCount }} 条</span>
+                  <span>{{ formatTime(session.lastMessageAt) }}</span>
+                </div>
+                <el-button
+                  class="session-delete"
+                  :icon="Delete"
+                  circle
+                  size="small"
+                  @click.stop="handleSessionDelete(session.sessionId)"
+                />
+              </div>
+              <el-empty v-if="!sessionLoading && sessions.length === 0" description="暂无对话记录" :image-size="60" />
             </div>
           </div>
+        </transition>
 
-          <div v-if="chatLoading && !streamingContent" class="chat-message assistant">
-            <div class="chat-avatar">
-              <el-icon><Cpu /></el-icon>
+        <div class="chat-area">
+          <div class="chat-messages" ref="chatMessagesRef">
+            <div v-if="messages.length === 0 && !loading" class="chat-welcome">
+              <div class="welcome-icon">
+                <el-icon :size="48"><Cpu /></el-icon>
+              </div>
+              <h3>你好，我是你的AI学习助手</h3>
+              <p>我可以帮你查询成绩、推荐图书、分析阅读习惯、提供选课建议</p>
+              <div class="quick-questions">
+                <el-tag
+                  v-for="q in quickQuestions"
+                  :key="q"
+                  class="quick-tag"
+                  @click="sendQuickQuestion(q)"
+                >{{ q }}</el-tag>
+              </div>
             </div>
-            <div class="chat-bubble">
-              <div class="thinking-dots">
-                <span class="dot">●</span>
-                <span class="dot">●</span>
-                <span class="dot">●</span>
+
+            <div v-for="(msg, index) in messages" :key="index" :class="['chat-message', msg.role]">
+              <div class="chat-avatar">
+                <el-icon v-if="msg.role === 'user'"><User /></el-icon>
+                <el-icon v-else><Cpu /></el-icon>
+              </div>
+              <div class="chat-bubble" v-html="msg.content"></div>
+            </div>
+
+            <div v-if="loading && streamingContent" class="chat-message assistant">
+              <div class="chat-avatar">
+                <el-icon><Cpu /></el-icon>
+              </div>
+              <div class="chat-bubble streaming">
+                <span v-html="streamingContent"></span>
+                <span class="cursor-blink">|</span>
+              </div>
+            </div>
+
+            <div v-if="loading && !streamingContent" class="chat-message assistant">
+              <div class="chat-avatar">
+                <el-icon><Cpu /></el-icon>
+              </div>
+              <div class="chat-bubble">
+                <div class="thinking-dots">
+                  <span class="dot">●</span>
+                  <span class="dot">●</span>
+                  <span class="dot">●</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="chat-input-area">
-          <el-input
-            v-model="chatInput"
-            type="textarea"
-            :rows="3"
-            placeholder="输入你的问题，按 Enter 发送..."
-            @keydown.enter.exact.prevent="sendMessage"
-            :disabled="chatLoading"
-          />
-          <div class="input-actions">
-            <span class="tip-text">Enter 发送，Shift+Enter 换行</span>
-            <el-button type="primary" @click="sendMessage" :loading="chatLoading" :disabled="!chatInput.trim()">
-              <el-icon><Promotion /></el-icon>
-              发送
-            </el-button>
+          <div class="chat-input-area">
+            <el-input
+              v-model="inputMessage"
+              type="textarea"
+              :rows="3"
+              placeholder="输入你的问题，按 Enter 发送..."
+              @keydown.enter.exact.prevent="sendMessage"
+              :disabled="loading || isViewingHistory"
+            />
+            <div class="input-actions">
+              <span v-if="isViewingHistory" class="tip-text warn">当前正在查看历史记录，如需继续对话请点击"新建对话"</span>
+              <span v-else class="tip-text">Enter 发送，Shift+Enter 换行</span>
+              <el-button type="primary" @click="sendMessage" :loading="loading" :disabled="!inputMessage.trim() || isViewingHistory">
+                <el-icon><Promotion /></el-icon>
+                发送
+              </el-button>
+            </div>
           </div>
         </div>
       </div>
     </el-card>
+
+    <el-dialog v-model="deleteDialogVisible" title="确认删除" width="400px">
+      <span>确定要删除这个对话记录吗？删除后无法恢复。</span>
+      <template #footer>
+        <el-button @click="deleteDialogVisible = false">取消</el-button>
+        <el-button type="danger" @click="confirmDelete" :loading="deleteLoading">确定删除</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, onBeforeUnmount } from 'vue'
-import { Cpu, User, Delete, Promotion } from '@element-plus/icons-vue'
-import { chatStream } from '@/api/ai'
+import { ref, nextTick, onBeforeUnmount, onMounted } from 'vue'
+import { Cpu, User, Delete, Promotion, Refresh, Plus, Expand, Fold, ChatLineRound } from '@element-plus/icons-vue'
 import { marked } from 'marked'
+import { chatStream, getAiSessions, getAiChatHistory, deleteAiSession } from '@/api/ai'
 
-marked.setOptions({
-  breaks: true,
-  gfm: true
-})
+marked.setOptions({ breaks: true, gfm: true })
 
-const chatMessages = ref([])
-const chatInput = ref('')
-const chatLoading = ref(false)
+const messages = ref([])
+const inputMessage = ref('')
+const loading = ref(false)
 const streamingContent = ref('')
 const chatMessagesRef = ref(null)
+const sessionId = ref(generateSessionId())
 let abortController = null
+
+const sidebarCollapsed = ref(false)
+const sessions = ref([])
+const sessionLoading = ref(false)
+const currentSessionId = ref(null)
+const isViewingHistory = ref(false)
+const deleteDialogVisible = ref(false)
+const deleteLoading = ref(false)
+let pendingDeleteSessionId = null
 
 const quickQuestions = [
   '查询我的成绩',
@@ -112,9 +167,24 @@ const quickQuestions = [
   '我的预约'
 ]
 
+function generateSessionId() {
+  return 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
+}
+
 function renderMarkdown(text) {
   if (!text) return ''
   return marked.parse(text)
+}
+
+function formatTime(time) {
+  if (!time) return ''
+  const d = new Date(time)
+  const now = new Date()
+  const diff = now - d
+  if (diff < 60000) return '刚刚'
+  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日'
 }
 
 function scrollToBottom() {
@@ -125,18 +195,41 @@ function scrollToBottom() {
   })
 }
 
+function toggleSidebar() {
+  sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+function newChat() {
+  if (abortController) abortController.abort()
+  messages.value = []
+  streamingContent.value = ''
+  loading.value = false
+  sessionId.value = generateSessionId()
+  currentSessionId.value = null
+  isViewingHistory.value = false
+}
+
+function clearChat() {
+  if (abortController) abortController.abort()
+  messages.value = []
+  streamingContent.value = ''
+  loading.value = false
+  currentSessionId.value = null
+  isViewingHistory.value = false
+}
+
 function sendQuickQuestion(question) {
-  chatInput.value = question
+  inputMessage.value = question
   sendMessage()
 }
 
 async function sendMessage() {
-  const message = chatInput.value.trim()
-  if (!message || chatLoading.value) return
+  const message = inputMessage.value.trim()
+  if (!message || loading.value || isViewingHistory.value) return
 
-  chatMessages.value.push({ role: 'user', content: renderMarkdown(message) })
-  chatInput.value = ''
-  chatLoading.value = true
+  messages.value.push({ role: 'user', content: renderMarkdown(message) })
+  inputMessage.value = ''
+  loading.value = true
   streamingContent.value = ''
   scrollToBottom()
 
@@ -147,45 +240,99 @@ async function sendMessage() {
     await chatStream({
       message,
       context: '',
+      sessionId: sessionId.value,
       onMessage: (chunk) => {
         fullContent += chunk
         streamingContent.value = renderMarkdown(fullContent)
         scrollToBottom()
       },
       onDone: () => {
-        chatMessages.value.push({ role: 'assistant', content: renderMarkdown(fullContent) })
+        messages.value.push({ role: 'assistant', content: renderMarkdown(fullContent) })
         streamingContent.value = ''
-        chatLoading.value = false
+        loading.value = false
+        loadSessions()
         scrollToBottom()
       },
       onError: (error) => {
         console.error('AI对话错误:', error)
-        chatMessages.value.push({ role: 'assistant', content: '抱歉，服务暂时不可用，请稍后重试。' })
+        messages.value.push({ role: 'assistant', content: '抱歉，服务暂时不可用，请稍后重试。' })
         streamingContent.value = ''
-        chatLoading.value = false
+        loading.value = false
+        loadSessions()
       },
       signal: abortController.signal
     })
   } catch (error) {
     console.error('发送消息失败:', error)
-    chatMessages.value.push({ role: 'assistant', content: '抱歉，发送失败，请重试。' })
-    chatLoading.value = false
+    messages.value.push({ role: 'assistant', content: '抱歉，发送失败，请重试。' })
+    loading.value = false
   }
 }
 
-function clearChat() {
-  if (abortController) {
-    abortController.abort()
+async function loadSessions() {
+  sessionLoading.value = true
+  try {
+    const res = await getAiSessions()
+    sessions.value = (res && res.data) || []
+  } catch (err) {
+    console.error('加载对话列表失败:', err)
+  } finally {
+    sessionLoading.value = false
   }
-  chatMessages.value = []
-  streamingContent.value = ''
-  chatLoading.value = false
 }
+
+async function selectSession(session) {
+  currentSessionId.value = session.sessionId
+  isViewingHistory.value = true
+  messages.value = []
+  loading.value = true
+  try {
+    const res = await getAiChatHistory(session.sessionId, 200)
+    const history = (res && res.data) || []
+    messages.value = history.map(msg => ({
+      role: msg.role,
+      content: renderMarkdown(msg.content)
+    }))
+    await nextTick()
+    scrollToBottom()
+  } catch (err) {
+    console.error('加载对话记录失败:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+function handleSessionDelete(sessionId) {
+  pendingDeleteSessionId = sessionId
+  deleteDialogVisible.value = true
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteSessionId) return
+  deleteLoading.value = true
+  try {
+    await deleteAiSession(pendingDeleteSessionId)
+    if (currentSessionId.value === pendingDeleteSessionId) {
+      currentSessionId.value = null
+      messages.value = []
+      isViewingHistory.value = false
+    }
+    await loadSessions()
+  } catch (err) {
+    console.error('删除对话失败:', err)
+  } finally {
+    deleteLoading.value = false
+    deleteDialogVisible.value = false
+    pendingDeleteSessionId = null
+  }
+}
+
+onMounted(() => {
+  loadSessions()
+})
 
 onBeforeUnmount(() => {
-  if (abortController) {
-    abortController.abort()
-  }
+  if (abortController) abortController.abort()
 })
 </script>
 
@@ -210,23 +357,31 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #303133;
 }
 
 .header-subtitle {
   margin: 0;
-  font-size: 13px;
-  color: #606266;
-  font-weight: 500;
+  font-size: 14px;
+  color: #409EFF;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-.chat-card {
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.main-card {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.chat-card :deep(.el-card__body) {
+.main-card :deep(.el-card__body) {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -234,11 +389,97 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.chat-container {
+.main-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.history-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid #ebeef5;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+}
+
+.sidebar-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.session-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.session-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.session-item:hover {
+  background-color: #f0f2f5;
+}
+
+.session-item.active {
+  background-color: #ecf5ff;
+  border-left: 3px solid #409EFF;
+}
+
+.session-title {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 30px;
+}
+
+.session-meta {
+  font-size: 12px;
+  color: #c0c4cc;
+  display: flex;
+  gap: 12px;
+}
+
+.session-delete {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.session-item:hover .session-delete {
+  opacity: 1;
+}
+
+.chat-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-width: 0;
 }
 
 .chat-messages {
@@ -294,6 +535,28 @@ onBeforeUnmount(() => {
 .quick-tag:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.chat-input-area {
+  padding: 12px 20px 16px;
+  border-top: 1px solid #ebeef5;
+  background: #fff;
+}
+
+.input-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.tip-text {
+  font-size: 12px;
+  color: #c0c4cc;
+}
+
+.tip-text.warn {
+  color: #e6a23c;
 }
 
 .chat-message {
@@ -396,26 +659,14 @@ onBeforeUnmount(() => {
   40% { opacity: 1; transform: scale(1); }
 }
 
-.chat-input-area {
-  border-top: 1px solid #ebeef5;
-  padding: 16px 20px;
-  flex-shrink: 0;
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
 }
 
-.chat-input-area :deep(.el-textarea__inner) {
-  resize: none;
-  border-radius: 8px;
-}
-
-.input-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.tip-text {
-  font-size: 12px;
-  color: #c0c4cc;
+.slide-enter-from,
+.slide-leave-to {
+  width: 0;
+  opacity: 0;
 }
 </style>

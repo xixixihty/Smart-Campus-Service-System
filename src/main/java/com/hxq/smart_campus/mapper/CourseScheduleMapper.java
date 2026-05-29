@@ -5,6 +5,7 @@ import com.hxq.smart_campus.entity.dto.CourseScheduleResponseDTO;
 import com.hxq.smart_campus.entity.dto.CourseScheduleUpdateDTO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleListVO;
+import com.hxq.smart_campus.entity.vo.StudentCourseVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -128,6 +129,15 @@ public interface CourseScheduleMapper {
                                                      @Param("endSection") Integer endSection,
                                                      @Param("weekRange") String weekRange,
                                                      @Param("excludeId") Long excludeId);
+
+    /**
+     * 查询学生的课表课程（含课程元数据：credit, type等）
+     * @param semesterId 学期ID
+     * @param classIds 班级ID列表
+     * @return
+     */
+    List<StudentCourseVO> getStudentCourseSchedules(@Param("semesterId") Long semesterId,
+                                                     @Param("classIds") List<Long> classIds);
 
     /**
      * 根据学生ID获取班级ID列表

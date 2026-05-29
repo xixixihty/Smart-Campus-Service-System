@@ -95,6 +95,7 @@ const routes = [
     component: () => import('@/views/ai/AiAssistant.vue'),
     meta: { title: 'AI 学习助手' }
   },
+  
   {
     path: '/profile',
     name: 'Profile',

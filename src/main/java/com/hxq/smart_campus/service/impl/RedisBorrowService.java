@@ -44,6 +44,7 @@ public class RedisBorrowService {
 
         loadBookIdsToFilter();
         loadUserIdsToFilter();
+        initAllBookStocks();
         initBorrowCache();
         log.info("图书借阅布隆过滤器初始化完成");
     }
@@ -63,6 +64,32 @@ public class RedisBorrowService {
 
         log.info("用户布隆过滤器加载完成，学生{}人，教师{}人",
                 studentIds.size(), teacherIds.size());
+    }
+
+    /**
+     * 初始化所有图书库存到Redis，从数据库同步available_copies
+     */
+    private void initAllBookStocks() {
+        List<Map<String, Object>> books = bookMapper.selectAllBookStocks();
+        if (books == null || books.isEmpty()) {
+            log.info("无图书数据，跳过库存初始化");
+            return;
+        }
+        int successCount = 0;
+        int skipCount = 0;
+        for (Map<String, Object> book : books) {
+            Long id = ((Number) book.get("id")).longValue();
+            Object copiesObj = book.get("available_copies");
+            if (copiesObj == null) {
+                log.warn("图书ID={} 的 available_copies 为 NULL，跳过库存初始化", id);
+                skipCount++;
+                continue;
+            }
+            Integer availableCopies = ((Number) copiesObj).intValue();
+            initStock(id, availableCopies);
+            successCount++;
+        }
+        log.info("图书库存初始化完成，成功 {} 本，跳过 {} 本", successCount, skipCount);
     }
 
     /**
@@ -120,32 +147,29 @@ public class RedisBorrowService {
 
     /**
      * 执行借阅Lua脚本
-     * @return -2=已借, -1=库存不足已排队, 1=成功
+     * @return -2=已借, -1=库存不足, 1=成功
      */
     public Long executeBorrow(Long bookId, Long userId) {
         String script = loadScript("lua/borrow_book.lua");
         String stockKey = "book:stock:" + bookId;
         String borrowedKey = "book:borrowed:" + userId;
-        String waitingKey = "book:waiting:" + bookId;
 
         return redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
-                List.of(stockKey, borrowedKey, waitingKey),
-                String.valueOf(bookId), String.valueOf(userId),
-                String.valueOf(System.currentTimeMillis()));
+                List.of(stockKey, borrowedKey),
+                String.valueOf(bookId), String.valueOf(userId));
     }
 
     /**
      * 执行归还Lua脚本
-     * @return -1=未借该书, 1=归还成功无排队, userId=有候补用户
+     * @return -1=未借该书, 1=归还成功
      */
     public Long executeReturn(Long bookId, Long userId) {
         String script = loadScript("lua/return_book.lua");
         String stockKey = "book:stock:" + bookId;
         String borrowedKey = "book:borrowed:" + userId;
-        String waitingKey = "book:waiting:" + bookId;
 
         return redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
-                List.of(stockKey, borrowedKey, waitingKey),
+                List.of(stockKey, borrowedKey),
                 String.valueOf(bookId), String.valueOf(userId));
     }
 

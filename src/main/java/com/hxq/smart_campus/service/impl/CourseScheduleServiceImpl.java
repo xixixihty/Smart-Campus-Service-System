@@ -9,10 +9,14 @@ import com.hxq.smart_campus.entity.dto.CourseScheduleUpdateDTO;
 import com.hxq.smart_campus.entity.vo.ConflictCheckResultVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleListVO;
+import com.hxq.smart_campus.entity.vo.MyCourseSelectionVO;
+import com.hxq.smart_campus.entity.vo.StudentCourseVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.exception.CourseScheduleException;
 import com.hxq.smart_campus.mapper.CourseScheduleMapper;
+import com.hxq.smart_campus.mapper.CourseSelectionMapper;
 import com.hxq.smart_campus.service.CourseScheduleService;
+import com.hxq.smart_campus.service.SemesterService;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import com.hxq.smart_campus.utils.TimeConflictUtils;
 import com.hxq.smart_campus.utils.WeekRangeUtils;
@@ -32,6 +36,8 @@ import static com.hxq.smart_campus.constant.MessageConstant.*;
 @RequiredArgsConstructor
 public class CourseScheduleServiceImpl implements CourseScheduleService {
     private final CourseScheduleMapper courseScheduleMapper;
+    private final CourseSelectionMapper courseSelectionMapper;
+    private final SemesterService semesterService;
     private final String CONFLICT_CHECK_TEACHER = "TEACHER";
     private final String CONFLICT_CHECK_CLASSROOM = "CLASSROOM";
     private final String CONFLICT_CHECK_CLASS = "CLASS";
@@ -385,5 +391,75 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             throw new RuntimeException("转换排课详情为响应DTO失败！");
         }
         return responseDTO;
+    }
+
+    @Override
+    public List<StudentCourseVO> getStudentAllCourses(Long semesterId, Long studentId) {
+        log.info("查询学生全部课程: semesterId={}, studentId={}", semesterId, studentId);
+
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester == null) {
+                log.warn("当前学期未设置，无法查询课程");
+                return new ArrayList<>();
+            }
+            semesterId = currentSemester.getId();
+            log.info("自动填充当前学期ID: {}", semesterId);
+        }
+
+        List<StudentCourseVO> result = new ArrayList<>();
+
+        List<Long> classIds = getClassIdsByStudentId(studentId);
+        if (classIds != null && !classIds.isEmpty()) {
+            List<StudentCourseVO> scheduleCourses = courseScheduleMapper.getStudentCourseSchedules(semesterId, classIds);
+            if (scheduleCourses != null) {
+                String semesterName = getSemesterName(semesterId);
+                for (StudentCourseVO course : scheduleCourses) {
+                    course.setSource("课表");
+                    course.setSemesterName(semesterName);
+                }
+                result.addAll(scheduleCourses);
+            }
+        }
+
+        List<MyCourseSelectionVO> selections = courseSelectionMapper.getMyCourseSelectionList(studentId, semesterId, "已选");
+        if (selections != null) {
+            for (MyCourseSelectionVO sel : selections) {
+                boolean exists = result.stream().anyMatch(c -> c.getCourseId() != null && c.getCourseId().equals(sel.getCourseId()));
+                if (exists) {
+                    result.stream()
+                            .filter(c -> c.getCourseId() != null && c.getCourseId().equals(sel.getCourseId()))
+                            .findFirst()
+                            .ifPresent(c -> {
+                                c.setScore(sel.getScore());
+                                c.setScorePoint(sel.getScorePoint());
+                                c.setSource("课表+选课");
+                            });
+                } else {
+                    StudentCourseVO vo = new StudentCourseVO();
+                    vo.setCourseId(sel.getCourseId());
+                    vo.setCourseName(sel.getCourseName());
+                    vo.setCredit(sel.getCredit());
+                    vo.setSemesterName(sel.getSemesterName());
+                    vo.setSource("选课");
+                    vo.setScore(sel.getScore());
+                    vo.setScorePoint(sel.getScorePoint());
+                    result.add(vo);
+                }
+            }
+        }
+
+        log.info("查询到{}条全部课程", result.size());
+        return result;
+    }
+
+    private String getSemesterName(Long semesterId) {
+        try {
+            var semester = semesterService.getSemesterDetail(semesterId);
+            return semester != null ? semester.getName() : null;
+        } catch (Exception e) {
+            log.warn("获取学期名称失败: semesterId={}", semesterId);
+            return null;
+        }
     }
 }

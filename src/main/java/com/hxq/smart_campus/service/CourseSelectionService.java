@@ -62,4 +62,27 @@ public interface CourseSelectionService {
      * @param studentId 学生ID
      */
     void invalidateAvailableCourseCache(Long studentId);
+
+    /**
+     * 查询我的候补课程列表
+     * @param studentId 学生ID
+     * @param semesterId 学期ID
+     * @return
+     */
+    List<CourseSelectionListVO> getMyWaitingCourses(Long studentId, Long semesterId);
+
+    /**
+     * 取消候补
+     * @param studentId 学生ID
+     * @param courseId 课程ID
+     * @return
+     */
+    boolean cancelWaiting(Long studentId, Long courseId);
+
+    /**
+     * 查询候补课程数量
+     * @param studentId 学生ID
+     * @return
+     */
+    Integer getWaitingCount(Long studentId);
 }

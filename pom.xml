@@ -131,6 +131,7 @@
             <artifactId>sentinel-core</artifactId>
             <version>1.8.6</version>
         </dependency>
+        <!-- Sentinel Spring WebMVC 适配器 -->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-spring-webmvc-adapter</artifactId>
@@ -143,9 +144,6 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
-
-
-
 
         <!-- Lombok -->
         <dependency>
@@ -160,12 +158,16 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.12.5</version>
         </dependency>
+
+        <!-- JJWT 实现 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.12.5</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- JJWT 签名实现 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
@@ -180,6 +182,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- MyBatis 测试依赖 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter-test</artifactId>

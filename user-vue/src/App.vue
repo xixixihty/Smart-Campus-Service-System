@@ -4,7 +4,7 @@
     <el-container>
       <el-header>
         <div class="header-left">
-          <el-icon :size="28"><School /></el-icon>
+          <img src="/logo.svg" class="header-logo" alt="Logo" />
           <span class="header-title">智慧校园服务系统-用户端</span>
         </div>
         <div class="header-right">
@@ -128,6 +128,7 @@
               <el-icon><Cpu /></el-icon>
               <span>AI 学习助手</span>
             </el-menu-item>
+            
           </el-menu>
         </el-aside>
         <el-main>
@@ -238,6 +239,11 @@ html, body, #app {
   align-items: center;
   gap: 12px;
   color: #fff;
+}
+
+.header-logo {
+  height: 32px;
+  width: auto;
 }
 
 .header-title {

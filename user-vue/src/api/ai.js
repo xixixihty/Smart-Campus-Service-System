@@ -59,3 +59,37 @@ export const chatStream = ({ message, context, sessionId, onStatus, onMessage, o
     onError && onError(err)
   })
 }
+
+export const getAiSessions = () => {
+  return fetch('/api/ai/chat/sessions', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}
+
+export const getAiChatHistory = (sessionId, limit = 100) => {
+  return fetch(`/api/ai/chat/history/${sessionId}?limit=${limit}`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}
+
+export const deleteAiSession = (sessionId) => {
+  return fetch(`/api/ai/chat/sessions/${sessionId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}

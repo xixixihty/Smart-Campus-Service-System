@@ -608,6 +608,41 @@ CREATE TABLE IF NOT EXISTS event_outbox (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='本地消息表（Outbox模式）';
 
 -- ============================================================================
+-- 9.5 AI对话记录（v2.2 新增）
+-- ============================================================================
+
+DROP TABLE IF EXISTS ai_chat_session;
+CREATE TABLE IF NOT EXISTS ai_chat_session (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT  COMMENT '会话ID',
+    user_id         BIGINT UNSIGNED   NOT NULL                 COMMENT '用户ID',
+    session_id      VARCHAR(64)       NOT NULL                 COMMENT '会话标识(UUID)',
+    title           VARCHAR(200)      DEFAULT NULL             COMMENT '会话标题(首条消息摘要)',
+    message_count   INT UNSIGNED      NOT NULL DEFAULT 0       COMMENT '消息数量',
+    last_message_at DATETIME          DEFAULT NULL             COMMENT '最后消息时间',
+    status          VARCHAR(20)       NOT NULL DEFAULT '活跃'  COMMENT '状态：活跃/归档',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_session_id (session_id),
+    KEY idx_user_time (user_id, last_message_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI对话会话表';
+
+DROP TABLE IF EXISTS ai_chat_record;
+CREATE TABLE IF NOT EXISTS ai_chat_record (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT  COMMENT '记录ID',
+    user_id         BIGINT UNSIGNED   NOT NULL                 COMMENT '用户ID',
+    session_id      VARCHAR(64)       NOT NULL                 COMMENT '会话ID',
+    role            VARCHAR(20)       NOT NULL                 COMMENT '角色：user/assistant/system',
+    content         TEXT              NOT NULL                 COMMENT '消息内容(markdown格式)',
+    token_count     INT UNSIGNED      DEFAULT 0                COMMENT 'Token消耗估算',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (id),
+    KEY idx_user_session (user_id, session_id),
+    KEY idx_user_time (user_id, create_time),
+    KEY idx_session (session_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI对话记录表';
+
+-- ============================================================================
 -- 10. 初始化数据（可选）
 -- ============================================================================
 

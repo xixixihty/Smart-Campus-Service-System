@@ -44,6 +44,8 @@ public class CourseSelectionConsumer {
 
             if ("DROP".equals(eventType)) {
                 handleDrop(msg, channel, deliveryTag, studentId, courseId, semesterId);
+            } else if ("WAITING".equals(eventType)) {
+                handleWaiting(msg, channel, deliveryTag, studentId, courseId, semesterId);
             } else {
                 handleSelect(msg, channel, deliveryTag, studentId, courseId, semesterId);
             }
@@ -75,12 +77,16 @@ public class CourseSelectionConsumer {
             return;
         }
 
-        var droppedRecord = courseSelectionMapper.selectDroppedRecord(studentId, courseId);
-        if (droppedRecord != null) {
-            courseSelectionMapper.reactivateCourseSelection(droppedRecord.getId());
-            stringRedisTemplate.delete(MQ_PROCESSED_COURSE_DROP_PREFIX + droppedRecord.getId());
-            log.info("复用已退课记录，重新激活: studentId={}, courseId={}, recordId={}",
-                    studentId, courseId, droppedRecord.getId());
+        var waitingRecord = courseSelectionMapper.selectDroppedRecord(studentId, courseId);
+        if (waitingRecord == null) {
+            waitingRecord = courseSelectionMapper.selectWaitingRecord(studentId, courseId);
+        }
+
+        if (waitingRecord != null) {
+            courseSelectionMapper.reactivateCourseSelection(waitingRecord.getId());
+            stringRedisTemplate.delete(MQ_PROCESSED_COURSE_DROP_PREFIX + waitingRecord.getId());
+            log.info("复用现有记录，重新激活: studentId={}, courseId={}, recordId={}",
+                    studentId, courseId, waitingRecord.getId());
         } else {
             CourseSelectionCreateDTO dto = new CourseSelectionCreateDTO();
             dto.setStudentId(studentId);
@@ -117,6 +123,30 @@ public class CourseSelectionConsumer {
 
         courseSelectionService.invalidateMySelectionCache(studentId);
         courseSelectionService.invalidateAvailableCourseCache(studentId);
+
+        channel.basicAck(deliveryTag, false);
+    }
+
+    private void handleWaiting(Map<String, Object> msg, Channel channel, long deliveryTag,
+                                Long studentId, Long courseId, Long semesterId) throws Exception {
+        String idempotentKey = "mq:processed:waiting:" + studentId + ":" + courseId + ":" + semesterId;
+        Boolean acquired = stringRedisTemplate.opsForValue()
+                .setIfAbsent(idempotentKey, "1", IDEMPOTENT_TTL);
+        if (Boolean.FALSE.equals(acquired)) {
+            log.warn("候补消息已处理，跳过: studentId={}, courseId={}", studentId, courseId);
+            channel.basicAck(deliveryTag, false);
+            return;
+        }
+
+        CourseSelectionCreateDTO dto = new CourseSelectionCreateDTO();
+        dto.setStudentId(studentId);
+        dto.setCourseId(courseId);
+        dto.setSemesterId(semesterId);
+        dto.setStatus("候补");
+        courseSelectionMapper.insertCourseSelection(dto);
+        log.info("候补记录已写入数据库: studentId={}, courseId={}", studentId, courseId);
+
+        courseSelectionService.invalidateMySelectionCache(studentId);
 
         channel.basicAck(deliveryTag, false);
     }

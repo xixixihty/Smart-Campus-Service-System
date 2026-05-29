@@ -31,6 +31,9 @@ public class BorrowRecordController {
     @PostMapping
     @Operation(summary = "创建借阅记录")
     public Result<BorrowResponseDTO> insertBorrowRecord(@RequestBody BorrowCreateDTO borrowCreateDTO) {
+        if (borrowCreateDTO.getUserId() == null) {
+            borrowCreateDTO.setUserId(SecurityUtils.getCurrentUserId());
+        }
         log.info("创建借阅记录，参数：{}", borrowCreateDTO);
         BorrowResponseDTO borrowResponseDTO = borrowRecordService.insertBorrowRecord(borrowCreateDTO);
         return Result.success(borrowResponseDTO);

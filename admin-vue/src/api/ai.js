@@ -2,6 +2,40 @@ import request from '@/utils/request'
 
 export const getDashboardStats = () => request.get('/dashboard/admin/stats')
 
+export const getAdminAiSessions = () => {
+  return fetch('/api/ai/admin/chat/sessions', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}
+
+export const getAdminAiChatHistory = (sessionId, limit = 100) => {
+  return fetch(`/api/ai/admin/chat/history/${sessionId}?limit=${limit}`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}
+
+export const deleteAdminAiSession = (sessionId) => {
+  return fetch(`/api/ai/admin/chat/sessions/${sessionId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    return res.json()
+  })
+}
+
 export const chatStream = ({ message, context, sessionId, onStatus, onMessage, onDone, onError, signal }) => {
   if (typeof onMessage !== 'function') {
     throw new Error('chatStream: onMessage 回调函数为必填参数')

@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BookMapper{
@@ -75,6 +76,13 @@ public interface BookMapper{
      */
     @Select("SELECT id FROM book")
     List<Long> selectAllBookIds();
+
+    /**
+     * 查询所有图书ID及可借数量（用于Redis库存初始化）
+     * @return 图书ID和可借数量列表
+     */
+    @Select("SELECT id, available_copies FROM book")
+    List<Map<String, Object>> selectAllBookStocks();
 
     /**
      * 扣减可借数量

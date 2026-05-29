@@ -8,6 +8,7 @@ import com.hxq.smart_campus.entity.dto.CourseScheduleUpdateDTO;
 import com.hxq.smart_campus.entity.vo.ConflictCheckResultVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleListVO;
+import com.hxq.smart_campus.entity.vo.StudentCourseVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 
 import java.util.List;
@@ -64,4 +65,12 @@ public interface CourseScheduleService {
      * @return
      */
     List<TimetableVO> queryTimetable(Long semesterId, Long userId, String userType);
+
+    /**
+     * 查询学生的全部课程（课表课程 + 选课课程合并去重）
+     * @param semesterId 学期ID
+     * @param studentId 学生ID
+     * @return
+     */
+    List<StudentCourseVO> getStudentAllCourses(Long semesterId, Long studentId);
 }

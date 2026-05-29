@@ -267,3 +267,71 @@ html.dark .el-empty__description p {
 
 html.dark .score-excellent { color: #73d13d !important; }
 html.dark .gpa-high { color: #73d13d !important; }
+
+/* AI 学习助手 */
+html.dark .ai-assistant-page .page-header h2 {
+  color: #e5e5e5 !important;
+}
+
+html.dark .ai-assistant-page .header-subtitle {
+  color: #8ab4f8 !important;
+}
+
+html.dark .ai-assistant-page .history-sidebar {
+  background: #1a1a1a !important;
+  border-right-color: #333 !important;
+}
+
+html.dark .ai-assistant-page .sidebar-header {
+  border-bottom-color: #333 !important;
+}
+
+html.dark .ai-assistant-page .sidebar-title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .ai-assistant-page .session-item {
+  border-bottom-color: #333 !important;
+}
+
+html.dark .ai-assistant-page .session-item:hover {
+  background-color: #262626 !important;
+}
+
+html.dark .ai-assistant-page .session-item.active {
+  background-color: #1a2a3a !important;
+}
+
+html.dark .ai-assistant-page .session-title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .ai-assistant-page .session-meta {
+  color: #737373 !important;
+}
+
+html.dark .ai-assistant-page .chat-input-area {
+  border-top-color: #333 !important;
+  background: #1d1d1d !important;
+}
+
+html.dark .ai-assistant-page .chat-message.assistant .chat-bubble {
+  background: #2a2a2a !important;
+  color: #e5e5e5 !important;
+}
+
+html.dark .ai-assistant-page .chat-welcome h3 {
+  color: #e5e5e5 !important;
+}
+
+html.dark .ai-assistant-page .chat-welcome p {
+  color: #a3a3a3 !important;
+}
+
+html.dark .ai-assistant-page .tip-text {
+  color: #737373 !important;
+}
+
+html.dark .ai-assistant-page .main-card {
+  background: #1d1d1d !important;
+}

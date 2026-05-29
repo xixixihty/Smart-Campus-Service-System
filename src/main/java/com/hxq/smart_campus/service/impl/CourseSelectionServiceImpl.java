@@ -154,11 +154,14 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                 Long result = redisCourseService.executeSelection(courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
                 log.info("选课Lua脚本执行结果: result={}, courseId={}, studentId={}", result,
                         courseSelectionCreateDTO.getCourseId(), courseSelectionCreateDTO.getStudentId());
-                // 课程已选
                 if (result == -2) {
                     throw CourseSelectionException.courseSelectionExist("已经选修过该课程");
+                } else if (result == -3) {
+                    throw CourseSelectionException.alreadyInWaiting("已在候补队列中");
+                } else if (result == -4) {
+                    throw CourseSelectionException.waitingLimitExceeded("候补课程已达上限(3门)");
                 } else if (result == -1) {
-                    // 课程已满，加入候补队列
+                    sendWaitingMessage(courseSelectionCreateDTO);
                     return buildWaitingResponseDTO(courseSelectionCreateDTO);
                 } else if (result == 1) {
                     sendSelectionMessage(courseSelectionCreateDTO);
@@ -548,6 +551,17 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         }
     }
 
+    private void sendWaitingMessage(CourseSelectionCreateDTO dto) {
+        Map<String, Object> message = new HashMap<>();
+        message.put("eventType", "WAITING");
+        message.put("studentId", dto.getStudentId());
+        message.put("courseId", dto.getCourseId());
+        message.put("semesterId", dto.getSemesterId());
+        message.put("timestamp", System.currentTimeMillis());
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, message);
+        log.info("发送候补消息: studentId={}, courseId={}", dto.getStudentId(), dto.getCourseId());
+    }
+
     /**
      * 发送选课消息
      * @param dto
@@ -630,7 +644,6 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         response.setStudentId(dto.getStudentId());
         response.setCourseId(dto.getCourseId());
         response.setSemesterId(dto.getSemesterId());
-        // TODO: 数据库选课状态字段中没有候补状态，需要根据实际情况修改
         response.setStatus("候补");
         response.setCreateTime(LocalDateTime.now());
         return response;
@@ -699,6 +712,33 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             redisTemplate.delete(keys);
             log.info("已失效可选课程缓存: studentId={}, keys={}", studentId, keys.size());
         }
+    }
+
+    @Override
+    public List<CourseSelectionListVO> getMyWaitingCourses(Long studentId, Long semesterId) {
+        return courseSelectionMapper.getCourseSelectionList(studentId, null, semesterId, "候补");
+    }
+
+    @Override
+    public boolean cancelWaiting(Long studentId, Long courseId) {
+        String waitingKey = "course:waiting:" + courseId;
+        String waitingCountKey = "course:waiting:count:" + studentId;
+        Long removed = stringRedisTemplate.opsForZSet().remove(waitingKey, String.valueOf(studentId));
+        if (removed == null || removed == 0) {
+            return false;
+        }
+        stringRedisTemplate.opsForValue().decrement(waitingCountKey);
+        courseSelectionMapper.cancelWaiting(studentId, courseId);
+        invalidateMySelectionCache(studentId);
+        log.info("取消候补成功: studentId={}, courseId={}", studentId, courseId);
+        return true;
+    }
+
+    @Override
+    public Integer getWaitingCount(Long studentId) {
+        String waitingCountKey = "course:waiting:count:" + studentId;
+        String count = stringRedisTemplate.opsForValue().get(waitingCountKey);
+        return count != null ? Integer.parseInt(count) : 0;
     }
 }
 

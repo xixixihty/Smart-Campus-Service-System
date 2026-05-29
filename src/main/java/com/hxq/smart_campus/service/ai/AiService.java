@@ -1,5 +1,6 @@
 package com.hxq.smart_campus.service.ai;
 
+import com.hxq.smart_campus.service.AiChatRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -19,16 +20,21 @@ import java.util.UUID;
 @Slf4j
 public class AiService {
 
+    private static final Long ADMIN_USER_ID = 0L;
+
     private final ChatClient userChatClient;
     private final ChatClient adminChatClient;
     private final ChatMemory chatMemory;
+    private final AiChatRecordService aiChatRecordService;
 
     public AiService(@Qualifier("userChatClient") ChatClient userChatClient,
                      @Qualifier("adminChatClient") ChatClient adminChatClient,
-                     ChatMemory chatMemory) {
+                     ChatMemory chatMemory,
+                     AiChatRecordService aiChatRecordService) {
         this.userChatClient = userChatClient;
         this.adminChatClient = adminChatClient;
         this.chatMemory = chatMemory;
+        this.aiChatRecordService = aiChatRecordService;
     }
 
     public Flux<ServerSentEvent<String>> chatStreamWithUserTools(String systemPrompt, String userMessage,
@@ -54,8 +60,12 @@ public class AiService {
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
-                .doOnComplete(() -> log.info("AI用户端流式响应完成: sessionId={}, response={}",
-                        effectiveSessionId, fullResponse.toString()))
+                .doOnComplete(() -> {
+                    log.info("AI用户端流式响应完成: sessionId={}, response={}",
+                            effectiveSessionId, fullResponse.toString());
+                    aiChatRecordService.saveMessagesAsync(userId, effectiveSessionId,
+                            userMessage, fullResponse.toString());
+                })
                 .onErrorResume(e -> {
                     log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, userId={}, error={}",
                             effectiveSessionId, userId, e.getMessage());
@@ -97,8 +107,13 @@ public class AiService {
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
-                .doOnComplete(() -> log.info("AI管理端流式响应完成: sessionId={}, response={}",
-                        effectiveSessionId, fullResponse.toString()))
+                .doOnComplete(() -> {
+                    String response = fullResponse.toString();
+                    log.info("AI管理端流式响应完成: sessionId={}, response={}",
+                            effectiveSessionId, response);
+                    aiChatRecordService.saveMessagesAsync(ADMIN_USER_ID, effectiveSessionId,
+                            userMessage, response);
+                })
                 .onErrorResume(e -> {
                     log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, error={}",
                             effectiveSessionId, e.getMessage());

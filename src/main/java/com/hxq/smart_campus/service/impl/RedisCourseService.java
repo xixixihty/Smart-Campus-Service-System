@@ -89,35 +89,37 @@ public class RedisCourseService {
      * 执行课程选择
      * @param courseId 课程ID
      * @param userId 用户ID
-     * @return 选择结果，0表示失败，1表示成功
+     * @return -2=已选, -3=已在候补, -4=候补上限, -1=加入候补, 1=选课成功
      */
     public Long executeSelection(Long courseId, Long userId) {
         String script = loadScriptFromResource("lua/select_course.lua");
         String stockKey = "course:stock:" + courseId;
         String selectedKey = "course:selected:" + userId;
         String waitingKey = "course:waiting:" + courseId;
+        String waitingCountKey = "course:waiting:count:" + userId;
 
         return redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
-            List.of(stockKey, selectedKey, waitingKey),
+            List.of(stockKey, selectedKey, waitingKey, waitingCountKey),
             String.valueOf(courseId), String.valueOf(userId),
-            String.valueOf(System.currentTimeMillis()));
+            String.valueOf(System.currentTimeMillis()),
+            "3");
     }
 
     /**
      * 退课
      * @param courseId 课程ID
      * @param userId 用户ID
-     * @return 退课结果，0表示失败，1表示成功
+     * @return "0"=未选, "1"=退课成功无候补, userId=有候补补位
      */
     public String executeDrop(Long courseId, Long userId) {
         String script = loadScriptFromResource("lua/drop_course.lua");
         String stockKey = "course:stock:" + courseId;
         String selectedKey = "course:selected:" + userId;
         String waitingKey = "course:waiting:" + courseId;
+        String waitingCountKey = "course:waiting:count:" + userId;
         return redisTemplate.execute(new DefaultRedisScript<>(script, String.class),
-                List.of(stockKey, selectedKey, waitingKey),
-                String.valueOf(courseId), String.valueOf(userId),
-                String.valueOf(System.currentTimeMillis()));
+                List.of(stockKey, selectedKey, waitingKey, waitingCountKey),
+                String.valueOf(courseId), String.valueOf(userId));
     }
 
     /**

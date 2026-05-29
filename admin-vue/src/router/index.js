@@ -131,6 +131,7 @@ const routes = [
     component: () => import('@/views/ai/AiAssistant.vue'),
     meta: { title: 'AI 智慧助手' }
   },
+  
   {
     path: '/profile',
     name: 'Profile',

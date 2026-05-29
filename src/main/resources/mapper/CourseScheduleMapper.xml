@@ -68,7 +68,12 @@
     </select>
     <!-- 查询课表 -->
     <select id="queryTimetable" resultType="com.hxq.smart_campus.entity.vo.TimetableVO">
-        select cs.id as course_schedule_id, c.course_name, t.name as teacher_name, CONCAT(cr.building, cr.room_number) as classroom_name,
+        select cs.id as course_schedule_id, c.course_name, t.name as teacher_name,
+               CONCAT(cr.building, cr.room_number) as classroom_name,
+               cs.class_ids,
+               (select GROUP_CONCAT(cl.class_name separator '、')
+                from class cl
+                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames,
                cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join course c on cs.course_id = c.id
@@ -80,11 +85,34 @@
             <if test="classIds != null and userType == 'student'">
                 and (
                 <foreach collection="classIds" item="classId" open="" close="" separator="or">
-                    FIND_IN_SET(#{classId}, cs.class_ids)
+                    JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
                 </foreach>
                 )
             </if>
         </where>
+        order by cs.week_day asc, cs.start_section asc
+    </select>
+
+    <!-- 查询学生的课表课程（含课程元数据） -->
+    <select id="getStudentCourseSchedules" resultType="com.hxq.smart_campus.entity.vo.StudentCourseVO">
+        select cs.course_id as courseId, c.course_name as courseName, c.credit, c.type,
+               t.name as teacherName,
+               CONCAT(cr.building, cr.room_number) as classroomName,
+               cs.week_day as weekDay, cs.start_section as startSection,
+               cs.end_section as endSection, cs.week_range as weekRange,
+               (select GROUP_CONCAT(cl.class_name separator '、')
+                from class cl
+                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames
+        from course_schedule cs
+        left join course c on cs.course_id = c.id
+        left join teacher t on cs.teacher_id = t.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.semester_id = #{semesterId}
+          and (
+          <foreach collection="classIds" item="classId" open="" close="" separator="or">
+              JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
+          </foreach>
+          )
         order by cs.week_day asc, cs.start_section asc
     </select>
 
@@ -135,7 +163,7 @@
         <if test="excludeId != null">and cs.id != #{excludeId}</if>
         and (
         <foreach collection="classIds" item="classId" open="" close="" separator="or">
-            FIND_IN_SET(#{classId}, cs.class_ids)
+            JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
         </foreach>
         )
     </select>

@@ -116,4 +116,22 @@ public class CourseSelectionException extends BusinessException {
     public static CourseSelectionException timeConflict(String reason) {
         return new CourseSelectionException("TIME_CONFLICT", "选课时间冲突: " + reason);
     }
+
+    /**
+     * 已在候补队列
+     * @param reason
+     * @return
+     */
+    public static CourseSelectionException alreadyInWaiting(String reason) {
+        return new CourseSelectionException("ALREADY_IN_WAITING", "已在候补队列中: " + reason);
+    }
+
+    /**
+     * 候补课程已达上限
+     * @param reason
+     * @return
+     */
+    public static CourseSelectionException waitingLimitExceeded(String reason) {
+        return new CourseSelectionException("WAITING_LIMIT_EXCEEDED", "候补课程已达上限(3门): " + reason);
+    }
 }

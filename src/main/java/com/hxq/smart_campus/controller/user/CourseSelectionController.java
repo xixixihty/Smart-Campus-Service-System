@@ -153,4 +153,53 @@ public class CourseSelectionController {
             return Result.success(null);
         }
     }
+
+    /**
+     * 查询我的候补课程列表
+     * @param semesterId
+     * @return
+     */
+    @GetMapping("/waiting")
+    @Operation(summary = "查询我的候补课程列表")
+    public Result<List<CourseSelectionListVO>> getMyWaitingCourses(
+            @RequestParam(required = false) Long semesterId
+    ) {
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            if (currentSemester != null) {
+                semesterId = currentSemester.getId();
+            }
+        }
+        Long studentId = SecurityUtils.getCurrentUserId();
+        log.info("查询我的候补课程列表: studentId={}, semesterId={}", studentId, semesterId);
+        List<CourseSelectionListVO> list = courseSelectionService.getMyWaitingCourses(studentId, semesterId);
+        return Result.success(list);
+    }
+
+    /**
+     * 取消候补
+     * @param courseId
+     * @return
+     */
+    @DeleteMapping("/waiting/{courseId}")
+    @Operation(summary = "取消候补课程")
+    public Result<Boolean> cancelWaiting(@PathVariable Long courseId) {
+        Long studentId = SecurityUtils.getCurrentUserId();
+        log.info("取消候补课程: studentId={}, courseId={}", studentId, courseId);
+        boolean result = courseSelectionService.cancelWaiting(studentId, courseId);
+        return Result.success(result);
+    }
+
+    /**
+     * 查询候补名额剩余
+     * @return
+     */
+    @GetMapping("/waiting/count")
+    @Operation(summary = "查询候补名额剩余")
+    public Result<Integer> getWaitingCount() {
+        Long studentId = SecurityUtils.getCurrentUserId();
+        log.info("查询候补名额剩余: studentId={}", studentId);
+        Integer count = courseSelectionService.getWaitingCount(studentId);
+        return Result.success(3 - count);
+    }
 }

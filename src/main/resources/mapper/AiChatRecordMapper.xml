@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.AiChatRecordMapper">
+
+    <insert id="insertRecord">
+        INSERT INTO ai_chat_record (user_id, session_id, role, content, create_time)
+        VALUES (#{userId}, #{sessionId}, #{role}, #{content}, now())
+    </insert>
+
+    <insert id="upsertSession">
+        INSERT INTO ai_chat_session (user_id, session_id, title, message_count, last_message_at, status, create_time, update_time)
+        VALUES (#{userId}, #{sessionId}, #{title}, 0, now(), '活跃', now(), now())
+        ON DUPLICATE KEY UPDATE
+            last_message_at = now(),
+            update_time = now()
+    </insert>
+
+    <update id="updateSessionMessageCount">
+        UPDATE ai_chat_session
+        SET message_count = message_count + #{count},
+            last_message_at = now(),
+            update_time = now()
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <select id="listSessionsByUserId" resultType="com.hxq.smart_campus.entity.dto.AiSessionDTO">
+        SELECT session_id, title, message_count, last_message_at, create_time
+        FROM ai_chat_session
+        WHERE user_id = #{userId}
+          AND status = '活跃'
+        ORDER BY last_message_at DESC
+    </select>
+
+    <select id="listRecordsBySessionId" resultType="com.hxq.smart_campus.entity.dto.AiChatHistoryDTO">
+        SELECT id, user_id, session_id, role, content, create_time
+        FROM ai_chat_record
+        WHERE session_id = #{sessionId}
+        ORDER BY create_time ASC
+        LIMIT #{limit}
+    </select>
+
+    <update id="deleteSession">
+        UPDATE ai_chat_session
+        SET status = '归档', update_time = now()
+        WHERE session_id = #{sessionId}
+          AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteRecordsBySessionId">
+        DELETE FROM ai_chat_record WHERE session_id = #{sessionId}
+    </delete>
+</mapper>

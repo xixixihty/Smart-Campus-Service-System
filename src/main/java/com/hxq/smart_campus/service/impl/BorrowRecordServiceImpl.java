@@ -9,6 +9,7 @@ import com.hxq.smart_campus.entity.dto.BorrowStatisticsDTO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordListVO;
 import com.hxq.smart_campus.exception.BusinessException;
+import com.hxq.smart_campus.mapper.BookMapper;
 import com.hxq.smart_campus.mapper.BorrowRecordMapper;
 import com.hxq.smart_campus.service.BorrowRecordService;
 import com.hxq.smart_campus.service.mq.BorrowRecordProducer;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @Slf4j
 public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BorrowRecordMapper borrowRecordMapper;
+    private final BookMapper bookMapper;
     private final RedisBorrowService redisBorrowService;
     @Lazy
     private final BorrowRecordProducer borrowRecordProducer;
@@ -57,20 +59,28 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
             throw new BusinessException("USER_NOT_EXIST", "用户不存在");
         }
 
-        // 2. Lua脚本原子借阅（防重借 + 库存扣减 + 排队）
+        // 2. Lua脚本原子借阅（防重借 + 库存扣减）
         Long result = redisBorrowService.executeBorrow(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId());
         if (result == -2) {
             throw new BusinessException("ALREADY_BORROWED", "已借未还，不可重复借阅");
         } else if (result == -1) {
-            throw new BusinessException("STOCK_EMPTY", "库存不足，已加入预约排队");
+            throw new BusinessException("STOCK_EMPTY", "库存不足，无法借阅");
         } else if (result != 1) {
             throw new RuntimeException("借阅失败，请稍后再试");
         }
 
-        // 3. 构建响应并发送MQ消息异步落库
+        // 3. 同步落库
         String borrowNo = generateBorrowNo();
-        BorrowMessage message = new BorrowMessage(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId(), borrowNo, "BORROW");
-        borrowRecordProducer.sendBorrowMessage(message);
+        borrowRecordMapper.insertBorrowRecordDirect(borrowCreateDTO.getUserId(), borrowCreateDTO.getBookId(), borrowNo);
+        bookMapper.decrementAvailableCopies(borrowCreateDTO.getBookId());
+
+        // 4. 发送MQ消息（失败不影响主流程，仅用于通知等非关键路径）
+        try {
+            BorrowMessage message = new BorrowMessage(borrowCreateDTO.getBookId(), borrowCreateDTO.getUserId(), borrowNo, "BORROW");
+            borrowRecordProducer.sendBorrowMessage(message);
+        } catch (Exception e) {
+            log.warn("发送借阅MQ消息失败: borrowNo={}", borrowNo, e);
+        }
 
         BorrowResponseDTO response = new BorrowResponseDTO();
         response.setBorrowNo(borrowNo);
@@ -100,25 +110,27 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
             throw new IllegalArgumentException("该图书已归还！");
         }
 
-        // 1. Lua脚本原子归还（释放库存 + 检查候补）
+        // 1. Lua脚本原子归还（释放库存）
         Long luaResult = redisBorrowService.executeReturn(record.getBookId(), record.getUserId());
         if (luaResult == -1L) {
             throw new BusinessException("NOT_BORROWED", "未借阅该书");
         }
 
-        // 2. 如果有候补用户，发送通知
-        if (luaResult != 1L) {
-            log.info("图书归还候补通知: 图书ID={}, 候补用户ID={}", record.getBookId(), luaResult);
-            // TODO: 发送候补成功通知给用户
-        }
-
-        // 3. 发送MQ消息异步落库
+        // 2. 同步落库
         String borrowNo = record.getBorrowNo();
         if (borrowNo == null) {
             borrowNo = generateBorrowNo();
         }
-        BorrowMessage message = new BorrowMessage(record.getBookId(), record.getUserId(), borrowNo, "RETURN");
-        borrowRecordProducer.sendReturnMessage(message);
+        borrowRecordMapper.returnBookByBorrowNo(borrowNo);
+        bookMapper.incrementAvailableCopies(record.getBookId());
+
+        // 4. 发送MQ消息（失败不影响主流程，仅用于通知等非关键路径）
+        try {
+            BorrowMessage message = new BorrowMessage(record.getBookId(), record.getUserId(), borrowNo, "RETURN");
+            borrowRecordProducer.sendReturnMessage(message);
+        } catch (Exception e) {
+            log.warn("发送归还MQ消息失败: borrowNo={}", borrowNo, e);
+        }
 
         log.info("归还图书成功，ID：{}", id);
         return true;
@@ -152,8 +164,8 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     public PageInfo<BorrowRecordListVO> getBorrowRecordMyList(Integer pageNum, Integer pageSize, String status, Long userId) {
         log.info("获取我的借阅记录，参数：pageNum={}, pageSize={}, status={}, userId={}", pageNum, pageSize, status, userId);
         PageHelper.startPage(pageNum, pageSize);
-        // 从登陆信息中获取到用户ID
-        List<BorrowRecordListVO> list = borrowRecordMapper.getBorrowRecordList(SecurityUtils.getCurrentUserId(), null, status);
+        Long queryUserId = userId != null ? userId : SecurityUtils.getCurrentUserId();
+        List<BorrowRecordListVO> list = borrowRecordMapper.getBorrowRecordList(queryUserId, null, status);
         // 计算逾期天数
         list.forEach(this::calculateOverdueDays);
         return new PageInfo<>(list);
