@@ -39,3 +39,8 @@ build/
 
 ### Local Config ###
 application-local.yml
+
+### Misc ###
+面试/
+loggerAI
+hs_err_pid*.log
