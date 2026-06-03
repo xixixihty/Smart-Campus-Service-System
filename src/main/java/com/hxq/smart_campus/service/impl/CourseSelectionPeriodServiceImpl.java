@@ -87,13 +87,15 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
         if (semesterDetailVO == null) {
             throw new IllegalArgumentException("当前学期不存在");
         }
-        // 根据当前学期获取选课时间段
-        CourseSelectionPeriodDetailVO currentSemesterCourseSelectionPeriod = courseSelectionPeriodMapper.getCourseSelectionPeriodBySemesterId(semesterDetailVO.getId());
-        if (currentSemesterCourseSelectionPeriod == null) {
+        // 根据当前学期获取选课时间段列表（一个学期可能有多个选课时间段）
+        List<CourseSelectionPeriodDetailVO> currentSemesterPeriods = courseSelectionPeriodMapper.getCourseSelectionPeriodBySemesterId(semesterDetailVO.getId());
+        if (currentSemesterPeriods == null || currentSemesterPeriods.isEmpty()) {
             throw new IllegalArgumentException("当前学期的选课时间段不存在");
         }
         // 判断修改的选课时间是不是当前学期的选课时间
-        if (courseSelectionPeriodUpdateDTO.getId().equals(currentSemesterCourseSelectionPeriod.getId())) {
+        boolean isCurrentSemester = currentSemesterPeriods.stream()
+                .anyMatch(p -> p.getId().equals(courseSelectionPeriodUpdateDTO.getId()));
+        if (isCurrentSemester) {
             log.info("修改的选课时间是当前学期的选课时间");
             // 需要删除Redis缓存
             redisTemplate.delete(COURSE_SELECTION_KEY_PERIOD + semesterDetailVO.getId());
@@ -185,9 +187,14 @@ public class CourseSelectionPeriodServiceImpl implements CourseSelectionPeriodSe
             return selectionTimeRedisVO;
         }
 
-        CourseSelectionPeriodDetailVO currentSemesterCourseSelectionPeriod = courseSelectionPeriodMapper.getCourseSelectionPeriodBySemesterId(semesterDetailVO.getId());
-        if (currentSemesterCourseSelectionPeriod == null) {
+        List<CourseSelectionPeriodDetailVO> currentSemesterPeriods = courseSelectionPeriodMapper.getCourseSelectionPeriodBySemesterId(semesterDetailVO.getId());
+        if (currentSemesterPeriods == null || currentSemesterPeriods.isEmpty()) {
             throw new IllegalArgumentException("当前学期的选课时间段不存在");
+        }
+        // 当前学期存在多个选课时间段时，取第一条进行缓存
+        CourseSelectionPeriodDetailVO currentSemesterCourseSelectionPeriod = currentSemesterPeriods.get(0);
+        if (currentSemesterPeriods.size() > 1) {
+            log.warn("当前学期存在多个选课时间段，仅缓存第一条，需前端支持多时间段展示");
         }
 
         selectionTimeRedisVO = convertToSelectionTimeRedisVO(currentSemesterCourseSelectionPeriod);

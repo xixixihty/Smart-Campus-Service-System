@@ -43,7 +43,7 @@ public interface CourseScheduleService {
      * @param weekDay
      * @return
      */
-    PageInfo<CourseScheduleListVO> getCourseScheduleList(Integer pageNum, Integer pageSize, Long semesterId, Long courseId, Long teacherId, Long classroomId, Integer weekDay);
+    PageInfo<CourseScheduleListVO> getCourseScheduleList(Integer pageNum, Integer pageSize, Long semesterId, Long courseId, Long teacherId, Long classroomId, Integer weekDay, Integer weekNum);
     /**
      * 获取排课详情
      * @param id

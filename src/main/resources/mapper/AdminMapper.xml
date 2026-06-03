@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.AdminMapper">
+
+    <select id="getAdminByAdminNo" resultType="com.hxq.smart_campus.entity.vo.AdminDetailVO">
+        select a.id, a.admin_no, a.name, a.gender, a.role, a.college_id,
+               c.college_name, a.phone, a.email, a.account_status, a.password,
+               a.create_time, a.update_time
+        from admin a
+        left join college c on a.college_id = c.id
+        where a.admin_no = #{adminNo}
+          and a.account_status = '启用'
+    </select>
+
+    <select id="getAdminDetail" resultType="com.hxq.smart_campus.entity.vo.AdminDetailVO">
+        select a.id, a.admin_no, a.name, a.gender, a.role, a.college_id,
+               c.college_name, a.phone, a.email, a.account_status,
+               a.create_time, a.update_time
+        from admin a
+        left join college c on a.college_id = c.id
+        where a.id = #{id}
+    </select>
+
+    <select id="getAdminList" resultType="com.hxq.smart_campus.entity.vo.AdminListVO">
+        select a.id, a.admin_no, a.name, a.gender, a.role,
+               c.college_name, a.account_status, a.create_time
+        from admin a
+        left join college c on a.college_id = c.id
+        <where>
+            <if test="name != null and name != ''">and a.name like concat('%', #{name}, '%')</if>
+            <if test="role != null and role != ''">and a.role = #{role}</if>
+            <if test="adminNo != null and adminNo != ''">and a.admin_no like concat('%', #{adminNo}, '%')</if>
+        </where>
+        order by a.id desc
+    </select>
+
+    <select id="getCollegeAdminByCollegeId" resultType="com.hxq.smart_campus.entity.vo.AdminDetailVO">
+        select a.id, a.admin_no, a.name, a.gender, a.role, a.college_id,
+               c.college_name, a.phone, a.email, a.account_status,
+               a.create_time, a.update_time
+        from admin a
+        left join college c on a.college_id = c.id
+        where a.college_id = #{collegeId}
+          and a.account_status = '启用'
+        order by
+            case a.role when '超级管理员' then 0 else 1 end,
+            a.id asc
+        limit 1
+    </select>
+
+</mapper>

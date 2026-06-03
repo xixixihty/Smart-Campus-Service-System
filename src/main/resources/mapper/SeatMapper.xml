@@ -42,6 +42,7 @@
             <if test="roomId != null">and room_id = #{roomId}</if>
             <if test="status != null and status != ''">and status = #{status}</if>
         </where>
+        order by room_id, seat_number
     </select>
 
     <!-- 获取可用座位列表（包含空闲和使用中） -->

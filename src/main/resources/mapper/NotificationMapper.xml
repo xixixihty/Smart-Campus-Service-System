@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.NotificationMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into notification (user_id, user_type, title, content, type, related_id, is_read, create_time)
+        values (#{userId}, #{userType}, #{title}, #{content}, #{type}, #{relatedId}, 0, now())
+    </insert>
+
+    <update id="markAsRead">
+        update notification set is_read = 1
+        where id = #{id}
+    </update>
+
+    <update id="markAllAsRead">
+        update notification set is_read = 1
+        where user_id = #{userId}
+          and user_type = #{userType}
+          and is_read = 0
+    </update>
+
+    <select id="getUnreadList" resultType="com.hxq.smart_campus.entity.vo.NotificationVO">
+        select id, title, content, type, related_id, is_read, create_time
+        from notification
+        where user_id = #{userId}
+          and user_type = #{userType}
+          and is_read = 0
+        order by create_time desc
+    </select>
+
+    <select id="getNotificationList" resultType="com.hxq.smart_campus.entity.vo.NotificationVO">
+        select id, title, content, type, related_id, is_read, create_time
+        from notification
+        where user_id = #{userId}
+          and user_type = #{userType}
+        <if test="type != null and type != ''">and type = #{type}</if>
+        order by create_time desc
+    </select>
+
+    <select id="getUnreadCount" resultType="long">
+        select count(*) from notification
+        where user_id = #{userId}
+          and user_type = #{userType}
+          and is_read = 0
+    </select>
+
+    <delete id="deleteByCreateTimeBefore">
+        delete from notification where create_time &lt; #{threshold}
+    </delete>
+
+</mapper>

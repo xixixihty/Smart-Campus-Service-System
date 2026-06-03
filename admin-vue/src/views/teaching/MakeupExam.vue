@@ -29,10 +29,8 @@
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" min-width="120" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
-        <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
         <el-table-column prop="examDate" label="补考日期" width="120" align="center" />
-        <el-table-column prop="startTime" label="开始时间" width="120" align="center" />
-        <el-table-column prop="endTime" label="结束时间" width="120" align="center" />
+        <el-table-column prop="location" label="考试地点" min-width="150" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status === '已考' ? 'success' : row.status === '待考' ? 'warning' : 'info'" size="small">
@@ -63,8 +61,7 @@
         <el-descriptions-item label="学生姓名">{{ detailData.studentName }}</el-descriptions-item>
         <el-descriptions-item label="课程名称">{{ detailData.courseName }}</el-descriptions-item>
         <el-descriptions-item label="补考日期">{{ detailData.examDate }}</el-descriptions-item>
-        <el-descriptions-item label="开始时间">{{ detailData.startTime }}</el-descriptions-item>
-        <el-descriptions-item label="结束时间">{{ detailData.endTime }}</el-descriptions-item>
+        <el-descriptions-item label="考试地点">{{ detailData.location }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="detailData.status === '已考' ? 'success' : detailData.status === '待考' ? 'warning' : 'info'" size="small">
             {{ detailData.status }}
@@ -130,7 +127,7 @@ const courseOptions = ref([])
 const classroomOptions = ref([])
 const detailData = reactive({
   id: null, studentName: '', courseName: '', semesterName: '',
-  examDate: '', startTime: '', endTime: '', status: '',
+  examDate: '', location: '', status: '',
   createTime: '', updateTime: ''
 })
 
@@ -182,8 +179,7 @@ const handleView = async (row) => {
       studentName: data.studentName || '',
       courseName: data.courseName || '',
       examDate: data.examDate || '',
-      startTime: data.startTime || '',
-      endTime: data.endTime || '',
+      location: data.location || '',
       status: data.status || '',
       createTime: data.createTime || '',
       updateTime: data.updateTime || ''

@@ -94,4 +94,12 @@ public interface TeacherMapper {
 
     @Select("SELECT id FROM teacher")
     java.util.List<Long> selectAllTeacherIds();
+
+    List<Long> getTeachingClassIds(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    List<Long> getTeachingCourseIds(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    List<Long> getTeachingStudentIds(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    List<TeacherDetailVO> getTeachingClassTeacherList(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
 }

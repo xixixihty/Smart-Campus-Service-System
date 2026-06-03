@@ -10,8 +10,8 @@ public class LeaveApprovalLog {
     private Long id;
     private Long leaveRequestId;
     private Long approverId;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime approveTime;
-    private String result;
+    private String action;
     private String comment;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 }

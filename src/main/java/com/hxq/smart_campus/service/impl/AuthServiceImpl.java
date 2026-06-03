@@ -2,8 +2,10 @@ package com.hxq.smart_campus.service.impl;
 
 import com.hxq.smart_campus.entity.dto.LoginDTO;
 import com.hxq.smart_campus.entity.dto.LoginResponseDTO;
+import com.hxq.smart_campus.entity.vo.AdminDetailVO;
 import com.hxq.smart_campus.entity.vo.StudentDetailVO;
 import com.hxq.smart_campus.entity.vo.TeacherDetailVO;
+import com.hxq.smart_campus.mapper.AdminMapper;
 import com.hxq.smart_campus.mapper.StudentMapper;
 import com.hxq.smart_campus.mapper.TeacherMapper;
 import com.hxq.smart_campus.service.AuthService;
@@ -26,22 +28,19 @@ public class AuthServiceImpl implements AuthService {
 
     private final StudentMapper studentMapper;
     private final TeacherMapper teacherMapper;
+    private final AdminMapper adminMapper;
 
     @Override
     public LoginResponseDTO login(LoginDTO loginDTO) {
-        // 校验参数
         if (loginDTO == null || loginDTO.getUsername() == null || loginDTO.getPassword() == null || loginDTO.getUserType() == null) {
             throw new IllegalArgumentException("登录参数不能为空");
         }
 
-        // 记录登录尝试的日志，对密码进行脱敏处理
         log.info("用户登录尝试，用户名：{}，用户类型：{}，密码：{}", loginDTO.getUsername(), loginDTO.getUserType(), SensitiveInfoUtils.maskPassword(loginDTO.getPassword()));
 
         LoginResponseDTO responseDTO = new LoginResponseDTO();
         responseDTO.setUserType(loginDTO.getUserType());
 
-
-        // 密码验证前的日志记录
         log.debug("准备验证密码，用户输入长度：{}", loginDTO.getPassword().length());
         log.debug("当前密码验证逻辑：直接使用明文密码与数据库哈希比对");
 
@@ -77,11 +76,26 @@ public class AuthServiceImpl implements AuthService {
             responseDTO.setName(teacher.getName());
             responseDTO.setStatus(teacher.getStatus());
             responseDTO.setAccountStatus(teacher.getAccountStatus());
+        } else if (USER_TYPE_ADMIN.equals(loginDTO.getUserType())) {
+            AdminDetailVO admin = adminMapper.getAdminByAdminNo(loginDTO.getUsername());
+            if (admin == null) {
+                throw new IllegalArgumentException("管理员不存在");
+            }
+            if (ADMIN_ACCOUNT_STATUS_LOCK.equals(admin.getAccountStatus())) {
+                throw new IllegalArgumentException("账号已被锁定");
+            }
+            if (!BCryptUtils.checkPassword(loginDTO.getPassword(), admin.getPassword())) {
+                throw new IllegalArgumentException("密码错误");
+            }
+            responseDTO.setUserId(admin.getId());
+            responseDTO.setUsername(admin.getAdminNo());
+            responseDTO.setName(admin.getName());
+            responseDTO.setStatus("启用");
+            responseDTO.setAccountStatus(admin.getAccountStatus());
         } else {
             throw new IllegalArgumentException("用户类型错误");
         }
 
-        // 生成JWT令牌
         String token = JwtUtils.generateToken(
                 responseDTO.getUserId(),
                 responseDTO.getUsername(),

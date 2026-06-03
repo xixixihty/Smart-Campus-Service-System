@@ -9,15 +9,13 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="scoreEntryId != null">score_entry_id</if>
             <if test="examDate != null">exam_date</if>
-            <if test="startTime != null">start_time</if>
-            <if test="endTime != null">end_time</if>
+            <if test="location != null">location</if>
         </trim>
             values
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="scoreEntryId != null">#{scoreEntryId}</if>
             <if test="examDate != null">#{examDate}</if>
-            <if test="startTime != null">#{startTime}</if>
-            <if test="endTime != null">#{endTime}</if>
+            <if test="location != null">#{location}</if>
         </trim>
     </insert>
     <!-- 新增补考成绩 -->
@@ -33,8 +31,7 @@
         update makeup_exam
             <set>
                 <if test="examDate != null">exam_date = #{examDate}</if>
-                <if test="startTime != null">start_time = #{startTime}</if>
-                <if test="endTime != null">end_time = #{endTime}</if>
+                <if test="location != null">location = #{location}</if>
                 <if test="status != null">status = #{status}</if>
             </set>
         where id = #{id}
@@ -42,7 +39,7 @@
     <!-- 获取补考安排详情 -->
     <select id="getMakeupExamDetail" resultType="com.hxq.smart_campus.entity.vo.MakeupExamDetailVO">
         select m.id, m.score_entry_id,se.student_id, s.name as student_name, s.student_no, se.course_id, c.course_name,
-               m.exam_date, m.start_time, m.end_time, m.status, m.create_time, m.update_time
+               m.exam_date, m.location, m.status, m.create_time, m.update_time
         from makeup_exam m
         join score_entry se on m.score_entry_id = se.id
         join student s on se.student_id = s.id
@@ -51,7 +48,7 @@
     </select>
     <!-- 获取补考安排列表 -->
     <select id="getMakeupExamList" resultType="com.hxq.smart_campus.entity.vo.MakeupExamListVO">
-        select m.id, s.name as student_name, c.course_name, m.exam_date, m.start_time, m.end_time, m.status, m.create_time
+        select m.id, s.name as student_name, c.course_name, m.exam_date, m.location, m.status, m.create_time
         from makeup_exam m
         join score_entry se on m.score_entry_id = se.id
         join student s on se.student_id = s.id
@@ -63,7 +60,7 @@
     </select>
     <!-- 获取我的补考安排列表 -->
     <select id="getMyMakeupExamList" resultType="com.hxq.smart_campus.entity.vo.MyMakeupExamVO">
-        select m.id, c.course_name, m.exam_date, m.start_time, m.end_time, m.status
+        select m.id, c.course_name, m.exam_date, m.location, m.status
         from makeup_exam m
         join score_entry se on m.score_entry_id = se.id
         join course c on se.course_id = c.id

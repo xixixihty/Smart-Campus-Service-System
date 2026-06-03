@@ -6,6 +6,7 @@ import com.hxq.smart_campus.entity.dto.ClassResponseDTO;
 import com.hxq.smart_campus.entity.dto.ClassUpdateDTO;
 import com.hxq.smart_campus.entity.vo.ClassDetailVO;
 import com.hxq.smart_campus.entity.vo.ClassListVO;
+import com.hxq.smart_campus.entity.vo.StudentBasicVO;
 
 import java.util.List;
 
@@ -56,4 +57,8 @@ public interface ClassService {
      * @return
      */
     boolean updateStatus(Long id);
+
+    List<StudentBasicVO> getClassStudents(Long classId);
+
+    List<ClassDetailVO> getTeachingClasses(Long semesterId);
 }

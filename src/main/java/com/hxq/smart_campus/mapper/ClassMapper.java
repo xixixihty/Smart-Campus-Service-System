@@ -4,6 +4,7 @@ import com.hxq.smart_campus.entity.dto.ClassCreateDTO;
 import com.hxq.smart_campus.entity.dto.ClassUpdateDTO;
 import com.hxq.smart_campus.entity.vo.ClassDetailVO;
 import com.hxq.smart_campus.entity.vo.ClassListVO;
+import com.hxq.smart_campus.entity.vo.StudentBasicVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -71,10 +72,14 @@ public interface ClassMapper {
     int updateStatus(@Param("id") Long id, @Param("newStatus") String newStatus);
 
     /**
-     * 查询班级关联的学生数量
-     *
-     * @param id 班级ID
-     * @return 关联的学生数量
-     */
+ * 查询班级关联的学生数量
+ *
+ * @param id 班级ID
+ * @return 关联的学生数量
+ */
     int countRelatedStudents(@Param("id") Long id);
+
+    List<StudentBasicVO> getClassStudents(@Param("classId") Long classId);
+
+    List<ClassDetailVO> getTeachingClasses(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
 }

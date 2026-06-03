@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxq.smart_campus.entity.dto.AiChatHistoryDTO;
 import com.hxq.smart_campus.entity.dto.AiSessionDTO;
+import com.hxq.smart_campus.mapper.AiChatRecordMapper;
 import com.hxq.smart_campus.service.AiChatRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,15 +35,39 @@ public class AiChatRecordServiceImpl implements AiChatRecordService {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
+    private final AiChatRecordMapper aiChatRecordMapper;
 
-    public AiChatRecordServiceImpl(StringRedisTemplate stringRedisTemplate, ObjectMapper objectMapper) {
+    public AiChatRecordServiceImpl(StringRedisTemplate stringRedisTemplate, ObjectMapper objectMapper,
+                                   AiChatRecordMapper aiChatRecordMapper) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.objectMapper = objectMapper;
+        this.aiChatRecordMapper = aiChatRecordMapper;
     }
 
     @Override
+    @Async
     public void saveMessagesAsync(Long userId, String sessionId, String userMessage, String assistantMessage) {
+        // 1. 同步写入Redis（保持现有逻辑）
         saveMessages(userId, sessionId, userMessage, assistantMessage);
+        // 2. 异步写入MySQL持久化
+        persistToDatabase(userId, sessionId, userMessage, assistantMessage);
+    }
+
+    /**
+     * 持久化对话记录到数据库
+     */
+    private void persistToDatabase(Long userId, String sessionId, String userMessage, String assistantMessage) {
+        try {
+            String title = userMessage != null && userMessage.length() > 50
+                    ? userMessage.substring(0, 50) : (userMessage != null ? userMessage : "新对话");
+            aiChatRecordMapper.upsertSession(userId, sessionId, title);
+            aiChatRecordMapper.insertRecord(userId, sessionId, "user", userMessage);
+            aiChatRecordMapper.insertRecord(userId, sessionId, "assistant", assistantMessage);
+            aiChatRecordMapper.updateSessionMessageCount(sessionId, 2);
+            log.info("AI对话记录已持久化到数据库: sessionId={}, userId={}", sessionId, userId);
+        } catch (Exception e) {
+            log.error("AI对话记录持久化到数据库失败: sessionId={}, userId={}", sessionId, userId, e);
+        }
     }
 
     private void saveMessages(Long userId, String sessionId, String userMessage, String assistantMessage) {
@@ -109,7 +135,14 @@ public class AiChatRecordServiceImpl implements AiChatRecordService {
     }
 
     @Override
-    public List<AiChatHistoryDTO> getSessionHistory(String sessionId, int limit) {
+    public List<AiChatHistoryDTO> getSessionHistory(String sessionId, Long userId, int limit) {
+        String sessionInfoKey = String.format(SESSION_INFO_KEY, sessionId);
+        String sessionOwnerId = getString(stringRedisTemplate.opsForHash().entries(sessionInfoKey), "userId");
+        if (sessionOwnerId == null || !sessionOwnerId.equals(String.valueOf(userId))) {
+            log.warn("会话归属校验失败: sessionId={}, requestUserId={}, sessionOwnerId={}", sessionId, userId, sessionOwnerId);
+            return Collections.emptyList();
+        }
+
         String chatKey = String.format(CHAT_KEY, sessionId);
         List<String> messages = stringRedisTemplate.opsForList().range(chatKey, 0, limit - 1);
 

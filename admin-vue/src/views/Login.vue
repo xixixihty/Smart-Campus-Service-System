@@ -42,15 +42,24 @@
       <div class="login-right">
         <div class="login-card">
           <div class="card-header">
-            <h2>管理员登录</h2>
-            <p>请使用教师工号登录系统</p>
+            <h2>智慧校园管理平台</h2>
+            <p>请选择身份登录系统</p>
           </div>
 
           <el-form ref="formRef" :model="form" :rules="rules" size="large" class="login-form" autocomplete="off">
+            <el-form-item>
+              <div class="role-selector">
+                <el-radio-group v-model="form.userType" size="default" @change="onRoleChange">
+                  <el-radio-button value="admin">管理员</el-radio-button>
+                  <el-radio-button value="teacher">教师</el-radio-button>
+                </el-radio-group>
+              </div>
+            </el-form-item>
+
             <el-form-item prop="username">
               <el-input
                 v-model="form.username"
-                placeholder="请输入教师工号"
+                :placeholder="form.userType === 'admin' ? '请输入管理员账号' : '请输入教师工号'"
                 :prefix-icon="User"
                 clearable
                 autocomplete="off"
@@ -87,7 +96,7 @@
           <div class="card-footer">
             <div class="test-account">
               <el-icon :size="14"><InfoFilled /></el-icon>
-              <span>测试账号：T2021001 / Password123!</span>
+              <span>测试账号：T20230001 / Password123!</span>
             </div>
           </div>
         </div>
@@ -114,18 +123,22 @@ const loading = ref(false)
 const form = reactive({
   username: '',
   password: '',
-  userType: 'teacher'
+  userType: 'admin'
 })
 
 const rules = {
   username: [
-    { required: true, message: '请输入教师工号', trigger: 'blur' },
-    { min: 3, max: 20, message: '工号长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: '请输入登录账号', trigger: 'blur' },
+    { min: 3, max: 20, message: '账号长度在 3 到 20 个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 30, message: '密码长度在 6 到 30 个字符', trigger: 'blur' }
   ]
+}
+
+const onRoleChange = () => {
+  formRef.value?.clearValidate()
 }
 
 const handleLogin = async () => {
@@ -347,6 +360,12 @@ const handleLogin = async () => {
 .card-header p {
   font-size: 14px;
   color: #909399;
+}
+
+.role-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
 .login-form :deep(.el-input__wrapper) {

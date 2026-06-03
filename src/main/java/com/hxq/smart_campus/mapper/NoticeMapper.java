@@ -28,7 +28,7 @@ public interface NoticeMapper {
     int deleteNotice(Long id);
 
     List<NoticeListVO> getNoticeList(@Param("title") String title,
-                                     @Param("targetType") String targetType,
+                                     @Param("type") String type,
                                      @Param("status") String status);
 
     List<MyNoticeVO> getMyNoticeList(@Param("className") String className,

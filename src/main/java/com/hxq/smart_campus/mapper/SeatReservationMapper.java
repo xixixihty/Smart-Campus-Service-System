@@ -1,24 +1,15 @@
 package com.hxq.smart_campus.mapper;
 
-import com.hxq.smart_campus.entity.dto.SeatReservationCreateDTO;
 import com.hxq.smart_campus.entity.vo.SeatReservationDetailVO;
 import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 @Mapper
 public interface SeatReservationMapper {
-    /**
-     * 座位预约
-     * @param seatReservationCreateDTO
-     * @return
-     */
-    int insertSeatReservation(SeatReservationCreateDTO seatReservationCreateDTO);
-
     /**
      * 获取最新插入的ID
      * @return
@@ -122,18 +113,18 @@ public interface SeatReservationMapper {
     /**
      * 根据预约编号签到
      */
-    @Update("update seat_reservation set status = '使用中', update_time = now() where reservation_no = #{reservationNo}")
+    @Update("update seat_reservation set status = '使用中' where reservation_no = #{reservationNo}")
     int checkInByReservationNo(@Param("reservationNo") String reservationNo);
 
     /**
      * 根据预约编号签退
      */
-    @Update("update seat_reservation set status = '已完成', leave_time = now(), update_time = now() where reservation_no = #{reservationNo}")
+    @Update("update seat_reservation set status = '已完成', leave_time = now() where reservation_no = #{reservationNo}")
     int checkOutByReservationNo(@Param("reservationNo") String reservationNo);
 
     /**
      * 根据预约编号暂离
      */
-    @Update("update seat_reservation set status = '暂离', leave_time = now(), update_time = now() where reservation_no = #{reservationNo}")
+    @Update("update seat_reservation set status = '暂离', leave_time = now() where reservation_no = #{reservationNo}")
     int leaveByReservationNo(@Param("reservationNo") String reservationNo);
 }

@@ -141,4 +141,22 @@ public interface ScoreEntryMapper {
      * @return
      */
     int batchInsertScore(@Param("scoreEntries") List<ScoreEntryCreateDTO> scoreEntries);
+
+    List<ScoreEntryListVO> getUnrecordedStudents(@Param("courseId") Long courseId, @Param("semesterId") Long semesterId);
+
+    TeacherScoreStatsDTO getTeacherScoreStats(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    List<ScoreDistributionItem> getScoreDistributionByTeacher(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    /**
+     * 校验教师对指定课程+学期的成绩操作权限
+     * @return 1=有权限, 0=无权限
+     */
+    @Select("SELECT COUNT(1) FROM course_schedule " +
+            "WHERE teacher_id = #{teacherId} " +
+            "AND course_id = #{courseId} " +
+            "AND semester_id = #{semesterId}")
+    int checkTeacherCoursePermission(@Param("teacherId") Long teacherId,
+                                      @Param("courseId") Long courseId,
+                                      @Param("semesterId") Long semesterId);
 }

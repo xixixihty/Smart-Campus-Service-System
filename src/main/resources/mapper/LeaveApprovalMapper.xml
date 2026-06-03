@@ -7,6 +7,11 @@
 
     <resultMap id="LeaveRequestDetailMap" type="com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO">
         <id column="id" property="id"/>
+        <result column="applicant_type" property="applicantType"/>
+        <result column="applicant_id" property="applicantId"/>
+        <result column="applicant_name" property="applicantName"/>
+        <result column="approver_id" property="approverId"/>
+        <result column="approver_name" property="approverName"/>
         <result column="student_id" property="studentId"/>
         <result column="student_name" property="studentName"/>
         <result column="leave_type" property="leaveType"/>
@@ -14,15 +19,16 @@
         <result column="end_time" property="endTime"/>
         <result column="reason" property="reason"/>
         <result column="status" property="status"/>
+        <result column="is_course_rescheduled" property="isCourseRescheduled"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <collection property="approvalLogs" ofType="com.hxq.smart_campus.entity.vo.LeaveApprovalLogVO">
             <id column="log_id" property="id"/>
-            <result column="approver_id" property="approverId"/>
-            <result column="approver_name" property="approverName"/>
-            <result column="approve_time" property="approveTime"/>
-            <result column="log_result" property="result"/>
-            <result column="comment" property="comment"/>
+            <result column="log_approver_id" property="approverId"/>
+            <result column="log_approver_name" property="approverName"/>
+            <result column="log_action" property="action"/>
+            <result column="log_comment" property="comment"/>
+            <result column="log_create_time" property="createTime"/>
         </collection>
     </resultMap>
 
@@ -32,50 +38,84 @@
     <insert id="insertLeaveRequest" useGeneratedKeys="true" keyProperty="id">
     insert into leave_request
     <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="applicantType != null">applicant_type,</if>
+        <if test="applicantId != null">applicant_id,</if>
+        <if test="approverId != null">approver_id,</if>
         <if test="studentId != null">student_id,</if>
         <if test="leaveType != null">leave_type,</if>
         <if test="startTime != null">start_time,</if>
         <if test="endTime != null">end_time,</if>
         <if test="reason != null">reason,</if>
+        <if test="isCourseRescheduled != null">is_course_rescheduled,</if>
         status,
         create_time,
     </trim>
     values
     <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="applicantType != null">#{applicantType},</if>
+        <if test="applicantId != null">#{applicantId},</if>
+        <if test="approverId != null">#{approverId},</if>
         <if test="studentId != null">#{studentId},</if>
         <if test="leaveType != null">#{leaveType},</if>
         <if test="startTime != null">#{startTime},</if>
         <if test="endTime != null">#{endTime},</if>
         <if test="reason != null">#{reason},</if>
+        <if test="isCourseRescheduled != null">#{isCourseRescheduled},</if>
         '待审批',
         now(),
     </trim>
 </insert>
     <!-- 审批请假申请 -->
     <insert id="approveLeaveRequest">
-        insert into leave_approval_log (leave_request_id, approver_id, result, comment, approve_time)
-        values (#{id}, #{approverId}, #{result}, #{comment}, now())
+        insert into leave_approval_log (leave_request_id, approver_id, action, comment, create_time)
+        values (#{id}, #{approverId}, #{action}, #{comment}, now())
     </insert>
 
     <!-- 获取请假申请详情 -->
     <select id="getLeaveRequestDetail" resultMap="LeaveRequestDetailMap">
-        select l.id, l.student_id, s.name as student_name, l.leave_type,
+        select l.id, l.applicant_type, l.applicant_id, l.approver_id,
+               l.student_id, s.name as student_name, l.leave_type,
                l.start_time, l.end_time, l.reason, l.status,
+               l.is_course_rescheduled,
                l.create_time, l.update_time,
-               log.id as log_id, log.approver_id, log.approve_time,
-               log.result as log_result, log.comment,
-               t.name as approver_name
+               log.id as log_id, log.approver_id as log_approver_id,
+               log.create_time as log_create_time,
+               log.action as log_action,
+               log.comment as log_comment,
+               CASE l.applicant_type
+                   WHEN 'STUDENT' THEN s.name
+                   WHEN 'TEACHER' THEN t.name
+               END as applicant_name,
+               COALESCE(CASE l.applicant_type
+                   WHEN 'STUDENT' THEN head_t.name
+                   WHEN 'TEACHER' THEN a.name
+               END, '待分配') as approver_name
         from leave_request l
-                 left join student s on l.student_id = s.id
-                 left join leave_approval_log log on l.id = log.leave_request_id
-                 left join teacher t on log.approver_id = t.id
+        left join student s on l.student_id = s.id
+        left join teacher t on l.applicant_id = t.id and l.applicant_type = 'TEACHER'
+        left join leave_approval_log log on l.id = log.leave_request_id
+        left join teacher head_t on l.approver_id = head_t.id and l.applicant_type = 'STUDENT'
+        left join admin a on l.approver_id = a.id and l.applicant_type = 'TEACHER'
         where l.id = #{id}
     </select>
     <!-- 获取请假申请列表 -->
     <select id="getLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.LeaveRequestListVO">
-        select l.id, s.name as student_name, l.leave_type, l.start_time, l.end_time, l.status, l.create_time
+        select l.id, l.applicant_type,
+               CASE l.applicant_type
+                   WHEN 'STUDENT' THEN s.name
+                   WHEN 'TEACHER' THEN t.name
+               END as applicant_name,
+               s.name as student_name,
+               COALESCE(CASE l.applicant_type
+                   WHEN 'STUDENT' THEN head_t.name
+                   WHEN 'TEACHER' THEN a.name
+               END, '待分配') as approver_name,
+               l.leave_type, l.start_time, l.end_time, l.status, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
+        left join teacher t on l.applicant_id = t.id and l.applicant_type = 'TEACHER'
+        left join teacher head_t on l.approver_id = head_t.id and l.applicant_type = 'STUDENT'
+        left join admin a on l.approver_id = a.id and l.applicant_type = 'TEACHER'
         <where>
             <if test="studentName != null and studentName != ''">and s.name like concat('%', #{studentName}, '%')</if>
             <if test="leaveType != null and leaveType != ''">and l.leave_type = #{leaveType}</if>
@@ -83,33 +123,79 @@
         </where>
         order by l.id desc
     </select>
-    <!-- 获取请假申请列表 -->
+    <!-- 获取我的请假申请列表 -->
     <select id="getMyLeaveRequestList" resultType="com.hxq.smart_campus.entity.vo.MyLeaveRequestVO">
-        select l.id, l.leave_type, l.start_time, l.end_time, l.reason, l.status, l.create_time
+        select l.id, l.applicant_type,
+               CASE l.applicant_type
+                   WHEN 'STUDENT' THEN s.name
+                   WHEN 'TEACHER' THEN t.name
+               END as applicant_name,
+               COALESCE(CASE l.applicant_type
+                   WHEN 'STUDENT' THEN head_t.name
+                   WHEN 'TEACHER' THEN a.name
+               END, '待分配') as approver_name,
+               l.leave_type, l.start_time, l.end_time, l.reason, l.status,
+               l.is_course_rescheduled, l.create_time
         from leave_request l
-        left join student s on l.student_id = s.id
+        left join student s on l.applicant_id = s.id and l.applicant_type = 'STUDENT'
+        left join teacher t on l.applicant_id = t.id and l.applicant_type = 'TEACHER'
+        left join teacher head_t on l.approver_id = head_t.id and l.applicant_type = 'STUDENT'
+        left join admin a on l.approver_id = a.id and l.applicant_type = 'TEACHER'
         <where>
             <if test="status != null and status != ''">and l.status = #{status}</if>
-            and l.student_id = #{studentId}
+            and l.applicant_id = #{applicantId}
+            and l.applicant_type = #{applicantType}
         </where>
+        order by l.id desc
     </select>
     <!-- 获取待审批请假申请列表 -->
     <select id="getPendingApprovalList" resultType="com.hxq.smart_campus.entity.vo.PendingLeaveRequestVO">
-        select l.id, l.student_id, s.name as student_name, l.leave_type, l.start_time, l.end_time, l.reason, l.create_time
+        select l.id, l.applicant_type,
+               CASE l.applicant_type
+                   WHEN 'STUDENT' THEN s.name
+                   WHEN 'TEACHER' THEN t.name
+               END as applicant_name,
+               s.name as student_name,
+               l.leave_type, l.start_time, l.end_time, l.reason, l.create_time
         from leave_request l
         left join student s on l.student_id = s.id
+        left join teacher t on l.applicant_id = t.id and l.applicant_type = 'TEACHER'
         <where>
             <if test="status != null and status != ''">and l.status = #{status}</if>
+            <if test="approverId != null">and l.approver_id = #{approverId}</if>
         </where>
         order by l.id desc
     </select>
     <!-- 获取请假申请审批日志列表 -->
     <select id="getLeaveApprovalLogList" resultType="com.hxq.smart_campus.entity.vo.LeaveApprovalLogVO">
-        select l.id, l.approver_id, t.name as approver_name, l.approve_time, l.result, l.comment
+        select l.id, l.approver_id, l.create_time, l.action, l.comment,
+               coalesce(t.name, a.name) as approverName
         from leave_approval_log l
         left join teacher t on l.approver_id = t.id
+        left join admin a on l.approver_id = a.id
         <where>
             <if test="leaveRequestId != null">l.leave_request_id = #{leaveRequestId}</if>
         </where>
+    </select>
+
+    <!-- 查询学生对应的班主任ID -->
+    <select id="getHeadTeacherByStudentId" resultType="long">
+        select c.head_teacher_id
+        from student s
+        inner join class c on s.class_id = c.id
+        where s.id = #{studentId}
+    </select>
+
+    <!-- 查询教师对应的学院管理员ID -->
+    <select id="getCollegeAdminByTeacherId" resultType="long">
+        select a.id
+        from teacher t
+        inner join admin a on t.college_id = a.college_id
+            and a.account_status = '启用'
+        where t.id = #{teacherId}
+        order by
+            case a.role when '超级管理员' then 0 else 1 end,
+            a.id asc
+        limit 1
     </select>
 </mapper>

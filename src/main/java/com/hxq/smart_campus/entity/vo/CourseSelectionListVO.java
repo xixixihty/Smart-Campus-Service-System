@@ -17,6 +17,6 @@ public class CourseSelectionListVO {
     private String status;          // 状态
     private BigDecimal score;       // 最终成绩
     private BigDecimal scorePoint;  // 绩点
-    private String createTime;      // 创建时间（格式化显示）
-    private String updateTime;      // 修改时间（格式化显示）
+    private String createTime;      // 创建时间
+    private String updateTime;      // 更新时间
 }

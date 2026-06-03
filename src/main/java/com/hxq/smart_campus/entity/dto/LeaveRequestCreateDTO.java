@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 
 @Data
 public class LeaveRequestCreateDTO {
-    private Long id;
-    private Long studentId;         // 学生ID，必填
-    private String leaveType;       // 请假类型，必填
-    private LocalDateTime startTime; // 开始时间，必填
-    private LocalDateTime endTime;   // 结束时间，必填
-    private String reason;          // 请假事由，必填
+    private String applicantType;
+    private Long applicantId;
+    private Long approverId;
+    private Long studentId;
+    private String leaveType;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private String reason;
+    private Boolean isCourseRescheduled;
 }

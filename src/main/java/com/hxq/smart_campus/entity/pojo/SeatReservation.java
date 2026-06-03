@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Data
 public class SeatReservation {
     private Long id;
+    private String reservationNo;
     private Long userId;
     private Long seatId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")

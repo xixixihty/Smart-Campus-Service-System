@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class BorrowRecordListVO {
+public class BorrowRecordListVO implements BorrowRecordBase {
     private Long id;                // 借阅记录ID
     private String borrowNo;        // 借阅流水号
     private String userName;        // 借阅人姓名

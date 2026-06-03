@@ -11,7 +11,10 @@ import com.hxq.smart_campus.entity.vo.AvailableCourseVO;
 import com.hxq.smart_campus.entity.vo.CourseDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseListVO;
 import com.hxq.smart_campus.mapper.CourseMapper;
+import com.hxq.smart_campus.mapper.TeacherMapper;
 import com.hxq.smart_campus.service.CourseService;
+import com.hxq.smart_campus.service.SemesterService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,8 +34,9 @@ import static com.hxq.smart_campus.constant.RedisConstant.COURSE_DETAIL_KEY_PREF
 @Service
 public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
-
+    private final TeacherMapper teacherMapper;
     private final RedisTemplate redisTemplate;
+    private final SemesterService semesterService;
 
     /**
      * 分页查询课程列表
@@ -189,7 +193,18 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
-
-
+    @Override
+    public List<CourseListVO> getTeachingCourses(Long semesterId) {
+        Long teacherId = SecurityUtils.getCurrentUserId();
+        var currentSemester = semesterService.getCurrentSemester();
+        Long currentSemesterId = currentSemester.getId();
+        log.info("教师查询所授课程: 前端传入semesterId={}, 强制使用当前学期: {} (ID={})",
+                semesterId, currentSemester.getName(), currentSemesterId);
+        List<Long> courseIds = teacherMapper.getTeachingCourseIds(teacherId, currentSemesterId);
+        if (courseIds == null || courseIds.isEmpty()) {
+            return List.of();
+        }
+        return courseMapper.getCoursesByIds(courseIds);
+    }
 
 }

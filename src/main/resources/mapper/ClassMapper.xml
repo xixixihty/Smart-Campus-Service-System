@@ -79,4 +79,27 @@
         SELECT COUNT(*) FROM student WHERE class_id = #{id}
     </select>
 
+    <!-- 获取班级学生花名册 -->
+    <select id="getClassStudents" resultType="com.hxq.smart_campus.entity.vo.StudentBasicVO">
+        select s.id, s.student_no, s.name, s.gender, s.status
+        from student s
+        where s.class_id = #{classId}
+        order by s.student_no
+    </select>
+
+    <!-- 获取教师所授班级详情 -->
+    <select id="getTeachingClasses" resultType="com.hxq.smart_campus.entity.vo.ClassDetailVO">
+        select distinct c.id, m.id as major_id, m.major_name, c.class_name,
+               c.head_teacher_id, t.name as head_teacher_name, c.status,
+               c.create_time, c.update_time
+        from course_schedule cs
+        join course_schedule_class csc on csc.schedule_id = cs.id
+        join class c on csc.class_id = c.id
+        left join major m on c.major_id = m.id
+        left join teacher t on c.head_teacher_id = t.id
+        where cs.teacher_id = #{teacherId}
+          and cs.semester_id = #{semesterId}
+        order by c.class_name
+    </select>
+
 </mapper>

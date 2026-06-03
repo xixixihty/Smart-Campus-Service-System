@@ -80,4 +80,16 @@
           )
         </if>
     </select>
+
+    <!-- 批量根据ID查询课程列表 -->
+    <select id="getCoursesByIds" resultType="com.hxq.smart_campus.entity.vo.CourseListVO">
+        select id, course_code, course_name, credit, hours, type, status, capacity, create_time
+        from course
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by course_name
+    </select>
+
 </mapper>

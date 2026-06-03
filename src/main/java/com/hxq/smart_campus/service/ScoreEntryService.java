@@ -6,6 +6,7 @@ import com.hxq.smart_campus.entity.vo.GpaVO;
 import com.hxq.smart_campus.entity.vo.ScoreEntryDetailVO;
 import com.hxq.smart_campus.entity.vo.ScoreEntryListVO;
 import com.hxq.smart_campus.entity.vo.ScoreStatisticsVO;
+import com.hxq.smart_campus.entity.vo.TeacherScoreStatsDTO;
 
 import java.util.List;
 
@@ -70,4 +71,8 @@ public interface ScoreEntryService {
      * @return
      */
     GpaVO getGpa(Long studentId, Long semesterId);
+
+    List<ScoreEntryListVO> getUnrecordedStudents(Long courseId, Long semesterId);
+
+    TeacherScoreStatsDTO getTeacherScoreStats(Long semesterId);
 }

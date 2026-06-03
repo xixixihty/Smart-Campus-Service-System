@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 @Data
 public class LeaveRequest {
     private Long id;
+    private String applicantType;
+    private Long applicantId;
+    private Long approverId;
     private Long studentId;
     private String leaveType;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -16,6 +19,7 @@ public class LeaveRequest {
     private LocalDateTime endTime;
     private String reason;
     private String status;
+    private Integer isCourseRescheduled;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

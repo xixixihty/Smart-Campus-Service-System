@@ -35,7 +35,7 @@
             <if test="collegeName != null and collegeName != ''">#{collegeName},</if>
             <if test="dean != null and dean != ''">#{dean},</if>
             <if test="contactPhone != null and contactPhone != ''">#{contactPhone},</if>
-            '启用',
+            '正常',
         </trim>
     </insert>
 

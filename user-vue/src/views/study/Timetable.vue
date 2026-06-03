@@ -31,7 +31,10 @@
                   class="course-block"
                   :style="{
                     height: (item.endPeriod - item.startPeriod + 1) * 48 + 'px',
-                    background: getCourseColor(item.courseName)
+                    background: getCourseColor(item.courseName),
+                    left: item._leftStyle,
+                    right: item._overlapCount > 1 ? 'auto' : '2px',
+                    width: item._widthStyle
                   }"
                   @click="showCourseDetail(item)"
                 >
@@ -94,7 +97,7 @@ const getCourseColor = (name) => {
 }
 
 const getCellCourses = (day, period) => {
-  return timetableData.value.filter((item) => {
+  const courses = timetableData.value.filter((item) => {
     if (item.weekDay !== day) return false
     if (item.startSection > period || item.endSection < period) return false
     const { startWeek, endWeek } = parseWeekRange(item.weekRange)
@@ -103,6 +106,27 @@ const getCellCourses = (day, period) => {
     }
     return true
   })
+
+  const slotMap = new Map()
+  courses.forEach((c) => {
+    const key = `${c.startSection}-${c.endSection}`
+    if (!slotMap.has(key)) slotMap.set(key, [])
+    slotMap.get(key).push(c)
+  })
+  for (const group of slotMap.values()) {
+    group.forEach((c, i) => {
+      c._overlapCount = group.length
+      c._overlapIndex = i
+      c._leftStyle = c._overlapCount > 1
+        ? `calc(${c._overlapIndex * 100 / c._overlapCount}% + 2px)`
+        : '2px'
+      c._widthStyle = c._overlapCount > 1
+        ? `calc(${100 / c._overlapCount}% - 4px)`
+        : 'auto'
+    })
+  }
+
+  return courses
 }
 
 const parseWeekRange = (weekRange) => {
@@ -167,6 +191,7 @@ const fetchData = async () => {
 
 onMounted(async () => {
   await calculateCurrentWeek()
+  currentWeek.value = todayWeek.value
   fetchData()
 })
 </script>

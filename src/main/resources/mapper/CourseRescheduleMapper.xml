@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.CourseRescheduleMapper">
+
+    <insert id="insert">
+        insert into course_reschedule (
+            leave_request_id, course_schedule_id, teacher_id,
+            original_week_day, original_start_section, original_end_section, original_week_range, original_classroom_id,
+            new_week_day, new_start_section, new_end_section, new_week_range, new_classroom_id,
+            reason
+        )
+        select
+            #{leaveRequestId}, #{dto.courseScheduleId}, #{teacherId},
+            cs.week_day, cs.start_section, cs.end_section, cs.week_range, cs.classroom_id,
+            #{dto.newWeekDay}, #{dto.newStartSection}, #{dto.newEndSection}, #{dto.newWeekRange}, #{dto.newClassroomId},
+            #{dto.reason}
+        from course_schedule cs
+        where cs.id = #{dto.courseScheduleId}
+    </insert>
+
+    <update id="confirmReschedule">
+        update course_reschedule set status = '已确认', update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="cancelReschedule">
+        update course_reschedule set status = '已取消', update_time = now()
+        where id = #{id}
+    </update>
+
+    <select id="getRescheduleListByLeaveRequest" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
+        select cr.id, cr.leave_request_id, cr.course_schedule_id,
+               cr.teacher_id,
+               co.course_name as course_name,
+               (select group_concat(c2.class_name separator ',')
+                from course_schedule_class csc2
+                join class c2 on csc2.class_id = c2.id
+                where csc2.schedule_id = cs.id) as class_name,
+               t.name as teacher_name,
+               cr.original_week_day, cr.original_start_section, cr.original_end_section,
+               cr.original_classroom_id, ocr.room_number as original_classroom_name,
+               cr.new_week_day, cr.new_start_section, cr.new_end_section,
+               cr.new_classroom_id, ncr.room_number as new_classroom_name,
+               cr.status, cr.reason, cr.original_week_range, cr.new_week_range,
+               cr.approver_id, cr.approve_time, cr.create_time, cr.update_time
+        from course_reschedule cr
+        left join course_schedule cs on cr.course_schedule_id = cs.id
+        left join course co on cs.course_id = co.id
+        left join teacher t on cr.teacher_id = t.id
+        left join classroom ocr on cr.original_classroom_id = ocr.id
+        left join classroom ncr on cr.new_classroom_id = ncr.id
+        where cr.leave_request_id = #{leaveRequestId}
+        order by cr.id
+    </select>
+
+    <select id="getRescheduleListByTeacher" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
+        select cr.id, cr.leave_request_id, cr.course_schedule_id,
+               cr.teacher_id,
+               co.course_name as course_name,
+               (select group_concat(c2.class_name separator ',')
+                from course_schedule_class csc2
+                join class c2 on csc2.class_id = c2.id
+                where csc2.schedule_id = cs.id) as class_name,
+               t.name as teacher_name,
+               cr.original_week_day, cr.original_start_section, cr.original_end_section,
+               cr.original_classroom_id, ocr.room_number as original_classroom_name,
+               cr.new_week_day, cr.new_start_section, cr.new_end_section,
+               cr.new_classroom_id, ncr.room_number as new_classroom_name,
+               cr.status, cr.reason, cr.original_week_range, cr.new_week_range,
+               cr.approver_id, cr.approve_time, cr.create_time, cr.update_time
+        from course_reschedule cr
+        left join course_schedule cs on cr.course_schedule_id = cs.id
+        left join course co on cs.course_id = co.id
+        left join teacher t on cr.teacher_id = t.id
+        left join classroom ocr on cr.original_classroom_id = ocr.id
+        left join classroom ncr on cr.new_classroom_id = ncr.id
+        where cr.teacher_id = #{teacherId}
+        order by cr.id desc
+    </select>
+
+    <select id="getRescheduleDetail" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
+        select cr.id, cr.leave_request_id, cr.course_schedule_id,
+               cr.teacher_id,
+               co.course_name as course_name,
+               (select group_concat(c2.class_name separator ',')
+                from course_schedule_class csc2
+                join class c2 on csc2.class_id = c2.id
+                where csc2.schedule_id = cs.id) as class_name,
+               t.name as teacher_name,
+               cr.original_week_day, cr.original_start_section, cr.original_end_section,
+               cr.original_classroom_id, ocr.room_number as original_classroom_name,
+               cr.new_week_day, cr.new_start_section, cr.new_end_section,
+               cr.new_classroom_id, ncr.room_number as new_classroom_name,
+               cr.status, cr.reason, cr.original_week_range, cr.new_week_range,
+               cr.approver_id, cr.approve_time, cr.create_time, cr.update_time
+        from course_reschedule cr
+        left join course_schedule cs on cr.course_schedule_id = cs.id
+        left join course co on cs.course_id = co.id
+        left join teacher t on cr.teacher_id = t.id
+        left join classroom ocr on cr.original_classroom_id = ocr.id
+        left join classroom ncr on cr.new_classroom_id = ncr.id
+        where cr.id = #{id}
+    </select>
+
+    <select id="getTeacherCourseSchedules" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
+        select cs.id as course_schedule_id, co.course_name as course_name,
+               (select group_concat(c2.class_name separator ',')
+                from course_schedule_class csc2
+                join class c2 on csc2.class_id = c2.id
+                where csc2.schedule_id = cs.id) as class_name,
+               cs.week_day as original_week_day,
+               cs.start_section as original_start_section,
+               cs.end_section as original_end_section,
+               cr.room_number as original_classroom_name
+        from course_schedule cs
+        left join course co on cs.course_id = co.id
+        left join classroom cr on cs.classroom_id = cr.id
+        where cs.teacher_id = #{teacherId}
+        order by cs.week_day, cs.start_section
+    </select>
+
+    <!-- 获取待审批调课列表（管理员端） -->
+    <select id="getPendingList" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
+        select cr.id, cr.leave_request_id, cr.course_schedule_id,
+               cr.teacher_id,
+               co.course_name as course_name,
+               (select group_concat(c2.class_name separator ',')
+                from course_schedule_class csc2
+                join class c2 on csc2.class_id = c2.id
+                where csc2.schedule_id = cs.id) as class_name,
+               t.name as teacher_name,
+               cr.original_week_day, cr.original_start_section, cr.original_end_section,
+               cr.original_classroom_id, ocr.room_number as original_classroom_name,
+               cr.new_week_day, cr.new_start_section, cr.new_end_section,
+               cr.new_classroom_id, ncr.room_number as new_classroom_name,
+               cr.status, cr.reason, cr.original_week_range, cr.new_week_range,
+               cr.approver_id, cr.approve_time, cr.create_time, cr.update_time
+        from course_reschedule cr
+        left join course_schedule cs on cr.course_schedule_id = cs.id
+        left join course co on cs.course_id = co.id
+        left join teacher t on cr.teacher_id = t.id
+        left join classroom ocr on cr.original_classroom_id = ocr.id
+        left join classroom ncr on cr.new_classroom_id = ncr.id
+        where cr.status = '待确认'
+        order by cr.id desc
+    </select>
+
+    <!-- 确认调课并更新排课表 -->
+    <update id="approveReschedule">
+        update course_reschedule set status = '已确认', update_time = now()
+        where id = #{id} and status = '待确认'
+    </update>
+
+    <!-- 驳回调课（管理员审批） -->
+    <update id="rejectReschedule">
+        update course_reschedule set status = '已取消', reason = concat_ws(' ', reason, #{reason}), update_time = now()
+        where id = #{id} and status = '待确认'
+    </update>
+
+    <!-- 将调课变更应用到排课表 -->
+    <update id="applyRescheduleToSchedule">
+        update course_schedule
+        set week_day = #{weekDay},
+            start_section = #{startSection},
+            end_section = #{endSection},
+            classroom_id = #{classroomId}
+        where id = #{scheduleId}
+    </update>
+
+</mapper>

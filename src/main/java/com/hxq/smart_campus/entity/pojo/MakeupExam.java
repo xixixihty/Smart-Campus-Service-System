@@ -5,7 +5,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Data
 public class MakeupExam {
@@ -13,10 +12,7 @@ public class MakeupExam {
     private Long scoreEntryId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate examDate;
-    @DateTimeFormat(pattern = "HH:mm:ss")
-    private LocalTime startTime;
-    @DateTimeFormat(pattern = "HH:mm:ss")
-    private LocalTime endTime;
+    private String location;
     private String status;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

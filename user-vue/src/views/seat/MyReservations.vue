@@ -8,10 +8,11 @@
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="状态">
           <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 200px">
-            <el-option label="已预约" value="RESERVED" />
-            <el-option label="已签到" value="CHECKED_IN" />
-            <el-option label="已签退" value="CHECKED_OUT" />
-            <el-option label="已取消" value="CANCELLED" />
+            <el-option label="待签到" value="待签到" />
+            <el-option label="使用中" value="使用中" />
+            <el-option label="暂离" value="暂离" />
+            <el-option label="已完成" value="已完成" />
+            <el-option label="已取消" value="已取消" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -31,27 +32,29 @@
         <el-table-column prop="endTime" label="结束时间" width="100" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'RESERVED' ? 'warning' : row.status === 'CHECKED_IN' ? 'success' : row.status === 'CHECKED_OUT' ? 'info' : 'danger'" size="small">
-              {{ row.status === 'RESERVED' ? '已预约' : row.status === 'CHECKED_IN' ? '已签到' : row.status === 'CHECKED_OUT' ? '已签退' : '已取消' }}
+            <el-tag :type="row.status === '待签到' ? 'warning' : row.status === '使用中' ? 'success' : row.status === '暂离' ? 'warning' : row.status === '已完成' ? 'success' : 'danger'" size="small">
+              {{ row.status }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="260" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="info" size="small" @click="handleDetail(row)"><el-icon><View /></el-icon>详情</el-button>
-            <el-button v-if="row.status === 'RESERVED'" type="success" size="small" @click="handleCheckIn(row)">
+            <el-button v-if="row.status === '待签到'" type="success" size="small" @click="handleCheckIn(row)">
               签到
             </el-button>
-            <el-button v-if="row.status === 'CHECKED_IN'" type="warning" size="small" @click="handleLeave(row)">
+            <el-button v-if="row.status === '使用中'" type="warning" size="small" @click="handleLeave(row)">
               暂离
             </el-button>
-            <el-button v-if="row.status === 'CHECKED_IN'" type="danger" size="small" @click="handleCheckOut(row)">
+            <el-button v-if="row.status === '使用中'" type="danger" size="small" @click="handleCheckOut(row)">
               签退
             </el-button>
-            <el-button v-if="row.status === 'RESERVED'" type="danger" size="small" @click="handleCancel(row)">
+            <el-button v-if="row.status === '暂离'" type="danger" size="small" @click="handleCheckOut(row)">
+              签退
+            </el-button>
+            <el-button v-if="row.status === '待签到'" type="danger" size="small" @click="handleCancel(row)">
               取消
             </el-button>
-            <el-text v-if="row.status === 'CHECKED_OUT' || row.status === 'CANCELLED'" type="info" size="small">已完成</el-text>
           </template>
         </el-table-column>
       </el-table>
@@ -73,8 +76,8 @@
         <el-descriptions-item label="结束时间">{{ currentReservation.endTime }}</el-descriptions-item>
         <el-descriptions-item label="签退/暂离时间">{{ currentReservation.leaveTime || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="currentReservation.status === 'RESERVED' ? 'warning' : currentReservation.status === 'CHECKED_IN' ? 'success' : currentReservation.status === 'CHECKED_OUT' ? 'info' : 'danger'" size="small">
-            {{ currentReservation.status === 'RESERVED' ? '已预约' : currentReservation.status === 'CHECKED_IN' ? '已签到' : currentReservation.status === 'CHECKED_OUT' ? '已签退' : '已取消' }}
+          <el-tag :type="currentReservation.status === '待签到' ? 'warning' : currentReservation.status === '使用中' ? 'success' : currentReservation.status === '暂离' ? 'warning' : currentReservation.status === '已完成' ? 'success' : 'danger'" size="small">
+            {{ currentReservation.status }}
           </el-tag>
         </el-descriptions-item>
       </el-descriptions>

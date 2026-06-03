@@ -33,7 +33,7 @@ public interface CourseMapper {
      * @param id
      * @return
      */
-    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = #{id}")
+    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time, usual_weight, final_weight from course where id = #{id}")
     CourseDetailVO getCourseDetail(Long id);
     /**
      * 新增课程
@@ -87,9 +87,11 @@ public interface CourseMapper {
      * @param courseName
      * @return
      */
-    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where course_name = #{courseName}")
+    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time, usual_weight, final_weight from course where course_name = #{courseName}")
     CourseDetailVO getCourseDetailByName(String courseName);
 
     @Select("select id, capacity from course where status = '开课'")
     List<Map<String, Object>> selectOpenCourseStocks();
+
+    List<CourseListVO> getCoursesByIds(@Param("ids") List<Long> ids);
 }

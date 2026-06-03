@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.ScoreAuditLogMapper">
+
+    <insert id="insert">
+        insert into score_audit_log (
+            score_entry_id, operator_id, operator_type, operation,
+            before_data, after_data, ip_address, create_time
+        ) values (
+            #{scoreEntryId}, #{operatorId}, #{operatorType}, #{operation},
+            #{beforeData}, #{afterData}, #{ipAddress}, now()
+        )
+    </insert>
+
+</mapper>

@@ -4,3 +4,4 @@ export const createLeaveRequest = (data) => request.post('/leave-requests/user',
 export const cancelLeaveRequest = (id) => request.delete(`/leave-requests/user/${id}`)
 export const getLeaveDetail = (id) => request.get(`/leave-requests/user/${id}`)
 export const getMyLeaveRequests = (params) => request.get('/leave-requests/user/my', { params })
+export const getApprovers = () => request.get('/leave-requests/user/approvers')

@@ -2,12 +2,16 @@
   <div class="page-container">
     <div class="page-header">
       <h2><el-icon><Checked /></el-icon> 请假审批</h2>
+      <div class="header-actions">
+        <el-tag v-if="wsConnected" type="success" size="small">实时通知已连接</el-tag>
+        <el-tag v-else type="info" size="small">实时通知未连接</el-tag>
+      </div>
     </div>
 
     <el-card shadow="never">
       <el-form :inline="true" :model="queryForm" class="search-form">
-        <el-form-item label="学生姓名">
-          <el-input v-model="queryForm.studentName" placeholder="请输入学生姓名" clearable class="search-input" />
+        <el-form-item label="申请人">
+          <el-input v-model="queryForm.studentName" placeholder="请输入申请人姓名" clearable class="search-input" />
         </el-form-item>
         <el-form-item label="请假类型">
           <el-select v-model="queryForm.leaveType" placeholder="请选择类型" clearable class="search-input">
@@ -34,7 +38,14 @@
     <el-card shadow="never" style="margin-top: 16px">
       <el-table :data="tableData" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="studentName" label="学生姓名" width="120" />
+        <el-table-column prop="applicantType" label="类型" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.applicantType === 'STUDENT' ? '' : 'success'" size="small">
+              {{ row.applicantType === 'STUDENT' ? '学生' : '教师' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="studentName" label="申请人" width="120" />
         <el-table-column prop="leaveType" label="请假类型" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="getLeaveTypeColor(row.leaveType)" size="small">{{ row.leaveType }}</el-tag>
@@ -42,6 +53,13 @@
         </el-table-column>
         <el-table-column prop="startTime" label="开始时间" width="170" />
         <el-table-column prop="endTime" label="结束时间" width="170" />
+        <el-table-column prop="approverName" label="审批人" width="120">
+          <template #default="{ row }">
+            <span :style="{ color: row.approverName ? '#303133' : '#909399' }">
+              {{ row.approverName || '待匹配' }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status === '已批准' ? 'success' : row.status === '已驳回' ? 'danger' : row.status === '待审批' ? 'warning' : 'info'" size="small">
@@ -72,7 +90,6 @@
       </div>
     </el-card>
 
-    <!-- 审批意见弹窗 -->
     <el-dialog v-model="approveVisible" title="审批意见" width="500px">
       <el-form :model="approveForm" label-width="100px">
         <el-form-item label="审批结果">
@@ -90,10 +107,17 @@
       </template>
     </el-dialog>
 
-    <!-- 请假详情弹窗 -->
     <el-dialog v-model="detailVisible" title="请假详情" width="700px" destroy-on-close>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="学生姓名">{{ detailForm.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="申请人">{{ detailForm.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="申请人类型">
+          {{ detailForm.applicantType === 'STUDENT' ? '学生' : detailForm.applicantType === 'TEACHER' ? '教师' : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="审批人">
+          <span :style="{ color: detailForm.approverName ? '#303133' : '#909399' }">
+            {{ detailForm.approverName || '待匹配' }}
+          </span>
+        </el-descriptions-item>
         <el-descriptions-item label="请假类型">
           <el-tag :type="getLeaveTypeColor(detailForm.leaveType)" size="small">{{ detailForm.leaveType }}</el-tag>
         </el-descriptions-item>
@@ -110,7 +134,6 @@
         </el-descriptions-item>
       </el-descriptions>
 
-      <!-- 审批记录 -->
       <div v-if="detailForm.approvalLogs && detailForm.approvalLogs.length > 0" class="approval-logs">
         <h4 class="logs-title">审批记录</h4>
         <el-timeline>
@@ -140,9 +163,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getLeaveRequestList, approveLeaveRequest, getLeaveRequestDetail } from '@/api/leaveApproval'
+import { useWebSocket } from '@/composables/useWebSocket'
 
 const loading = ref(false)
 const approveLoading = ref(false)
@@ -151,9 +175,15 @@ const detailVisible = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const currentRow = ref(null)
+const wsConnected = ref(false)
+
+const { connect, subscribe, disconnect } = useWebSocket()
+
 const detailForm = reactive({
   id: null,
   studentName: '',
+  applicantType: '',
+  approverName: '',
   leaveType: '',
   startTime: '',
   endTime: '',
@@ -176,12 +206,33 @@ const formatDateTime = (dateTime) => {
   return dateTime.replace('T', ' ')
 }
 
+const initWebSocket = async () => {
+  try {
+    await connect()
+    wsConnected.value = true
+
+    subscribe('/queue/leave/apply', (payload) => {
+      ElMessage({
+        message: `新的请假申请：${payload.title || ''}`,
+        type: 'info',
+        duration: 5000
+      })
+      fetchData()
+    })
+  } catch (e) {
+    console.warn('WebSocket连接失败:', e.message)
+    wsConnected.value = false
+  }
+}
+
 const fetchData = async () => {
   loading.value = true
   try {
     const res = await getLeaveRequestList(queryForm)
     tableData.value = res.data.list || []
     total.value = res.data.total || 0
+  } catch (e) {
+    console.error('获取请假列表失败:', e)
   } finally { loading.value = false }
 }
 
@@ -195,6 +246,8 @@ const handleView = async (row) => {
     Object.assign(detailForm, {
       id: data.id,
       studentName: data.studentName,
+      applicantType: data.applicantType || '',
+      approverName: data.approverName || '',
       leaveType: data.leaveType,
       startTime: data.startTime,
       endTime: data.endTime,
@@ -225,16 +278,26 @@ const handleApproveSubmit = async () => {
     ElMessage.success('审批完成')
     approveVisible.value = false
     fetchData()
+  } catch (e) {
+    console.error('审批操作失败:', e)
   } finally { approveLoading.value = false }
 }
 
-onMounted(fetchData)
+onMounted(() => {
+  fetchData()
+  initWebSocket()
+})
+
+onUnmounted(() => {
+  disconnect()
+})
 </script>
 
 <style scoped>
 .page-container { padding: 0; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .page-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; color: #303133; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
 .search-form { display: flex; flex-wrap: wrap; gap: 0; }
 .search-form :deep(.el-form-item) { margin-bottom: 16px; }

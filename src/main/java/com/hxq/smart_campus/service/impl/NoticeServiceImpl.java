@@ -34,8 +34,6 @@ public class NoticeServiceImpl implements NoticeService {
     private final StudentMapper studentMapper;
     private final TeacherMapper teacherMapper;
     private final MajorMapper majorMapper;
-    private final CollegeMapper collegeMapper;
-    private final ClassMapper classMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -53,6 +51,9 @@ public class NoticeServiceImpl implements NoticeService {
         noticeCreateDTO.setPublisherId(publisherId);
 
         resolveTargetName(noticeCreateDTO);
+        if (noticeCreateDTO.getScope() == null || noticeCreateDTO.getScope().trim().isEmpty()) {
+            throw new BusinessException("发布范围不能为空");
+        }
 
         int result = noticeMapper.insertNotice(noticeCreateDTO);
         if (result == 0) {
@@ -174,15 +175,15 @@ public class NoticeServiceImpl implements NoticeService {
      * @param pageNum
      * @param pageSize
      * @param title
-     * @param targetType
+     * @param type
      * @param status
      * @return
      */
     @Override
-    public PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String targetType, String status) {
+    public PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String type, String status) {
         String cacheKey = NOTICE_KEY_PREFIX + "list:" +
                 (title != null ? title : "all") + ":" +
-                (targetType != null ? targetType : "all") + ":" +
+                (type != null ? type : "all") + ":" +
                 (status != null ? status : "all");
 
         List<NoticeListVO> noticeListVOList = (List<NoticeListVO>) redisTemplate.opsForValue().get(cacheKey);
@@ -204,7 +205,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
 
         PageHelper.startPage(pageNum, pageSize);
-        noticeListVOList = noticeMapper.getNoticeList(title, targetType, status);
+        noticeListVOList = noticeMapper.getNoticeList(title, type, status);
         PageInfo<NoticeListVO> pageInfo = new PageInfo<>(noticeListVOList);
 
         if (noticeListVOList != null && !noticeListVOList.isEmpty() && pageNum == 1) {
@@ -361,44 +362,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @param dto
      */
     private void resolveTargetName(NoticeCreateDTO dto) {
-        String targetType = dto.getTargetType();
-        Long targetId = dto.getTargetId();
-
-        if ("全部".equals(targetType)) {
-            dto.setTargetId(null);
-            dto.setTargetName("全部");
-            return;
-        }
-
-        if (targetId == null) {
-            throw new BusinessException("请指定发布范围");
-        }
-
-        switch (targetType) {
-            case "学院":
-                CollegeDetailVO college = collegeMapper.getCollegeDetail(targetId);
-                if (college == null) {
-                    throw new BusinessException("学院不存在");
-                }
-                dto.setTargetName(college.getCollegeName());
-                break;
-            case "专业":
-                MajorDetailVO major = majorMapper.getMajorDetail(targetId);
-                if (major == null) {
-                    throw new BusinessException("专业不存在");
-                }
-                dto.setTargetName(major.getMajorName());
-                break;
-            case "班级":
-                ClassDetailVO clazz = classMapper.getClassDetail(targetId);
-                if (clazz == null) {
-                    throw new BusinessException("班级不存在");
-                }
-                dto.setTargetName(clazz.getClassName());
-                break;
-            default:
-                throw new BusinessException("无效的发布范围类型: " + targetType);
-        }
+        // scope 由前端直接传入，无需后端解析
     }
 
     /**
@@ -406,48 +370,7 @@ public class NoticeServiceImpl implements NoticeService {
      * @param dto
      */
     private void resolveTargetName(NoticeUpdateDTO dto) {
-        String targetType = dto.getTargetType();
-        Long targetId = dto.getTargetId();
-
-        if (targetType == null) {
-            return;
-        }
-
-        if ("全部".equals(targetType)) {
-            dto.setTargetId(null);
-            dto.setTargetName("全部");
-            return;
-        }
-
-        if (targetId == null) {
-            throw new BusinessException("请指定发布范围");
-        }
-
-        switch (targetType) {
-            case "学院":
-                CollegeDetailVO college = collegeMapper.getCollegeDetail(targetId);
-                if (college == null) {
-                    throw new BusinessException("学院不存在");
-                }
-                dto.setTargetName(college.getCollegeName());
-                break;
-            case "专业":
-                MajorDetailVO major = majorMapper.getMajorDetail(targetId);
-                if (major == null) {
-                    throw new BusinessException("专业不存在");
-                }
-                dto.setTargetName(major.getMajorName());
-                break;
-            case "班级":
-                ClassDetailVO clazz = classMapper.getClassDetail(targetId);
-                if (clazz == null) {
-                    throw new BusinessException("班级不存在");
-                }
-                dto.setTargetName(clazz.getClassName());
-                break;
-            default:
-                throw new BusinessException("无效的发布范围类型: " + targetType);
-        }
+        // scope 由前端直接传入，无需后端解析
     }
 
     /**
@@ -478,9 +401,8 @@ public class NoticeServiceImpl implements NoticeService {
         noticeResponseDTO.setPublisherId(noticeDetailVO.getPublisherId());
         noticeResponseDTO.setPublisherName(noticeDetailVO.getPublisherName());
         noticeResponseDTO.setPublishTime(noticeDetailVO.getPublishTime());
-        noticeResponseDTO.setTargetType(noticeDetailVO.getTargetType());
-        noticeResponseDTO.setTargetId(noticeDetailVO.getTargetId());
-        noticeResponseDTO.setTargetName(noticeDetailVO.getTargetName());
+        noticeResponseDTO.setType(noticeDetailVO.getType());
+        noticeResponseDTO.setScope(noticeDetailVO.getScope());
         noticeResponseDTO.setStatus(noticeDetailVO.getStatus());
         try {
             if (noticeDetailVO.getCreateTime() != null && !noticeDetailVO.getCreateTime().isEmpty()) {

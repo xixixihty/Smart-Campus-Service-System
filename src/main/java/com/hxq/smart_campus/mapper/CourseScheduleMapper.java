@@ -59,7 +59,8 @@ public interface CourseScheduleMapper {
                                                       @Param("courseId") Long courseId,
                                                       @Param("teacherId") Long teacherId,
                                                       @Param("classroomId") Long classroomId,
-                                                      @Param("weekDay") Integer weekDay);
+                                                      @Param("weekDay") Integer weekDay,
+                                                      @Param("weekNum") Integer weekNum);
     /**
      * 查询课表
      * @param semesterId 学期ID
@@ -145,4 +146,14 @@ public interface CourseScheduleMapper {
      * @return 班级ID列表
      */
     List<Long> getClassIdsByStudentId(@Param("studentId") Long studentId);
+
+    /**
+     * 插入排课班级关联
+     */
+    int insertCourseScheduleClasses(@Param("scheduleId") Long scheduleId, @Param("classIds") List<Long> classIds);
+
+    /**
+     * 删除排课班级关联
+     */
+    int deleteCourseScheduleClasses(@Param("scheduleId") Long scheduleId);
 }

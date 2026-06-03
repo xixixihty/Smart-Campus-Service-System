@@ -62,18 +62,22 @@ public interface LeaveApprovalMapper {
     /**
      * 获取我的请假申请列表
      * @param status
-     * @param studentId
+     * @param applicantId
+     * @param applicantType
      * @return
      */
     List<MyLeaveRequestVO> getMyLeaveRequestList(@Param("status") String status,
-                                           @Param("studentId") Long studentId);
+                                           @Param("applicantId") Long applicantId,
+                                           @Param("applicantType") String applicantType);
 
     /**
      * 获取待审批请假申请列表
      * @param leaveApplyStatusWaiting
+     * @param approverId
      * @return
      */
-    List<PendingLeaveRequestVO> getPendingApprovalList(String leaveApplyStatusWaiting);
+    List<PendingLeaveRequestVO> getPendingApprovalList(@Param("status") String leaveApplyStatusWaiting,
+                                                        @Param("approverId") Long approverId);
 
     /**
      * 获取请假审批审批记录列表
@@ -81,4 +85,33 @@ public interface LeaveApprovalMapper {
      * @return
      */
     List<LeaveApprovalLogVO> getLeaveApprovalLogList(@Param("leaveRequestId") Long leaveRequestId);
+
+    /**
+     * 查询学生对应的班主任ID
+     * @param studentId
+     * @return
+     */
+    Long getHeadTeacherByStudentId(@Param("studentId") Long studentId);
+
+    /**
+     * 查询教师对应的学院管理员ID
+     * @param teacherId
+     * @return
+     */
+    Long getCollegeAdminByTeacherId(@Param("teacherId") Long teacherId);
+
+    /**
+     * 获取所有启用的管理员（作为可选审批人）
+     * @return
+     */
+    @Select("SELECT a.id, a.name, 'ADMIN' as type FROM admin a WHERE a.account_status = '启用' ORDER BY a.id")
+    List<ApproverVO> getAllEnabledAdmins();
+
+    /**
+     * 根据教师ID获取教师信息（作为审批人选项）
+     * @param teacherId
+     * @return
+     */
+    @Select("SELECT t.id, t.name, 'TEACHER' as type FROM teacher t WHERE t.id = #{teacherId}")
+    ApproverVO getTeacherApproverById(@Param("teacherId") Long teacherId);
 }

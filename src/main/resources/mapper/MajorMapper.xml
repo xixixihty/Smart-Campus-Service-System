@@ -68,7 +68,7 @@
             <if test="majorCode != null">#{majorCode},</if>
             <if test="majorName != null">#{majorName},</if>
             <if test="studyYears != null">#{studyYears},</if>
-            '启用',
+            '正常',
         </trim>
     </insert>
 

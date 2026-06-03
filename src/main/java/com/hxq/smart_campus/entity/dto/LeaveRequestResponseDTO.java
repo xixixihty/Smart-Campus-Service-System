@@ -6,14 +6,20 @@ import java.time.LocalDateTime;
 
 @Data
 public class LeaveRequestResponseDTO {
-    private Long id;                // 请假申请ID
-    private Long studentId;         // 学生ID
-    private String studentName;     // 学生姓名
-    private String leaveType;       // 请假类型
-    private LocalDateTime startTime; // 开始时间
-    private LocalDateTime endTime;   // 结束时间
-    private String reason;          // 请假事由
-    private String status;          // 状态
-    private LocalDateTime createTime; // 申请时间
-    private LocalDateTime updateTime; // 最后修改时间
+    private Long id;
+    private String applicantType;
+    private Long applicantId;
+    private String applicantName;
+    private Long approverId;
+    private String approverName;
+    private Long studentId;
+    private String studentName;
+    private String leaveType;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private String reason;
+    private String status;
+    private Integer isCourseRescheduled;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

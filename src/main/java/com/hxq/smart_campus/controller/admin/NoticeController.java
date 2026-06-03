@@ -93,11 +93,11 @@ public class NoticeController {
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String targetType,
+            @RequestParam(required = false, name = "targetType") String type,
             @RequestParam(required = false) String status
     ) {
-        log.info("获取通知列表: {}, {}, {}, {}, {}", pageNum, pageSize, title, targetType, status);
-        PageInfo<NoticeListVO> noticeListVO = noticeService.getNoticeList(pageNum, pageSize, title, targetType, status);
+        log.info("获取通知列表: {}, {}, {}, {}, {}", pageNum, pageSize, title, type, status);
+        PageInfo<NoticeListVO> noticeListVO = noticeService.getNoticeList(pageNum, pageSize, title, type, status);
         return Result.success(noticeListVO);
     }
 

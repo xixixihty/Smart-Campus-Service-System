@@ -7,7 +7,6 @@ public class NoticeUpdateDTO {
     private Long id;
     private String title;
     private String content;
-    private String targetType;
-    private Long targetId;
-    private String targetName;
+    private String type;
+    private String scope;
 }

@@ -17,12 +17,9 @@ public class NoticeCreateDTO {
 
     private Long publisherId;
 
-    private LocalDateTime publishTime;
+    @NotBlank(message = "通知类型不能为空")
+    private String type;
 
-    @NotBlank(message = "发布范围类型不能为空")
-    private String targetType;
-
-    private Long targetId;
-
-    private String targetName;
+    @NotBlank(message = "发布范围不能为空")
+    private String scope;
 }

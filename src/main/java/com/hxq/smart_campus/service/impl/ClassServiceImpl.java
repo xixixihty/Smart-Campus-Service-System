@@ -8,8 +8,10 @@ import com.hxq.smart_campus.entity.dto.ClassResponseDTO;
 import com.hxq.smart_campus.entity.dto.ClassUpdateDTO;
 import com.hxq.smart_campus.entity.vo.ClassDetailVO;
 import com.hxq.smart_campus.entity.vo.ClassListVO;
+import com.hxq.smart_campus.entity.vo.StudentBasicVO;
 import com.hxq.smart_campus.mapper.ClassMapper;
 import com.hxq.smart_campus.service.ClassService;
+import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -190,5 +192,22 @@ public class ClassServiceImpl implements ClassService {
             log.error("时间格式转换失败：{}", e.getMessage());
         }
         return classResponseDTO;
+    }
+
+    @Override
+    public List<StudentBasicVO> getClassStudents(Long classId) {
+        if (classId == null) {
+            throw new IllegalArgumentException("班级ID不能为空");
+        }
+        return classMapper.getClassStudents(classId);
+    }
+
+    @Override
+    public List<ClassDetailVO> getTeachingClasses(Long semesterId) {
+        Long teacherId = SecurityUtils.getCurrentUserId();
+        if (semesterId == null) {
+            throw new IllegalArgumentException("学期ID不能为空");
+        }
+        return classMapper.getTeachingClasses(teacherId, semesterId);
     }
 }

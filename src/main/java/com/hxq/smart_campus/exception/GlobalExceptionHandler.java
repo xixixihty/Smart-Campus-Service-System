@@ -1,20 +1,34 @@
 package com.hxq.smart_campus.exception;
 
 import com.hxq.smart_campus.result.Result;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import reactor.core.publisher.Flux;
 
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    /**
+     * 判断是否为SSE流式请求
+     */
+    private boolean isSseRequest(HttpServletRequest request) {
+        String accept = request.getHeader("Accept");
+        return MediaType.TEXT_EVENT_STREAM_VALUE.equals(request.getContentType())
+                || (accept != null && accept.contains(MediaType.TEXT_EVENT_STREAM_VALUE));
+    }
 
     /**
      * 资源不存在异常 → HTTP 404
@@ -70,8 +84,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<Void> handleException(Exception e) {
+    public Object handleException(Exception e, HttpServletRequest request, HttpServletResponse response) {
         log.error("系统异常", e);
+        // 响应已提交（如SSE流式进行中），无法再写入，仅记录日志
+        if (response.isCommitted()) {
+            log.warn("响应已提交，无法返回错误信息到客户端: {}", request.getRequestURI());
+            return null;
+        }
+        // SSE 端点返回 Flux<ServerSentEvent>，避免 Content-Type 冲突
+        if (isSseRequest(request)) {
+            return Flux.just(ServerSentEvent.<String>builder()
+                    .event("error")
+                    .data("系统异常，请稍后重试")
+                    .build());
+        }
         return Result.error("SYSTEM_ERROR", "系统异常，请稍后重试");
     }
 }

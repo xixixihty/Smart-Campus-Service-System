@@ -58,6 +58,12 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (dto.getStartTime().isAfter(dto.getEndTime())) {
             throw new IllegalArgumentException("开始时间不能晚于结束时间");
         }
+        if (dto.getDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("不能预约过去的日期");
+        }
+        if (dto.getDate().isEqual(LocalDate.now()) && dto.getStartTime().isBefore(LocalTime.now().plusMinutes(5))) {
+            throw new IllegalArgumentException("不能预约已过时段，请选择当前时间5分钟之后的时间段");
+        }
 
         Long userId = SecurityUtils.getCurrentUserId();
         dto.setUserId(userId);

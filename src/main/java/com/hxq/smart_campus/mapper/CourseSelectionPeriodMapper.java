@@ -45,12 +45,12 @@ public interface CourseSelectionPeriodMapper {
     List<CourseSelectionPeriodListVO> getCourseSelectionPeriodList(Long semesterId);
 
     /**
-     * 根据学期ID获取选课时间段详情
-     * @param id
-     * @return
+     * 根据学期ID获取选课时间段列表（一个学期可能有多个选课时间段）
+     * @param id 学期ID
+     * @return 选课时间段列表
      */
     @Select("select * from course_selection_period where semester_id = #{id}")
-    CourseSelectionPeriodDetailVO getCourseSelectionPeriodBySemesterId(Long id);
+    List<CourseSelectionPeriodDetailVO> getCourseSelectionPeriodBySemesterId(Long id);
 
     /**
      * 批量删除选课时间段

@@ -43,11 +43,11 @@ public interface NoticeService {
      * @param pageNum
      * @param pageSize
      * @param title
-     * @param targetType
+     * @param type
      * @param status
      * @return
      */
-    PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String targetType, String status);
+    PageInfo<NoticeListVO> getNoticeList(Integer pageNum, Integer pageSize, String title, String type, String status);
 
     /**
      * 获取通知详情

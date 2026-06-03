@@ -25,7 +25,7 @@ public class SeatReservationConsumer {
     private static final Duration IDEMPOTENT_TTL = Duration.ofDays(1);
     private static final String MQ_PROCESSED_SEAT_PREFIX = "mq:processed:seat:";
 
-    @RabbitListener(queues = "seat-reservation-queue")
+    @RabbitListener(queues = "seat-reservation-queue", containerFactory = "seatReservationContainerFactory")
     @Transactional
     public void handleSeatMessage(SeatReservationMessage msg, Channel channel, Message message) {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();

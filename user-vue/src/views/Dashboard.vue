@@ -137,6 +137,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { getTimetable } from '@/api/courseSchedule'
+import { getCurrentSemester } from '@/api/semester'
 import { getMyCourses } from '@/api/courseSelection'
 import { getMyBorrows } from '@/api/borrowRecord'
 import { getReservationList } from '@/api/seatReservation'
@@ -214,10 +215,32 @@ const isRecentNotice = (publishTime) => {
   return (now - pubDate) < 24 * 60 * 60 * 1000
 }
 
+const parseWeekRange = (rangeStr) => {
+  if (!rangeStr) return { startWeek: 0, endWeek: 0 }
+  const parts = rangeStr.split('-')
+  return {
+    startWeek: parseInt(parts[0]) || 0,
+    endWeek: parseInt(parts[1]) || 0
+  }
+}
+
 const fetchData = async () => {
   loading.value = true
   try {
     const todayWeekDay = new Date().getDay() === 0 ? 7 : new Date().getDay()
+
+    let currentWeekNum = 0
+    try {
+      const semRes = await getCurrentSemester()
+      if (semRes.data && semRes.data.startDate) {
+        const startDate = new Date(semRes.data.startDate)
+        const today = new Date()
+        const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24))
+        currentWeekNum = Math.max(1, Math.floor(diffDays / 7) + 1)
+      }
+    } catch (e) {
+      console.warn('获取当前学期信息失败:', e)
+    }
 
     const [courseRes, timetableRes, borrowRes, reserveRes, gpaRes, noticeRes] = await Promise.allSettled([
       getMyCourses({ pageNum: 1, pageSize: 1 }),
@@ -242,7 +265,14 @@ const fetchData = async () => {
     if (timetableRes.status === 'fulfilled') {
       const allCourses = timetableRes.value.data || []
       todayCourses.value = allCourses
-        .filter(item => item.weekDay === todayWeekDay)
+        .filter(item => {
+          if (item.weekDay !== todayWeekDay) return false
+          const { startWeek, endWeek } = parseWeekRange(item.weekRange)
+          if (currentWeekNum > 0 && startWeek > 0 && endWeek > 0) {
+            if (currentWeekNum < startWeek || currentWeekNum > endWeek) return false
+          }
+          return true
+        })
         .sort((a, b) => a.startSection - b.startSection)
         .map(item => ({
           ...item,

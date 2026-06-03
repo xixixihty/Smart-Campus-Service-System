@@ -3,10 +3,16 @@ package com.hxq.smart_campus.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.*;
+import com.hxq.smart_campus.entity.pojo.ScoreAuditLog;
 import com.hxq.smart_campus.entity.vo.*;
+import com.hxq.smart_campus.exception.BusinessException;
+import com.hxq.smart_campus.mapper.CourseMapper;
+import com.hxq.smart_campus.mapper.ScoreAuditLogMapper;
 import com.hxq.smart_campus.mapper.ScoreEntryMapper;
 import com.hxq.smart_campus.service.ScoreEntryService;
+import com.hxq.smart_campus.service.SemesterService;
 import com.hxq.smart_campus.utils.SecurityUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
+import static com.hxq.smart_campus.constant.MessageConstant.USER_TYPE_ADMIN;
 
 /**
  * 成绩录入 Service 实现类
@@ -28,6 +35,10 @@ import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
 public class ScoreEntryServiceImpl implements ScoreEntryService {
 
     private final ScoreEntryMapper scoreEntryMapper;
+    private final ScoreAuditLogMapper scoreAuditLogMapper;
+    private final CourseMapper courseMapper;
+    private final SemesterService semesterService;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * 录入成绩
@@ -42,13 +53,15 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryCreateDTO == null) {
             throw new IllegalArgumentException("成绩录入参数不能为空");
         }
+        checkTeacherPermission(scoreEntryCreateDTO.getCourseId(), scoreEntryCreateDTO.getSemesterId());
         validateScore(scoreEntryCreateDTO.getUsualScore(), "平时成绩");
         validateScore(scoreEntryCreateDTO.getFinalScore(), "期末成绩");
 
         if (scoreEntryCreateDTO.getUsualScore() != null && scoreEntryCreateDTO.getFinalScore() != null) {
+            BigDecimal[] weights = getScoreWeights(scoreEntryCreateDTO.getCourseId());
             BigDecimal totalScore = scoreEntryCreateDTO.getUsualScore()
-                    .multiply(new BigDecimal("0.3"))
-                    .add(scoreEntryCreateDTO.getFinalScore().multiply(new BigDecimal("0.7")))
+                    .multiply(weights[0])
+                    .add(scoreEntryCreateDTO.getFinalScore().multiply(weights[1]))
                     .setScale(2, RoundingMode.HALF_UP);
             scoreEntryCreateDTO.setTotalScore(totalScore);
         } else if (scoreEntryCreateDTO.getFinalScore() != null) {
@@ -68,6 +81,10 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryDetailVO == null) {
             throw new RuntimeException("获取录入成功的成绩信息失败");
         }
+
+        // 审计日志
+        auditLogInsert(scoreEntryCreateDTO, id);
+
         return convertToScoreEntryResponseDTO(scoreEntryDetailVO);
     }
 
@@ -84,13 +101,19 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryUpdateDTO == null) {
             throw new IllegalArgumentException("成绩更新参数不能为空");
         }
+        // 先查询原成绩获取课程和学期信息，再校验权限
+        ScoreEntryDetailVO existing = scoreEntryMapper.getScoreDetail(scoreEntryUpdateDTO.getId());
+        if (existing != null) {
+            checkTeacherPermission(existing.getCourseId(), existing.getSemesterId());
+        }
         validateScore(scoreEntryUpdateDTO.getUsualScore(), "平时成绩");
         validateScore(scoreEntryUpdateDTO.getFinalScore(), "期末成绩");
 
         if (scoreEntryUpdateDTO.getUsualScore() != null && scoreEntryUpdateDTO.getFinalScore() != null) {
+            BigDecimal[] weights = getScoreWeights(existing.getCourseId());
             BigDecimal totalScore = scoreEntryUpdateDTO.getUsualScore()
-                    .multiply(new BigDecimal("0.3"))
-                    .add(scoreEntryUpdateDTO.getFinalScore().multiply(new BigDecimal("0.7")))
+                    .multiply(weights[0])
+                    .add(scoreEntryUpdateDTO.getFinalScore().multiply(weights[1]))
                     .setScale(2, RoundingMode.HALF_UP);
             scoreEntryUpdateDTO.setTotalScore(totalScore);
         } else if (scoreEntryUpdateDTO.getFinalScore() != null) {
@@ -109,6 +132,12 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (scoreEntryDetailVO == null) {
             throw new RuntimeException("获取更新后的成绩信息失败");
         }
+
+        // 审计日志：记录修改前后的差异
+        if (existing != null) {
+            auditLogUpdate(existing, scoreEntryDetailVO);
+        }
+
         return convertToScoreEntryResponseDTO(scoreEntryDetailVO);
     }
 
@@ -127,14 +156,24 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
             throw new IllegalArgumentException("成绩录入参数不能为空");
         }
 
+        // 批量权限校验：按(courseId, semesterId)去重后校验
+        Set<String> checkedPairs = new HashSet<>();
+        for (ScoreEntryCreateDTO entry : batchScoreEntryDTO.getScoreEntries()) {
+            String pairKey = entry.getCourseId() + "_" + entry.getSemesterId();
+            if (checkedPairs.add(pairKey)) {
+                checkTeacherPermission(entry.getCourseId(), entry.getSemesterId());
+            }
+        }
+
         for (ScoreEntryCreateDTO entry : batchScoreEntryDTO.getScoreEntries()) {
             validateScore(entry.getUsualScore(), "平时成绩");
             validateScore(entry.getFinalScore(), "期末成绩");
 
             if (entry.getUsualScore() != null && entry.getFinalScore() != null) {
+                BigDecimal[] weights = getScoreWeights(entry.getCourseId());
                 BigDecimal totalScore = entry.getUsualScore()
-                        .multiply(new BigDecimal("0.3"))
-                        .add(entry.getFinalScore().multiply(new BigDecimal("0.7")))
+                        .multiply(weights[0])
+                        .add(entry.getFinalScore().multiply(weights[1]))
                         .setScale(2, RoundingMode.HALF_UP);
                 entry.setTotalScore(totalScore);
             } else if (entry.getFinalScore() != null) {
@@ -157,6 +196,16 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
         if (score != null && (score.compareTo(BigDecimal.ZERO) < 0 || score.compareTo(new BigDecimal("100")) > 0)) {
             throw new IllegalArgumentException(fieldName + "必须在0-100之间");
         }
+    }
+
+    /**
+     * 获取成绩权重，默认值：平时30%，期末70%
+     * @return [usualWeight, finalWeight]
+     */
+    private BigDecimal[] getScoreWeights(Long courseId) {
+        BigDecimal usualWeight = new BigDecimal("0.3");
+        BigDecimal finalWeight = new BigDecimal("0.7");
+        return new BigDecimal[]{usualWeight, finalWeight};
     }
 
     private BigDecimal calculateScorePoint(BigDecimal totalScore) {
@@ -184,6 +233,7 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
      */
     @Override
     public PageInfo<ScoreEntryListVO> getScoreList(Integer pageNum, Integer pageSize, Long courseId, Long studentId, Long semesterId) {
+        checkTeacherPermission(courseId, semesterId);
         PageHelper.startPage(pageNum, pageSize);
         List<ScoreEntryListVO> scoreEntryListVOList = scoreEntryMapper.getScoreList(courseId, studentId, semesterId);
         return new PageInfo<>(scoreEntryListVOList);
@@ -644,5 +694,106 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
             throw new RuntimeException("转换成绩详情为响应DTO时出错", e);
         }
         return scoreEntryResponseDTO;
+    }
+
+    @Override
+    public List<ScoreEntryListVO> getUnrecordedStudents(Long courseId, Long semesterId) {
+        if (courseId == null || semesterId == null) {
+            throw new IllegalArgumentException("课程ID和学期ID不能为空");
+        }
+        checkTeacherPermission(courseId, semesterId);
+        return scoreEntryMapper.getUnrecordedStudents(courseId, semesterId);
+    }
+
+    @Override
+    public TeacherScoreStatsDTO getTeacherScoreStats(Long semesterId) {
+        Long teacherId = SecurityUtils.getCurrentUserId();
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            semesterId = currentSemester.getId();
+            log.info("教师端未传学期ID，自动填充当前学期: {} (ID={})", currentSemester.getName(), semesterId);
+        }
+        TeacherScoreStatsDTO stats = scoreEntryMapper.getTeacherScoreStats(teacherId, semesterId);
+        // 填充学期名称
+        try {
+            var semester = semesterService.getCurrentSemester();
+            stats.setSemesterName(semester.getId().equals(semesterId) ? semester.getName() : "未知学期");
+        } catch (Exception e) {
+            log.warn("获取学期名称失败: {}", e.getMessage());
+            stats.setSemesterName("未知学期");
+        }
+        return stats;
+    }
+
+    /**
+     * 校验教师对指定课程+学期是否有成绩操作权限
+     * 管理员跳过校验，教师需确认授课关系
+     */
+    private void checkTeacherPermission(Long courseId, Long semesterId) {
+        if (courseId == null || semesterId == null) {
+            return;
+        }
+        String userType = SecurityUtils.getCurrentUserType();
+        if (USER_TYPE_ADMIN.equals(userType)) {
+            return;
+        }
+        Long teacherId = SecurityUtils.getCurrentUserId();
+        int count = scoreEntryMapper.checkTeacherCoursePermission(teacherId, courseId, semesterId);
+        if (count <= 0) {
+            throw new BusinessException("无权操作该课程的成绩，您不是该课程的授课教师");
+        }
+    }
+
+    /**
+     * 新建成绩审计日志
+     */
+    private void auditLogInsert(ScoreEntryCreateDTO dto, Long scoreEntryId) {
+        try {
+            ScoreAuditLog auditLog = new ScoreAuditLog();
+            auditLog.setScoreEntryId(scoreEntryId);
+            auditLog.setOperatorId(SecurityUtils.getCurrentUserId());
+            auditLog.setOperatorType(SecurityUtils.getCurrentUserType());
+            auditLog.setOperation("INSERT");
+            Map<String, Object> scoreData = new LinkedHashMap<>();
+            scoreData.put("courseId", dto.getCourseId());
+            scoreData.put("studentId", dto.getStudentId());
+            scoreData.put("usualScore", dto.getUsualScore());
+            scoreData.put("finalScore", dto.getFinalScore());
+            scoreData.put("totalScore", dto.getTotalScore());
+            auditLog.setAfterData(OBJECT_MAPPER.writeValueAsString(scoreData));
+            scoreAuditLogMapper.insert(auditLog);
+        } catch (Exception e) {
+            log.warn("审计日志写入失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 更新成绩审计日志
+     */
+    private void auditLogUpdate(ScoreEntryDetailVO oldScore, ScoreEntryDetailVO newScore) {
+        try {
+            ScoreAuditLog auditLog = new ScoreAuditLog();
+            auditLog.setScoreEntryId(oldScore.getId());
+            auditLog.setOperatorId(SecurityUtils.getCurrentUserId());
+            auditLog.setOperatorType(SecurityUtils.getCurrentUserType());
+            auditLog.setOperation("UPDATE");
+            Map<String, Object> beforeData = new LinkedHashMap<>();
+            beforeData.put("courseId", oldScore.getCourseId());
+            beforeData.put("studentId", oldScore.getStudentId());
+            beforeData.put("usualScore", oldScore.getUsualScore());
+            beforeData.put("finalScore", oldScore.getFinalScore());
+            beforeData.put("totalScore", oldScore.getTotalScore());
+            auditLog.setBeforeData(OBJECT_MAPPER.writeValueAsString(beforeData));
+            Map<String, Object> afterData = new LinkedHashMap<>();
+            afterData.put("courseId", newScore.getCourseId());
+            afterData.put("studentId", newScore.getStudentId());
+            afterData.put("usualScore", newScore.getUsualScore());
+            afterData.put("finalScore", newScore.getFinalScore());
+            afterData.put("totalScore", newScore.getTotalScore());
+            auditLog.setAfterData(OBJECT_MAPPER.writeValueAsString(afterData));
+            scoreAuditLogMapper.insert(auditLog);
+        } catch (Exception e) {
+            log.warn("审计日志写入失败: {}", e.getMessage());
+        }
     }
 }

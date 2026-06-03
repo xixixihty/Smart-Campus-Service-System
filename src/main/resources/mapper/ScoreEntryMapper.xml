@@ -39,7 +39,7 @@
             final_score,
             exam_status,
             total_score,
-            score_point,
+            score_point
         ) values
         <foreach collection="scoreEntries" item="entry" separator=",">
             (
@@ -74,7 +74,7 @@
         select se.id, se.course_id, c.course_name, se.student_id, s.name as studentName, s.student_no as studentNo,
                se.semester_id, sm.name as semesterName, se.usual_score,
                se.final_score, se.total_score, se.makeup_score, se.score_point, c.credit, se.exam_status,
-               me.id as makeup_exam_id
+               me.id as makeup_exam_id, se.create_time as createTime, se.update_time as updateTime
         from score_entry se
         left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id
@@ -152,6 +152,71 @@
           <if test="query.dimension == 'COLLEGE'">
               and co.id = #{query.collegeId}
           </if>
+    </select>
+
+    <!-- 获取未录入成绩的学生列表 -->
+    <select id="getUnrecordedStudents" resultType="com.hxq.smart_campus.entity.vo.ScoreEntryListVO">
+        select s.id as studentId, s.name as studentName, s.student_no as studentNo,
+               c.course_name as courseName, c.credit, sm.name as semesterName,
+               cs.course_id as courseId, cs.semester_id as semesterId
+        from course_schedule cs
+        join course_schedule_class csc on csc.schedule_id = cs.id
+        join student s on s.class_id = csc.class_id
+        left join score_entry se on se.course_id = cs.course_id
+            and se.student_id = s.id
+            and se.semester_id = cs.semester_id
+        left join course c on cs.course_id = c.id
+        left join semester sm on cs.semester_id = sm.id
+        where cs.course_id = #{courseId}
+          and cs.semester_id = #{semesterId}
+          and se.id is null
+        order by s.student_no
+    </select>
+
+    <!-- 获取教师成绩统计 -->
+    <select id="getTeacherScoreStats" resultType="com.hxq.smart_campus.entity.vo.TeacherScoreStatsDTO">
+        select
+            count(distinct s.id) as totalStudents,
+            count(case when se.usual_score is not null and se.final_score is not null then 1 end) as recordedCount,
+            count(case when se.usual_score is null or se.final_score is null then 1 end) as unrecordedCount,
+            coalesce(avg(se.total_score), 0) as averageScore,
+            coalesce((count(case when se.total_score >= 60 then 1 end) * 100.0) / nullif(count(se.id), 0), 0) as passRate
+        from course_schedule cs
+        join course_schedule_class csc on csc.schedule_id = cs.id
+        join class cl on csc.class_id = cl.id
+        join student s on s.class_id = cl.id
+        left join score_entry se on se.student_id = s.id
+            and se.course_id = cs.course_id
+            and se.semester_id = cs.semester_id
+        where cs.teacher_id = #{teacherId}
+          and cs.semester_id = #{semesterId}
+    </select>
+
+    <!-- 获取教师所授课程成绩分布 -->
+    <select id="getScoreDistributionByTeacher" resultType="com.hxq.smart_campus.entity.vo.ScoreDistributionItem">
+        select
+            case
+                when se.total_score >= 90 then '90-100'
+                when se.total_score >= 80 then '80-89'
+                when se.total_score >= 70 then '70-79'
+                when se.total_score >= 60 then '60-69'
+                else '0-59'
+            end as scoreRange,
+            count(*) as count
+        from score_entry se
+        join course_schedule cs on se.course_id = cs.course_id and se.semester_id = cs.semester_id
+        where cs.teacher_id = #{teacherId}
+          and se.semester_id = #{semesterId}
+          and se.total_score is not null
+        group by
+            case
+                when se.total_score >= 90 then '90-100'
+                when se.total_score >= 80 then '80-89'
+                when se.total_score >= 70 then '70-79'
+                when se.total_score >= 60 then '60-69'
+                else '0-59'
+            end
+        order by scoreRange
     </select>
 
 </mapper>

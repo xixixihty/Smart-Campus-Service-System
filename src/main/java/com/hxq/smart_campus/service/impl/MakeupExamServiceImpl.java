@@ -49,11 +49,8 @@ public class MakeupExamServiceImpl implements MakeupExamService {
         if (makeupExamCreateDTO.getExamDate() == null) {
             throw new IllegalArgumentException("补考日期不能为空");
         }
-        if (makeupExamCreateDTO.getStartTime() == null) {
-            throw new IllegalArgumentException("开始时间不能为空");
-        }
-        if (makeupExamCreateDTO.getEndTime() == null) {
-            throw new IllegalArgumentException("结束时间不能为空");
+        if (makeupExamCreateDTO.getLocation() == null || makeupExamCreateDTO.getLocation().trim().isEmpty()) {
+            throw new IllegalArgumentException("补考地点不能为空");
         }
         int result = makeupExamMapper.insertMakeupExam(makeupExamCreateDTO);
         // 校验结果
@@ -215,8 +212,7 @@ public class MakeupExamServiceImpl implements MakeupExamService {
         makeupExamResponseDTO.setCourseId(makeupExamDetailVO.getCourseId());
         makeupExamResponseDTO.setCourseName(makeupExamDetailVO.getCourseName());
         makeupExamResponseDTO.setExamDate(makeupExamDetailVO.getExamDate());
-        makeupExamResponseDTO.setStartTime(makeupExamDetailVO.getStartTime());
-        makeupExamResponseDTO.setEndTime(makeupExamDetailVO.getEndTime());
+        makeupExamResponseDTO.setLocation(makeupExamDetailVO.getLocation());
         makeupExamResponseDTO.setStatus(makeupExamDetailVO.getStatus());
         try {
             if (makeupExamDetailVO.getCreateTime() != null && !makeupExamDetailVO.getCreateTime().isEmpty()) {

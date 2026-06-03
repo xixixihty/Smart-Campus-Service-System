@@ -10,9 +10,9 @@
           <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" class="apply-form">
             <el-form-item label="请假类型" prop="leaveType">
               <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-                <el-option label="病假" value="SICK" />
-                <el-option label="事假" value="PERSONAL" />
-                <el-option label="其他" value="OTHER" />
+                <el-option label="病假" value="病假" />
+                <el-option label="事假" value="事假" />
+                <el-option label="其他" value="其他" />
               </el-select>
             </el-form-item>
 
@@ -40,6 +40,17 @@
               <el-input :value="calculatedDays" disabled placeholder="自动计算" />
             </el-form-item>
 
+            <el-form-item label="审批人" prop="approverId">
+              <el-select v-model="form.approverId" placeholder="请选择审批人" style="width: 100%" :loading="approverLoading">
+                <el-option
+                  v-for="approver in approverList"
+                  :key="approver.id + '_' + approver.type"
+                  :label="approver.name + (approver.id === defaultApproverId ? '（默认）' : '')"
+                  :value="approver.id"
+                />
+              </el-select>
+            </el-form-item>
+
             <el-form-item label="请假原因" prop="reason">
               <el-input
                 v-model="form.reason"
@@ -64,15 +75,24 @@
       <el-tab-pane label="我的请假" name="list">
         <el-card shadow="never">
           <div class="search-bar">
-            <el-select v-model="queryForm.status" placeholder="全部状态" clearable style="width: 150px" @change="fetchData">
+            <el-select v-model="queryForm.status" placeholder="全部状态" clearable style="width: 150px" @change="queryForm.pageNum = 1; fetchData()">
               <el-option label="待审批" value="待审批" />
               <el-option label="已批准" value="已批准" />
-              <el-option label="已拒绝" value="已拒绝" />
+              <el-option label="已驳回" value="已驳回" />
             </el-select>
+            <el-tag v-if="wsConnected" type="success" size="small" class="ws-status">实时通知已连接</el-tag>
+            <el-tag v-else type="info" size="small" class="ws-status">实时通知未连接</el-tag>
           </div>
 
           <el-table :data="tableData" stripe border v-loading="loading">
             <el-table-column prop="id" label="ID" width="70" align="center" />
+            <el-table-column prop="applicantType" label="申请人类型" width="100" align="center">
+              <template #default="{ row }">
+                <el-tag :type="row.applicantType === 'STUDENT' ? '' : 'success'" size="small">
+                  {{ row.applicantType === 'STUDENT' ? '学生' : '教师' }}
+                </el-tag>
+              </template>
+            </el-table-column>
             <el-table-column prop="leaveType" label="请假类型" width="100" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.leaveType === '病假' ? 'danger' : row.leaveType === '事假' ? 'warning' : 'info'" size="small">
@@ -82,10 +102,15 @@
             </el-table-column>
             <el-table-column prop="startTime" label="开始时间" width="170" />
             <el-table-column prop="endTime" label="结束时间" width="170" />
+            <el-table-column prop="approverName" label="审批人" width="120">
+              <template #default="{ row }">
+                {{ row.approverName || '-' }}
+              </template>
+            </el-table-column>
             <el-table-column prop="reason" label="请假事由" min-width="200" show-overflow-tooltip />
             <el-table-column prop="status" label="状态" width="100" align="center">
               <template #default="{ row }">
-                <el-tag :type="row.status === '已批准' ? 'success' : row.status === '已拒绝' ? 'danger' : 'warning'" size="small">
+                <el-tag :type="row.status === '已批准' ? 'success' : row.status === '已驳回' ? 'danger' : 'warning'" size="small">
                   {{ row.status }}
                 </el-tag>
               </template>
@@ -127,17 +152,24 @@
             {{ currentLeave.leaveType }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="学生姓名">{{ currentLeave.studentName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="申请人">{{ currentLeave.applicantName || currentLeave.studentName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="申请人类型">
+          {{ currentLeave.applicantType === 'STUDENT' ? '学生' : currentLeave.applicantType === 'TEACHER' ? '教师' : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="审批人">
+          <span :style="{ color: currentLeave.approverName ? '#303133' : '#909399' }">
+            {{ currentLeave.approverName || '待匹配' }}
+          </span>
+        </el-descriptions-item>
         <el-descriptions-item label="开始时间">{{ currentLeave.startTime }}</el-descriptions-item>
         <el-descriptions-item label="结束时间">{{ currentLeave.endTime }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="currentLeave.status === '已批准' ? 'success' : currentLeave.status === '已拒绝' ? 'danger' : 'warning'" size="small">
+          <el-tag :type="currentLeave.status === '已批准' ? 'success' : currentLeave.status === '已驳回' ? 'danger' : 'warning'" size="small">
             {{ currentLeave.status }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="申请时间">{{ currentLeave.createTime }}</el-descriptions-item>
         <el-descriptions-item label="请假原因">{{ currentLeave.reason }}</el-descriptions-item>
-        <el-descriptions-item v-if="currentLeave.approverName" label="审批人">{{ currentLeave.approverName }}</el-descriptions-item>
         <el-descriptions-item v-if="currentLeave.approveTime" label="审批时间">{{ currentLeave.approveTime }}</el-descriptions-item>
         <el-descriptions-item v-if="currentLeave.logResult" label="审批结果">{{ currentLeave.logResult }}</el-descriptions-item>
         <el-descriptions-item v-if="currentLeave.comment" label="备注">
@@ -149,9 +181,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getMyLeaveRequests, createLeaveRequest, cancelLeaveRequest, getLeaveDetail } from '@/api/leaveRequest'
+import { getMyLeaveRequests, createLeaveRequest, cancelLeaveRequest, getLeaveDetail, getApprovers } from '@/api/leaveRequest'
+import { useWebSocket } from '@/composables/useWebSocket'
 
 const activeTab = ref('apply')
 const loading = ref(false)
@@ -161,14 +194,21 @@ const currentLeave = ref(null)
 const tableData = ref([])
 const total = ref(0)
 const formRef = ref(null)
+const wsConnected = ref(false)
+const approverList = ref([])
+const approverLoading = ref(false)
+const defaultApproverId = ref(null)
+
+const { connect, subscribe, disconnect } = useWebSocket()
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, status: '' })
-const form = reactive({ leaveType: '', startTime: '', endTime: '', reason: '' })
+const form = reactive({ leaveType: '', startTime: '', endTime: '', reason: '', approverId: null })
 const rules = {
   leaveType: [{ required: true, message: '请选择请假类型', trigger: 'change' }],
   startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
   endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
-  reason: [{ required: true, message: '请输入请假原因', trigger: 'blur' }]
+  reason: [{ required: true, message: '请输入请假原因', trigger: 'blur' }],
+  approverId: [{ required: true, message: '请选择审批人', trigger: 'change' }]
 }
 
 const calculatedDays = computed(() => {
@@ -179,14 +219,39 @@ const calculatedDays = computed(() => {
   return diff > 0 ? `${diff} 天` : '-'
 })
 
+const initWebSocket = async () => {
+  try {
+    await connect()
+    wsConnected.value = true
+
+    subscribe('/queue/leave/approved', (payload) => {
+      ElMessage.success(`请假申请已审批通过：${payload.title || ''}`)
+      fetchData()
+    })
+
+    subscribe('/queue/leave/rejected', (payload) => {
+      ElMessage.warning(`请假申请已被驳回：${payload.title || ''}`)
+      fetchData()
+    })
+  } catch (e) {
+    console.warn('WebSocket连接失败，将使用轮询方式:', e.message)
+    wsConnected.value = false
+  }
+}
+
 const fetchData = async () => {
   loading.value = true
   try {
     const params = { ...queryForm }
     if (!params.status) delete params.status
     const res = await getMyLeaveRequests(params)
-    tableData.value = res.data.list || res.data || []
-    total.value = res.data.total || 0
+    const allData = res.data || []
+    total.value = allData.length
+    const start = (queryForm.pageNum - 1) * queryForm.pageSize
+    const end = start + queryForm.pageSize
+    tableData.value = allData.slice(start, end)
+  } catch (e) {
+    console.error('获取请假列表失败:', e)
   } finally {
     loading.value = false
   }
@@ -200,6 +265,23 @@ const handleTabChange = (tab) => {
 
 const resetForm = () => {
   formRef.value?.resetFields()
+  form.approverId = defaultApproverId.value
+}
+
+const fetchApprovers = async () => {
+  approverLoading.value = true
+  try {
+    const res = await getApprovers()
+    const data = res.data
+    approverList.value = data.approvers || []
+    defaultApproverId.value = data.defaultApproverId
+    form.approverId = data.defaultApproverId
+  } catch (e) {
+    console.error('获取审批人列表失败:', e)
+    ElMessage.warning('获取审批人列表失败，可手动选择')
+  } finally {
+    approverLoading.value = false
+  }
 }
 
 const handleSubmit = async () => {
@@ -222,11 +304,12 @@ const handleSubmit = async () => {
     resetForm()
     activeTab.value = 'list'
     fetchData()
+  } catch (e) {
+    console.error('提交请假失败:', e)
   } finally {
     submitLoading.value = false
   }
 }
-
 
 const handleDetail = async (row) => {
   try {
@@ -243,11 +326,21 @@ const handleCancel = (row) => {
     await cancelLeaveRequest(row.id)
     ElMessage.success('已取消')
     fetchData()
-  }).catch(() => {})
+  }).catch((e) => {
+    if (e !== 'cancel') {
+      console.error('取消请假失败:', e)
+    }
+  })
 }
 
 onMounted(() => {
+  fetchApprovers()
   fetchData()
+  initWebSocket()
+})
+
+onUnmounted(() => {
+  disconnect()
 })
 </script>
 
@@ -300,6 +393,13 @@ onMounted(() => {
 
 .search-bar {
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ws-status {
+  margin-left: auto;
 }
 
 .action-buttons {

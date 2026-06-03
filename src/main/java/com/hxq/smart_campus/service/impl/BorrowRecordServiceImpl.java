@@ -6,6 +6,7 @@ import com.hxq.smart_campus.entity.dto.BorrowCreateDTO;
 import com.hxq.smart_campus.entity.dto.BorrowMessage;
 import com.hxq.smart_campus.entity.dto.BorrowResponseDTO;
 import com.hxq.smart_campus.entity.dto.BorrowStatisticsDTO;
+import com.hxq.smart_campus.entity.vo.BorrowRecordBase;
 import com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordListVO;
 import com.hxq.smart_campus.exception.BusinessException;
@@ -173,25 +174,9 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
     /**
      * 计算逾期天数
-     * @param record 借阅记录列表VO
+     * @param record 借阅记录VO
      */
-    private void calculateOverdueDays(BorrowRecordListVO record) {
-        if (record == null || record.getDueDate() == null) {
-            return;
-        }
-        LocalDate today = LocalDate.now();
-        int overdueDays = 0;
-        if (today.isAfter(record.getDueDate())) {
-            overdueDays = (int) ChronoUnit.DAYS.between(record.getDueDate(), today);
-        }
-        record.setOverdueDays(overdueDays);
-    }
-
-    /**
-     * 计算逾期天数
-     * @param record 借阅记录详情VO
-     */
-    private void calculateOverdueDays(BorrowRecordDetailVO record) {
+    private void calculateOverdueDays(BorrowRecordBase record) {
         if (record == null || record.getDueDate() == null) {
             return;
         }

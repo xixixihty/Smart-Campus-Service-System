@@ -37,7 +37,6 @@
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
         <el-table-column prop="studentNo" label="学号" width="120" align="center" />
-        <el-table-column prop="studentNo" label="学号" width="120" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="120" align="center" />
         <el-table-column prop="semesterName" label="学期名称" width="120" align="center" />
         <el-table-column prop="usualScore" label="平时成绩" width="80" align="center" />
@@ -107,8 +106,11 @@
             <el-option v-for="s in studentOptions" :key="s.id" :label="s.name + ' (' + s.studentNo + ')'" :value="s.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="成绩" prop="score">
-          <el-input-number v-model="form.score" :min="0" :max="100" :precision="1" style="width: 100%" />
+        <el-form-item label="平时成绩" prop="usualScore">
+          <el-input-number v-model="form.usualScore" :min="0" :max="100" :precision="1" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="期末成绩" prop="finalScore">
+          <el-input-number v-model="form.finalScore" :min="0" :max="100" :precision="1" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -163,12 +165,13 @@ const detailData = reactive({
 })
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', courseId: '', studentId: '' })
-const form = reactive({ id: null, semesterId: '', courseId: '', studentId: '', score: 0 })
+const form = reactive({ id: null, semesterId: '', courseId: '', studentId: '', usualScore: null, finalScore: null })
 const rules = {
   semesterId: [{ required: true, message: '请选择学期', trigger: 'change' }],
   courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
   studentId: [{ required: true, message: '请选择学生', trigger: 'change' }],
-  score: [{ required: true, message: '请输入成绩', trigger: 'blur' }]
+  usualScore: [{ required: true, message: '请输入平时成绩', trigger: 'blur' }],
+  finalScore: [{ required: true, message: '请输入期末成绩', trigger: 'blur' }]
 }
 
 const loadOptions = async () => {
@@ -195,7 +198,7 @@ const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.semesterId = ''; queryForm.courseId = ''; queryForm.studentId = ''; handleSearch() }
 const handleAdd = () => {
   isEdit.value = false; isView.value = false; dialogTitle.value = '录入成绩'
-  Object.assign(form, { id: null, semesterId: '', courseId: '', studentId: '', score: 0 })
+  Object.assign(form, { id: null, semesterId: '', courseId: '', studentId: '', usualScore: null, finalScore: null })
   dialogVisible.value = true
 }
 const handleEdit = (row) => { isEdit.value = true; isView.value = false; dialogTitle.value = '编辑成绩'; Object.assign(form, { ...row }); dialogVisible.value = true }

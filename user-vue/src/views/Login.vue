@@ -43,15 +43,23 @@
               <el-icon :size="36" color="#409EFF"><School /></el-icon>
             </div>
             <h2>智慧校园</h2>
-            <p class="header-sub">学生服务平台</p>
+            <p class="header-sub">校园综合服务平台</p>
             <div class="header-divider"></div>
           </div>
 
           <el-form ref="formRef" :model="form" :rules="rules" size="large" class="login-form">
+            <el-form-item>
+              <div class="role-selector">
+                <el-radio-group v-model="form.userType" size="default" @change="onRoleChange">
+                  <el-radio-button value="student">学生</el-radio-button>
+                </el-radio-group>
+              </div>
+            </el-form-item>
+
             <el-form-item prop="username">
               <el-input
                 v-model="form.username"
-                placeholder="请输入学号"
+                :placeholder="usernamePlaceholder"
                 :prefix-icon="User"
                 clearable
               />
@@ -84,7 +92,7 @@
           <div class="card-footer">
             <div class="test-account">
               <el-icon :size="14"><InfoFilled /></el-icon>
-              <span>测试账号：2023001001 / Password123!</span>
+              <span>测试账号：20233001 / Password123!</span>
             </div>
           </div>
         </div>
@@ -98,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
@@ -108,6 +116,14 @@ const router = useRouter()
 const formRef = ref(null)
 const loading = ref(false)
 
+const usernamePlaceholderMap = {
+  student: '请输入学号',
+  teacher: '请输入教师工号',
+  admin: '请输入管理员账号'
+}
+
+const usernamePlaceholder = computed(() => usernamePlaceholderMap[form.userType] || '请输入账号')
+
 const form = reactive({
   username: '',
   password: '',
@@ -116,13 +132,17 @@ const form = reactive({
 
 const rules = {
   username: [
-    { required: true, message: '请输入学号', trigger: 'blur' },
-    { min: 3, max: 20, message: '学号长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: '请输入登录账号', trigger: 'blur' },
+    { min: 3, max: 20, message: '账号长度在 3 到 20 个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 30, message: '密码长度在 6 到 30 个字符', trigger: 'blur' }
   ]
+}
+
+const onRoleChange = () => {
+  formRef.value?.clearValidate()
 }
 
 const handleLogin = async () => {
@@ -140,7 +160,7 @@ const handleLogin = async () => {
     localStorage.setItem('username', res.data.name || form.username)
     localStorage.setItem('userId', res.data.userId)
     localStorage.setItem('userType', res.data.userType)
-    ElMessage.success(`欢迎回来，${res.data.name || form.username}同学！`)
+    ElMessage.success(`欢迎回来，${res.data.name || form.username}！`)
     router.push('/dashboard')
   } catch {
   } finally {
@@ -435,6 +455,11 @@ const handleLogin = async () => {
 .card-footer {
   margin-top: 28px;
   text-align: center;
+}
+
+.role-selector {
+  display: flex;
+  justify-content: center;
 }
 
 .test-account {

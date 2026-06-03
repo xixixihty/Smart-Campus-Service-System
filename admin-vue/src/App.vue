@@ -9,7 +9,7 @@
         </div>
         <div class="header-right">
           <el-badge :value="noticeCount" :hidden="noticeCount === 0">
-            <el-icon :size="22"><Bell /></el-icon>
+            <el-icon :size="22" style="cursor: pointer" @click="handleBellClick"><Bell /></el-icon>
           </el-badge>
           <el-button :icon="isDark ? Sunny : Moon" circle size="small" class="theme-toggle" @click="toggleTheme" />
           <el-dropdown @command="handleUserCommand">
@@ -178,16 +178,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { validateToken } from '@/api/auth'
+import { getUnreadNotificationCount, markAllNotificationsAsRead } from '@/api/notification'
 import { useTheme } from '@/composables/useTheme'
+import { useWebSocket } from '@/composables/useWebSocket'
 import { Sunny, Moon } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
 
 const { isDark, toggleTheme } = useTheme()
+const { connect, subscribe, disconnect } = useWebSocket()
 
 const username = ref(localStorage.getItem('username') || '管理员')
 const noticeCount = ref(0)
@@ -213,7 +216,60 @@ onMounted(async () => {
       }
     }
   }
+  fetchUnreadCount()
+  initWebSocket()
 })
+
+onUnmounted(() => {
+  disconnect()
+})
+
+const playNotificationSound = () => {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    const oscillator = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    oscillator.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+    oscillator.type = 'sine'
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3)
+    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime)
+    oscillator.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.1)
+    oscillator.start(audioCtx.currentTime)
+    oscillator.stop(audioCtx.currentTime + 0.3)
+  } catch {}
+}
+
+const initWebSocket = async () => {
+  try {
+    await connect()
+
+    subscribe('/queue/leave/apply', (payload) => {
+      noticeCount.value++
+      playNotificationSound()
+    })
+  } catch (e) {
+    console.warn('WebSocket连接失败:', e.message)
+  }
+}
+
+const fetchUnreadCount = async () => {
+  try {
+    const res = await getUnreadNotificationCount()
+    noticeCount.value = res.data ?? 0
+  } catch {
+    noticeCount.value = 0
+  }
+}
+
+const handleBellClick = async () => {
+  noticeCount.value = 0
+  try {
+    await markAllNotificationsAsRead()
+  } catch {}
+  router.push('/leave-approval')
+}
 
 
 

@@ -14,5 +14,4 @@ public class CourseScheduleListVO {
     private Integer startSection;   // 开始节次
     private Integer endSection;     // 结束节次
     private String weekRange;       // 周次范围
-    private String createTime;      // 创建时间（格式化显示）
 }

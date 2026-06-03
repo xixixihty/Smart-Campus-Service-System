@@ -44,8 +44,9 @@ public class AiChatHistoryController {
             @PathVariable String sessionId,
             @RequestParam(defaultValue = "100") int limit
     ) {
-        log.info("查询AI对话记录: sessionId={}, limit={}", sessionId, limit);
-        return Result.success(aiChatRecordService.getSessionHistory(sessionId, limit));
+        Long userId = SecurityUtils.getCurrentUserId();
+        log.info("查询AI对话记录: sessionId={}, userId={}, limit={}", sessionId, userId, limit);
+        return Result.success(aiChatRecordService.getSessionHistory(sessionId, userId, limit));
     }
 
     /**

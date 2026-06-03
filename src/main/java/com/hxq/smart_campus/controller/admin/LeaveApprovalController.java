@@ -22,20 +22,6 @@ import java.util.List;
 public class LeaveApprovalController {
     private final LeaveApprovalService leaveApprovalService;
 
-
-//    /**
-//     * 提交请假申请
-//     * @param leaveRequestCreateDTO
-//     * @return
-//     */
-//    @PostMapping
-//    @Operation(summary = "提交请假申请")
-//    public Result<LeaveRequestResponseDTO> insertLeaveRequest(@RequestBody LeaveRequestCreateDTO leaveRequestCreateDTO) {
-//        log.info("提交请假申请：{}", leaveRequestCreateDTO);
-//        LeaveRequestResponseDTO leaveRequestResponseDTO = leaveApprovalService.insertLeaveRequest(leaveRequestCreateDTO);
-//        return Result.success(leaveRequestResponseDTO);
-//    }
-
     /**
      * 审批请假申请
      * @param leaveApprovalDTO
@@ -49,16 +35,7 @@ public class LeaveApprovalController {
         Boolean result = leaveApprovalService.approveLeaveRequest(id, leaveApprovalDTO);
         return Result.success(result);
     }
-//    /**
-//     * 取消请假申请
-//     */
-//    @DeleteMapping("/{id}")
-//    @Operation(summary = "取消请假申请")
-//    public Result<Boolean> cancelLeaveRequest(@PathVariable Long id) {
-//        log.info("取消请假申请：{}", id);
-//        Boolean result = leaveApprovalService.cancelLeaveRequest(id);
-//        return Result.success(result);
-//    }
+
     /**
      * 查询请假列表
      */
@@ -88,19 +65,6 @@ public class LeaveApprovalController {
         LeaveRequestDetailVO leaveRequestDetailVO = leaveApprovalService.getLeaveRequestDetail(id);
         return Result.success(leaveRequestDetailVO);
     }
-
-//    /**
-//     * 查询我的请假列表
-//     * @param status
-//     * @return
-//     */
-//    @GetMapping("/my")
-//    @Operation(summary = "查询我的请假列表")
-//    public Result<List<MyLeaveRequestVO>> getMyLeaveRequestList(@RequestParam(required = false) String status) {
-//        log.info("查询我的请假列表：{}", status);
-//        List<MyLeaveRequestVO> myLeaveRequestList = leaveApprovalService.getMyLeaveRequestList(status);
-//        return Result.success(myLeaveRequestList);
-//    }
 
     /**
      * 查询待审批列表

@@ -8,7 +8,7 @@ import java.util.List;
 @Slf4j
 public class WeekRangeUtils {
 
-    private static final String WEEK_RANGE_PATTERN = "^\\d+(-\\d+)?$";
+    private static final String WEEK_RANGE_PATTERN = "^\\d+(-\\d+)?(周)?$";
 
     /**
      * 验证周次范围格式
@@ -47,7 +47,7 @@ public class WeekRangeUtils {
 
     /**
      * 解析周次范围，返回周次列表
-     * @param weekRange 周次范围字符串，如 "1-10,12-18"
+     * @param weekRange 周次范围字符串，如 "1-10,12-18" 或 "1-16周"
      * @return 周次列表
      */
     public static List<Integer> parseWeekRange(String weekRange) {
@@ -58,7 +58,9 @@ public class WeekRangeUtils {
         }
 
         try {
-            String[] ranges = weekRange.split(",");
+            // 去除末尾的"周"字，兼容"1-16周"格式
+            String cleaned = cleanWeekRange(weekRange);
+            String[] ranges = cleaned.split(",");
             for (String range : ranges) {
                 range = range.trim();
                 if (range.contains("-")) {
@@ -78,6 +80,22 @@ public class WeekRangeUtils {
         }
 
         return weeks;
+    }
+
+    /**
+     * 清理周次范围字符串，去除末尾的"周"字
+     * @param weekRange 原始周次范围字符串
+     * @return 清理后的纯数字格式周次范围
+     */
+    public static String cleanWeekRange(String weekRange) {
+        if (weekRange == null || weekRange.trim().isEmpty()) {
+            return weekRange;
+        }
+        String cleaned = weekRange.trim();
+        if (cleaned.endsWith("周")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 1);
+        }
+        return cleaned;
     }
 
     /**

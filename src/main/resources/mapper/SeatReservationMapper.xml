@@ -4,31 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hxq.smart_campus.mapper.SeatReservationMapper">
 
-    <!-- 座位预约 -->
-    <insert id="insertSeatReservation">
-        insert into seat_reservation
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="seatId != null">seat_id</if>
-            <if test="userId != null">user_id</if>
-            <if test="date != null">date</if>
-            <if test="startTime != null">start_time</if>
-            <if test="endTime != null">end_time</if>
-        </trim>
-            values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="seatId != null">#{seatId}</if>
-                <if test="userId != null">#{userId}</if>
-                <if test="date != null">#{date}</if>
-                <if test="startTime != null">#{startTime}</if>
-                <if test="endTime != null">#{endTime}</if>
-        </trim>
-    </insert>
-
     <!-- 获取座位预约详情 -->
     <select id="getSeatReservationDetail" resultType="com.hxq.smart_campus.entity.vo.SeatReservationDetailVO">
-        select r.id, r.user_id, stu.name as userName, r.seat_id, s.seat_number,
+        select r.id, r.reservation_no as reservationNo, r.user_id, stu.name as userName, r.seat_id, s.seat_number,
             r.date, r.start_time, r.end_time, r.leave_time, r.status,
-            r.create_time, r.update_time, s.room_id, CONCAT('阅览室', s.room_id) as roomName
+            s.room_id, CONCAT('阅览室', s.room_id) as roomName
         from seat_reservation r
         left join student stu on r.user_id = stu.id
         left join seat s on r.seat_id = s.id
@@ -37,7 +17,7 @@
 
     <!-- 获取座位预约列表 -->
     <select id="getSeatReservationList" resultType="com.hxq.smart_campus.entity.vo.SeatReservationListVO">
-        select r.id, stu.name as userName, r.seat_id as seatId, s.seat_number as seatNumber,
+        select r.id, r.reservation_no as reservationNo, stu.name as userName, r.seat_id as seatId, s.seat_number as seatNumber,
                r.date, r.start_time as startTime, r.end_time as endTime, r.leave_time as leaveTime, r.status,
                s.room_id as roomId, CONCAT('阅览室', s.room_id) as areaName
         from seat_reservation r

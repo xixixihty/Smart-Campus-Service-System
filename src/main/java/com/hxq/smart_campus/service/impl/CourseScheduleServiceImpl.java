@@ -23,11 +23,13 @@ import com.hxq.smart_campus.utils.WeekRangeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
 
@@ -48,6 +50,7 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
      * @return
      */
     @Override
+    @Transactional
     public CourseScheduleResponseDTO insertCourseSchedule(CourseScheduleCreateDTO courseScheduleCreateDTO) {
         log.info("开始创建排课: {}", courseScheduleCreateDTO);
         
@@ -58,6 +61,16 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
         
         validateCourseSchedule(courseScheduleCreateDTO.getWeekDay(), courseScheduleCreateDTO.getStartSection(), 
                               courseScheduleCreateDTO.getEndSection(), courseScheduleCreateDTO.getWeekRange());
+        
+        ConflictCheckDTO conflictCheckDTO = buildConflictCheckDTO(courseScheduleCreateDTO);
+        ConflictCheckResultVO conflictResult = conflictCheck(conflictCheckDTO, null);
+        if (Boolean.TRUE.equals(conflictResult.getHasConflict())) {
+            List<String> conflictReasons = conflictResult.getConflicts().stream()
+                    .map(ConflictCheckResultVO.ConflictDetailVO::getConflictReason)
+                    .collect(Collectors.toList());
+            log.warn("创建排课失败: 检测到{}个冲突, reasons={}", conflictResult.getConflicts().size(), conflictReasons);
+            throw CourseScheduleException.conflict(conflictResult.getMessage());
+        }
         
         try {
             int result = courseScheduleMapper.insertCourseSchedule(courseScheduleCreateDTO);
@@ -73,7 +86,10 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
                 log.error("创建排课失败: 无法查询到创建的排课记录");
                 throw CourseScheduleException.createFailed("无法查询到创建的排课记录");
             }
-            
+
+            // 插入班级关联到 junction table
+            courseScheduleMapper.insertCourseScheduleClasses(id, courseScheduleCreateDTO.getClassIds());
+
             CourseScheduleResponseDTO responseDTO = convertToResponseDTO(courseScheduleDetailVO);
             log.info("创建排课成功: id={}", id);
             
@@ -121,13 +137,44 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             throw new IllegalArgumentException("参数不能为空");
         }
         
+        CourseScheduleDetailVO existingRecord = courseScheduleMapper.getCourseScheduleDetail(courseScheduleUpdateDTO.getId());
+        if (existingRecord == null) {
+            throw CourseScheduleException.notFound(courseScheduleUpdateDTO.getId());
+        }
+        
+        boolean timeChanged = courseScheduleUpdateDTO.getWeekDay() != null
+                || courseScheduleUpdateDTO.getStartSection() != null
+                || courseScheduleUpdateDTO.getEndSection() != null
+                || courseScheduleUpdateDTO.getWeekRange() != null;
+        boolean resourceChanged = courseScheduleUpdateDTO.getTeacherId() != null
+                || courseScheduleUpdateDTO.getClassroomId() != null
+                || courseScheduleUpdateDTO.getClassIds() != null;
+        
+        if (timeChanged || resourceChanged) {
+            ConflictCheckDTO conflictCheckDTO = buildConflictCheckDTO(courseScheduleUpdateDTO, existingRecord);
+            ConflictCheckResultVO conflictResult = conflictCheck(conflictCheckDTO, existingRecord.getId());
+            if (Boolean.TRUE.equals(conflictResult.getHasConflict())) {
+                List<String> conflictReasons = conflictResult.getConflicts().stream()
+                        .map(ConflictCheckResultVO.ConflictDetailVO::getConflictReason)
+                        .collect(Collectors.toList());
+                log.warn("更新排课失败: 检测到{}个冲突, reasons={}", conflictResult.getConflicts().size(), conflictReasons);
+                throw CourseScheduleException.conflict(conflictResult.getMessage());
+            }
+        }
+        
         try {
             int result = courseScheduleMapper.updateCourseSchedule(courseScheduleUpdateDTO);
             if (result <= 0) {
                 log.error("更新排课失败: 数据库更新失败");
                 throw CourseScheduleException.updateFailed("数据库更新失败");
             }
-            
+
+            // 如果班级列表有变更，更新关联表
+            if (courseScheduleUpdateDTO.getClassIds() != null) {
+                courseScheduleMapper.deleteCourseScheduleClasses(courseScheduleUpdateDTO.getId());
+                courseScheduleMapper.insertCourseScheduleClasses(courseScheduleUpdateDTO.getId(), courseScheduleUpdateDTO.getClassIds());
+            }
+
             CourseScheduleDetailVO detailVO = courseScheduleMapper.getCourseScheduleDetail(courseScheduleUpdateDTO.getId());
             if (detailVO == null) {
                 log.error("更新排课失败: 无法查询到更新后的排课记录");
@@ -195,12 +242,14 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
      * @param teacherId
      * @param classroomId
      * @param weekDay
+     * @param weekNum
      * @return
      */
     @Override
-    public PageInfo<CourseScheduleListVO> getCourseScheduleList(Integer pageNum, Integer pageSize, Long semesterId, Long courseId, Long teacherId, Long classroomId, Integer weekDay) {
+    @Transactional(readOnly = true)
+    public PageInfo<CourseScheduleListVO> getCourseScheduleList(Integer pageNum, Integer pageSize, Long semesterId, Long courseId, Long teacherId, Long classroomId, Integer weekDay, Integer weekNum) {
         PageHelper.startPage(pageNum, pageSize);
-        List<CourseScheduleListVO> courseScheduleListVO = courseScheduleMapper.getCourseScheduleList(semesterId, courseId, teacherId, classroomId, weekDay);
+        List<CourseScheduleListVO> courseScheduleListVO = courseScheduleMapper.getCourseScheduleList(semesterId, courseId, teacherId, classroomId, weekDay, weekNum);
         return new PageInfo<>(courseScheduleListVO);
     }
 
@@ -220,6 +269,10 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
      */
     @Override
     public ConflictCheckResultVO conflictCheck(ConflictCheckDTO conflictCheckDTO) {
+        return conflictCheck(conflictCheckDTO, null);
+    }
+
+    private ConflictCheckResultVO conflictCheck(ConflictCheckDTO conflictCheckDTO, Long excludeId) {
         log.info("检查排课冲突: {}", conflictCheckDTO);
         
         ConflictCheckResultVO result = new ConflictCheckResultVO();
@@ -235,10 +288,9 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             Integer endSection = conflictCheckDTO.getEndSection();
             String weekRange = conflictCheckDTO.getWeekRange();
             
-            Long excludeId = null;
-            
             List<CourseScheduleDetailVO> teacherConflicts = courseScheduleMapper.checkTeacherConflict(
                     semesterId, teacherId, weekDay, startSection, endSection, weekRange, excludeId);
+            teacherConflicts = filterByWeekRangeOverlap(teacherConflicts, weekRange);
             
             if (teacherConflicts != null && !teacherConflicts.isEmpty()) {
                 for (CourseScheduleDetailVO conflict : teacherConflicts) {
@@ -253,6 +305,7 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             
             List<CourseScheduleDetailVO> classroomConflicts = courseScheduleMapper.checkClassroomConflict(
                     semesterId, classroomId, weekDay, startSection, endSection, weekRange, excludeId);
+            classroomConflicts = filterByWeekRangeOverlap(classroomConflicts, weekRange);
             
             if (classroomConflicts != null && !classroomConflicts.isEmpty()) {
                 for (CourseScheduleDetailVO conflict : classroomConflicts) {
@@ -267,6 +320,7 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             
             List<CourseScheduleDetailVO> classConflicts = courseScheduleMapper.checkClassConflict(
                     semesterId, classIds, weekDay, startSection, endSection, weekRange, excludeId);
+            classConflicts = filterByWeekRangeOverlap(classConflicts, weekRange);
             
             if (classConflicts != null && !classConflicts.isEmpty()) {
                 for (CourseScheduleDetailVO conflict : classConflicts) {
@@ -305,6 +359,7 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public List<TimetableVO> queryTimetable(Long semesterId, Long userId, String userType) {
         log.info("查询课表: semesterId={}, userId={}, userType={}", semesterId, userId, userType);
         // 从登陆信息中判断用户的类型
@@ -329,6 +384,7 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             }
             
             List<TimetableVO> timetableVOList = courseScheduleMapper.queryTimetable(semesterId, userId, userType, classIds);
+            timetableVOList = filterTimetableByCurrentWeek(timetableVOList, semesterId);
             log.info("查询到{}条课表记录", timetableVOList != null ? timetableVOList.size() : 0);
             
             return timetableVOList;
@@ -415,7 +471,6 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             if (scheduleCourses != null) {
                 String semesterName = getSemesterName(semesterId);
                 for (StudentCourseVO course : scheduleCourses) {
-                    course.setSource("课表");
                     course.setSemesterName(semesterName);
                 }
                 result.addAll(scheduleCourses);
@@ -433,7 +488,6 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
                             .ifPresent(c -> {
                                 c.setScore(sel.getScore());
                                 c.setScorePoint(sel.getScorePoint());
-                                c.setSource("课表+选课");
                             });
                 } else {
                     StudentCourseVO vo = new StudentCourseVO();
@@ -441,7 +495,6 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
                     vo.setCourseName(sel.getCourseName());
                     vo.setCredit(sel.getCredit());
                     vo.setSemesterName(sel.getSemesterName());
-                    vo.setSource("选课");
                     vo.setScore(sel.getScore());
                     vo.setScorePoint(sel.getScorePoint());
                     result.add(vo);
@@ -453,6 +506,64 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
         return result;
     }
 
+    private List<TimetableVO> filterTimetableByCurrentWeek(List<TimetableVO> timetableList, Long semesterId) {
+        if (timetableList == null || timetableList.isEmpty() || semesterId == null) {
+            return timetableList;
+        }
+        try {
+            var semester = semesterService.getSemesterDetail(semesterId);
+            if (semester == null || semester.getStartDate() == null) {
+                return timetableList;
+            }
+            int currentWeek = calculateCurrentWeek(semester.getStartDate());
+            if (currentWeek <= 0) {
+                return timetableList;
+            }
+            return timetableList.stream()
+                    .filter(t -> t.getWeekRange() != null && isWeekInRange(currentWeek, t.getWeekRange()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("按当前周过滤课表失败，返回全部课表: semesterId={}", semesterId, e);
+            return timetableList;
+        }
+    }
+
+    private int calculateCurrentWeek(java.time.LocalDate semesterStartDate) {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(semesterStartDate, today);
+        return (int) (daysBetween / 7) + 1;
+    }
+
+    private boolean isWeekInRange(int week, String weekRange) {
+        if (weekRange == null || weekRange.isEmpty()) {
+            return true;
+        }
+        try {
+            // 去除末尾的"周"字，兼容"1-16周"格式
+            String cleaned = WeekRangeUtils.cleanWeekRange(weekRange);
+            String[] ranges = cleaned.split(",");
+            for (String range : ranges) {
+                range = range.trim();
+                if (range.contains("-")) {
+                    String[] parts = range.split("-");
+                    int start = Integer.parseInt(parts[0].trim());
+                    int end = Integer.parseInt(parts[1].trim());
+                    if (week >= start && week <= end) {
+                        return true;
+                    }
+                } else {
+                    if (week == Integer.parseInt(range)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (NumberFormatException e) {
+            log.warn("解析周次范围失败: {}", weekRange);
+            return true;
+        }
+        return false;
+    }
+
     private String getSemesterName(Long semesterId) {
         try {
             var semester = semesterService.getSemesterDetail(semesterId);
@@ -461,5 +572,40 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
             log.warn("获取学期名称失败: semesterId={}", semesterId);
             return null;
         }
+    }
+
+    private ConflictCheckDTO buildConflictCheckDTO(CourseScheduleCreateDTO dto) {
+        ConflictCheckDTO checkDTO = new ConflictCheckDTO();
+        checkDTO.setSemesterId(dto.getSemesterId());
+        checkDTO.setTeacherId(dto.getTeacherId());
+        checkDTO.setClassroomId(dto.getClassroomId());
+        checkDTO.setClassIds(dto.getClassIds());
+        checkDTO.setWeekDay(dto.getWeekDay());
+        checkDTO.setStartSection(dto.getStartSection());
+        checkDTO.setEndSection(dto.getEndSection());
+        checkDTO.setWeekRange(dto.getWeekRange());
+        return checkDTO;
+    }
+
+    private ConflictCheckDTO buildConflictCheckDTO(CourseScheduleUpdateDTO dto, CourseScheduleDetailVO existing) {
+        ConflictCheckDTO checkDTO = new ConflictCheckDTO();
+        checkDTO.setSemesterId(existing.getSemesterId());
+        checkDTO.setTeacherId(dto.getTeacherId() != null ? dto.getTeacherId() : existing.getTeacherId());
+        checkDTO.setClassroomId(dto.getClassroomId() != null ? dto.getClassroomId() : existing.getClassroomId());
+        checkDTO.setClassIds(dto.getClassIds() != null ? dto.getClassIds() : existing.getClassIds());
+        checkDTO.setWeekDay(dto.getWeekDay() != null ? dto.getWeekDay() : existing.getWeekDay());
+        checkDTO.setStartSection(dto.getStartSection() != null ? dto.getStartSection() : existing.getStartSection());
+        checkDTO.setEndSection(dto.getEndSection() != null ? dto.getEndSection() : existing.getEndSection());
+        checkDTO.setWeekRange(dto.getWeekRange() != null ? dto.getWeekRange() : existing.getWeekRange());
+        return checkDTO;
+    }
+
+    private List<CourseScheduleDetailVO> filterByWeekRangeOverlap(List<CourseScheduleDetailVO> conflicts, String targetWeekRange) {
+        if (conflicts == null || conflicts.isEmpty() || targetWeekRange == null) {
+            return conflicts;
+        }
+        return conflicts.stream()
+                .filter(c -> WeekRangeUtils.hasWeekRangeOverlap(targetWeekRange, c.getWeekRange()))
+                .collect(Collectors.toList());
     }
 }

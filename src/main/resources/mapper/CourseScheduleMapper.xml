@@ -6,17 +6,30 @@
     <!-- 插入课程安排 -->
     <insert id="insertCourseSchedule">
         insert into course_schedule
-        (semester_id, course_id, teacher_id, classroom_id, class_ids, week_day, start_section, end_section, week_range)
+        (semester_id, course_id, teacher_id, classroom_id, week_day, start_section, end_section, week_range)
         values
-        (#{semesterId}, #{courseId}, #{teacherId}, #{classroomId}, #{classIds}, #{weekDay}, #{startSection}, #{endSection}, #{weekRange})
+        (#{semesterId}, #{courseId}, #{teacherId}, #{classroomId}, #{weekDay}, #{startSection}, #{endSection}, #{weekRange})
     </insert>
+
+    <!-- 插入排课班级关联 -->
+    <insert id="insertCourseScheduleClasses">
+        insert into course_schedule_class (schedule_id, class_id) values
+        <foreach collection="classIds" item="classId" separator=",">
+            (#{scheduleId}, #{classId})
+        </foreach>
+    </insert>
+
+    <!-- 删除排课班级关联 -->
+    <delete id="deleteCourseScheduleClasses">
+        delete from course_schedule_class where schedule_id = #{scheduleId}
+    </delete>
+
     <!-- 更新课程安排 -->
     <update id="updateCourseSchedule">
         update course_schedule
         <set>
             <if test="teacherId != null">teacher_id = #{teacherId},</if>
             <if test="classroomId != null">classroom_id = #{classroomId},</if>
-            <if test="classIds != null">class_ids = #{classIds},</if>
             <if test="weekDay != null">week_day = #{weekDay},</if>
             <if test="startSection != null">start_section = #{startSection},</if>
             <if test="endSection != null">end_section = #{endSection},</if>
@@ -35,9 +48,11 @@
     <select id="getCourseScheduleDetail" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
                cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time as createTime, cs.update_time as updateTime,
                CAST((select GROUP_CONCAT(cl.class_name separator '、')
-                from class cl
-                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) AS CHAR) as classNames
+                from course_schedule_class csc
+                join class cl on csc.class_id = cl.id
+                where csc.schedule_id = cs.id) AS CHAR) as classNames
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -50,8 +65,9 @@
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
                cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name,
                (select GROUP_CONCAT(cl.class_name separator '、')
-                from class cl
-                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames,
+                from course_schedule_class csc
+                join class cl on csc.class_id = cl.id
+                where csc.schedule_id = cs.id) as classNames,
                cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
@@ -64,16 +80,20 @@
             <if test="teacherId != null">and cs.teacher_id = #{teacherId}</if>
             <if test="classroomId != null">and cs.classroom_id = #{classroomId}</if>
             <if test="weekDay != null">and cs.week_day = #{weekDay}</if>
+            <if test="weekNum != null">
+                and CAST(SUBSTRING_INDEX(cs.week_range, '-', 1) AS UNSIGNED) &lt;= #{weekNum}
+                and CAST(SUBSTRING_INDEX(cs.week_range, '-', -1) AS UNSIGNED) &gt;= #{weekNum}
+            </if>
         </where>
     </select>
     <!-- 查询课表 -->
     <select id="queryTimetable" resultType="com.hxq.smart_campus.entity.vo.TimetableVO">
         select cs.id as course_schedule_id, c.course_name, t.name as teacher_name,
                CONCAT(cr.building, cr.room_number) as classroom_name,
-               cs.class_ids,
                (select GROUP_CONCAT(cl.class_name separator '、')
-                from class cl
-                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames,
+                from course_schedule_class csc
+                join class cl on csc.class_id = cl.id
+                where csc.schedule_id = cs.id) as classNames,
                cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join course c on cs.course_id = c.id
@@ -83,10 +103,13 @@
             <if test="semesterId != null">cs.semester_id = #{semesterId}</if>
             <if test="userId != null and userType == 'teacher'">and cs.teacher_id = #{userId}</if>
             <if test="classIds != null and userType == 'student'">
-                and (
-                <foreach collection="classIds" item="classId" open="" close="" separator="or">
-                    JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
-                </foreach>
+                and exists (
+                    select 1 from course_schedule_class csc
+                    where csc.schedule_id = cs.id
+                    and csc.class_id in
+                    <foreach collection="classIds" item="classId" open="(" close=")" separator=",">
+                        #{classId}
+                    </foreach>
                 )
             </if>
         </where>
@@ -95,23 +118,23 @@
 
     <!-- 查询学生的课表课程（含课程元数据） -->
     <select id="getStudentCourseSchedules" resultType="com.hxq.smart_campus.entity.vo.StudentCourseVO">
-        select cs.course_id as courseId, c.course_name as courseName, c.credit, c.type,
+        select cs.course_id as courseId, c.course_name as courseName, c.credit,
                t.name as teacherName,
                CONCAT(cr.building, cr.room_number) as classroomName,
                cs.week_day as weekDay, cs.start_section as startSection,
-               cs.end_section as endSection, cs.week_range as weekRange,
-               (select GROUP_CONCAT(cl.class_name separator '、')
-                from class cl
-                where JSON_CONTAINS(cs.class_ids, CAST(cl.id as JSON))) as classNames
+               cs.end_section as endSection, cs.week_range as weekRange
         from course_schedule cs
         left join course c on cs.course_id = c.id
         left join teacher t on cs.teacher_id = t.id
         left join classroom cr on cs.classroom_id = cr.id
         where cs.semester_id = #{semesterId}
-          and (
-          <foreach collection="classIds" item="classId" open="" close="" separator="or">
-              JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
-          </foreach>
+          and exists (
+              select 1 from course_schedule_class csc
+              where csc.schedule_id = cs.id
+              and csc.class_id in
+              <foreach collection="classIds" item="classId" open="(" close=")" separator=",">
+                  #{classId}
+              </foreach>
           )
         order by cs.week_day asc, cs.start_section asc
     </select>
@@ -119,7 +142,8 @@
     <!-- 检测教师时间冲突 -->
     <select id="checkTeacherConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time as createTime, cs.update_time as updateTime
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -135,7 +159,8 @@
     <!-- 检测教室时间冲突 -->
     <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time as createTime, cs.update_time as updateTime
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -151,7 +176,8 @@
     <!-- 检测班级时间冲突 -->
     <select id="checkClassConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.class_ids, cs.week_day, cs.start_section, cs.end_section, cs.week_range
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
+               cs.create_time as createTime, cs.update_time as updateTime
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -161,10 +187,13 @@
         and cs.week_day = #{weekDay}
         and not (cs.end_section &lt; #{startSection} or cs.start_section &gt; #{endSection})
         <if test="excludeId != null">and cs.id != #{excludeId}</if>
-        and (
-        <foreach collection="classIds" item="classId" open="" close="" separator="or">
-            JSON_CONTAINS(cs.class_ids, CAST(#{classId} AS JSON))
-        </foreach>
+        and exists (
+            select 1 from course_schedule_class csc
+            where csc.schedule_id = cs.id
+            and csc.class_id in
+            <foreach collection="classIds" item="classId" open="(" close=")" separator=",">
+                #{classId}
+            </foreach>
         )
     </select>
 

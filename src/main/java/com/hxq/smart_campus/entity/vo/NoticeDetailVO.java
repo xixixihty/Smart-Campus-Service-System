@@ -12,9 +12,8 @@ public class NoticeDetailVO {
     private Long publisherId;       // 发布人ID
     private String publisherName;   // 发布人姓名
     private LocalDateTime publishTime; // 发布时间
-    private String targetType;      // 发布范围类型
-    private Long targetId;          // 发布范围ID
-    private String targetName;      // 发布范围名称
+    private String type;            // 通知类型
+    private String scope;           // 发布范围
     private String status;          // 状态
     private String createTime;      // 创建时间（格式化显示）
     private String updateTime;      // 修改时间（格式化显示）

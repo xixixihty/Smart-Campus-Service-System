@@ -36,7 +36,7 @@ public class AdminAiChatHistoryController {
             @RequestParam(defaultValue = "100") int limit
     ) {
         log.info("管理端查询AI对话记录: sessionId={}, limit={}", sessionId, limit);
-        return Result.success(aiChatRecordService.getSessionHistory(sessionId, limit));
+        return Result.success(aiChatRecordService.getSessionHistory(sessionId, ADMIN_USER_ID, limit));
     }
 
     @DeleteMapping("/sessions/{sessionId}")

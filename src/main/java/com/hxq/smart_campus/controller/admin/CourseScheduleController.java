@@ -78,6 +78,7 @@ public class CourseScheduleController {
      * @param teacherId
      * @param classroomId
      * @param weekDay
+     * @param weekNum
      * @return
      */
     @GetMapping
@@ -89,11 +90,12 @@ public class CourseScheduleController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) Long teacherId,
             @RequestParam(required = false) Long classroomId,
-            @RequestParam(required = false) Integer weekDay
+            @RequestParam(required = false) Integer weekDay,
+            @RequestParam(required = false) Integer weekNum
     ) {
-        log.info("查询排课列表: pageNum={}, pageSize={}, semesterId={}, courseId={}, teacherId={}, classroomId={}, weekDay={}",
-                pageNum, pageSize, semesterId, courseId, teacherId, classroomId, weekDay);
-                PageInfo<CourseScheduleListVO> courseScheduleListVO = courseScheduleService.getCourseScheduleList(pageNum, pageSize, semesterId, courseId, teacherId, classroomId, weekDay);
+        log.info("查询排课列表: pageNum={}, pageSize={}, semesterId={}, courseId={}, teacherId={}, classroomId={}, weekDay={}, weekNum={}",
+                pageNum, pageSize, semesterId, courseId, teacherId, classroomId, weekDay, weekNum);
+                PageInfo<CourseScheduleListVO> courseScheduleListVO = courseScheduleService.getCourseScheduleList(pageNum, pageSize, semesterId, courseId, teacherId, classroomId, weekDay, weekNum);
                 return Result.success(courseScheduleListVO);
     }
     /**

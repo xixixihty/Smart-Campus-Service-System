@@ -19,6 +19,7 @@ public class CourseRecommendService {
 
     private final CourseMapper courseMapper;
     private final ScoreEntryMapper scoreEntryMapper;
+    private final AiService aiService;
 
     public List<CourseRecommendVO> recommendCourses(Long studentId, Long semesterId) {
         List<ScoreEntryListVO> scores = scoreEntryMapper.getScoreList(null, studentId, null);
@@ -65,6 +66,53 @@ public class CourseRecommendService {
                             .build();
                 })
                 .collect(Collectors.toList());
+
+        // 调用AI生成个性化推荐理由
+        try {
+            if (!recommendations.isEmpty()) {
+                String allCourses = recommendations.stream()
+                        .map(c -> String.format("%s（%s，%s学分）", c.getCourseName(), c.getCourseType(), c.getCredit()))
+                        .collect(Collectors.joining("、"));
+
+                String scoreSummary = "";
+                if (scores != null && !scores.isEmpty()) {
+                    scoreSummary = "已修课程：" + scores.stream()
+                            .map(s -> String.format("%s(%s分)", s.getCourseName(), s.getTotalScore()))
+                            .collect(Collectors.joining("、"));
+                }
+
+                String systemPrompt = "你是一个选课推荐专家。根据学生的已修课程成绩和可选课程列表，"
+                        + "为每门推荐课程生成一条简短的个性化推荐理由（20字以内）。"
+                        + "请以JSON数组格式返回：[\"推荐理由1\", \"推荐理由2\", ...]";
+
+                String userMessage = String.format("可选课程：%s\n%s\n请为每门课程生成推荐理由。",
+                        allCourses, scoreSummary);
+
+                String aiResult = aiService.analyzeWithAdminTools(systemPrompt, userMessage);
+                if (aiResult != null && !aiResult.isEmpty()) {
+                    // 尝试解析AI返回的推荐理由
+                    try {
+                        String cleaned = aiResult.trim();
+                        if (cleaned.startsWith("```")) {
+                            int start = cleaned.indexOf("[");
+                            int end = cleaned.lastIndexOf("]");
+                            if (start >= 0 && end > start) {
+                                cleaned = cleaned.substring(start, end + 1);
+                            }
+                        }
+                        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                        String[] reasons = mapper.readValue(cleaned, String[].class);
+                        for (int i = 0; i < recommendations.size() && i < reasons.length; i++) {
+                            recommendations.get(i).setReason(reasons[i]);
+                        }
+                    } catch (Exception parseEx) {
+                        log.warn("AI推荐理由解析失败，使用默认理由: {}", parseEx.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("AI课程推荐调用失败，使用默认推荐理由: studentId={}", studentId, e);
+        }
 
         return recommendations;
     }

@@ -23,7 +23,7 @@
         select r.id, r.borrow_no as borrowNo, r.user_id as userId,
                COALESCE(s.name, t.name) as userName,
                r.book_id as bookId, b.title as bookTitle, b.isbn as bookIsbn, r.borrow_date as borrowDate,
-               r.due_date as dueDate, r.return_date as returnDate, r.status, r.create_time as createTime, r.update_time as updateTime
+               r.due_date as dueDate, r.return_date as returnDate, r.status
         from borrow_record r
         left join student s on r.user_id = s.id
         left join teacher t on r.user_id = t.id

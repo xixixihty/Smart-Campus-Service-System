@@ -22,6 +22,16 @@
             <el-option v-for="t in teacherOptions" :key="t.id" :label="t.name" :value="t.id" />
           </el-select>
         </el-form-item>
+        <el-form-item label="星期">
+          <el-select v-model="queryForm.weekDay" placeholder="全部" clearable style="width: 120px">
+            <el-option v-for="(d, i) in ['一','二','三','四','五','六','日']" :key="i + 1" :label="'星期' + d" :value="i + 1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="周次">
+          <el-select v-model="queryForm.weekNum" placeholder="全部" clearable style="width: 120px">
+            <el-option v-for="w in 20" :key="w" :label="'第' + w + '周'" :value="w" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch"><el-icon><Search /></el-icon>搜索</el-button>
           <el-button @click="handleReset"><el-icon><Refresh /></el-icon>重置</el-button>
@@ -166,7 +176,7 @@ const courseOptions = ref([])
 const teacherOptions = ref([])
 const classroomOptions = ref([])
 
-const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', courseId: '', teacherId: '' })
+const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', courseId: '', teacherId: '', weekDay: '', weekNum: '' })
 const form = reactive({ id: null, semesterId: '', courseId: '', teacherId: '', classroomId: '', weekDay: 1, startSection: 1, endSection: 2, weekRange: '1-16' })
 const detailData = reactive({ id: null, semesterName: '', courseName: '', teacherName: '', classroomName: '', weekDay: null, startSection: null, endSection: null, weekRange: '', classNames: '', createTime: '', updateTime: '' })
 const rules = {
@@ -199,7 +209,7 @@ const fetchData = async () => {
 }
 
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
-const handleReset = () => { queryForm.semesterId = ''; queryForm.courseId = ''; queryForm.teacherId = ''; handleSearch() }
+const handleReset = () => { queryForm.semesterId = ''; queryForm.courseId = ''; queryForm.teacherId = ''; queryForm.weekDay = ''; queryForm.weekNum = ''; handleSearch() }
 const handleAdd = () => {
   isEdit.value = false; isView.value = false; dialogTitle.value = '新增排课'
   Object.assign(form, { id: null, semesterId: '', courseId: '', teacherId: '', classroomId: '', weekDay: 1, startSection: 1, endSection: 2, weekRange: '1-16' })

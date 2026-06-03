@@ -2,11 +2,11 @@ package com.hxq.smart_campus.controller.user;
 
 import com.hxq.smart_campus.entity.dto.LeaveRequestCreateDTO;
 import com.hxq.smart_campus.entity.dto.LeaveRequestResponseDTO;
+import com.hxq.smart_campus.entity.vo.ApproverListVO;
 import com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO;
 import com.hxq.smart_campus.entity.vo.MyLeaveRequestVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.LeaveApprovalService;
-import com.hxq.smart_campus.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,6 @@ public class LeaveApprovalUserController {
     @Operation(summary = "提交请假申请")
     public Result<LeaveRequestResponseDTO> insertLeaveRequest(@RequestBody LeaveRequestCreateDTO leaveRequestCreateDTO) {
         log.info("提交请假申请：{}", leaveRequestCreateDTO);
-        leaveRequestCreateDTO.setStudentId(SecurityUtils.getCurrentUserId());
         LeaveRequestResponseDTO leaveRequestResponseDTO = leaveApprovalService.insertLeaveRequest(leaveRequestCreateDTO);
         return Result.success(leaveRequestResponseDTO);
     }
@@ -73,5 +72,17 @@ public class LeaveApprovalUserController {
         log.info("查询我的请假列表：{}", status);
         List<MyLeaveRequestVO> myLeaveRequestList = leaveApprovalService.getMyLeaveRequestList(status);
         return Result.success(myLeaveRequestList);
+    }
+
+    /**
+     * 获取可选审批人列表
+     * @return
+     */
+    @GetMapping("/approvers")
+    @Operation(summary = "获取可选审批人列表")
+    public Result<ApproverListVO> getAvailableApprovers() {
+        log.info("获取可选审批人列表");
+        ApproverListVO approverListVO = leaveApprovalService.getAvailableApprovers();
+        return Result.success(approverListVO);
     }
 }

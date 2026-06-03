@@ -21,6 +21,10 @@ public class MessageConstant {
      * 用户类型学生
      */
     public static final String USER_TYPE_STUDENT = "student";
+    /**
+     * 用户类型管理员
+     */
+    public static final String USER_TYPE_ADMIN = "admin";
 
     /**
      * 学院状态正常
@@ -295,5 +299,75 @@ public class MessageConstant {
      * 通知状态撤回
      */
     public static final String NOTICE_STATUS_RETRACTED = "撤回";
+
+    // ============ 请假申请类型 ============
+    /**
+     * 请假申请类型-学生
+     */
+    public static final String APPLICANT_TYPE_STUDENT = "STUDENT";
+    /**
+     * 请假申请类型-教师
+     */
+    public static final String APPLICANT_TYPE_TEACHER = "TEACHER";
+
+    // ============ 通知业务类型 ============
+    /**
+     * 通知类型-新请假申请
+     */
+    public static final String NOTIFY_BIZ_LEAVE_APPLY = "LEAVE_APPLY";
+    /**
+     * 通知类型-请假已批准
+     */
+    public static final String NOTIFY_BIZ_LEAVE_APPROVED = "LEAVE_APPROVED";
+    /**
+     * 通知类型-请假已驳回
+     */
+    public static final String NOTIFY_BIZ_LEAVE_REJECTED = "LEAVE_REJECTED";
+    /**
+     * 通知类型-需要调课
+     */
+    public static final String NOTIFY_BIZ_NEED_RESCHEDULE = "NEED_RESCHEDULE";
+    /**
+     * 通知类型-课程已调整
+     */
+    public static final String NOTIFY_BIZ_COURSE_RESCHEDULED = "COURSE_RESCHEDULED";
+
+    // ============ 调课状态 ============
+    /**
+     * 调课状态-待确认
+     */
+    public static final String RESCHEDULE_STATUS_PENDING = "待确认";
+    /**
+     * 调课状态-已确认
+     */
+    public static final String RESCHEDULE_STATUS_CONFIRMED = "已确认";
+    /**
+     * 调课状态-已取消
+     */
+    public static final String RESCHEDULE_STATUS_CANCELED = "已取消";
+
+    // ============ 管理员状态 ============
+    /**
+     * 管理员账号状态启用
+     */
+    public static final String ADMIN_ACCOUNT_STATUS_ENABLED = "启用";
+    /**
+     * 管理员账号状态锁定
+     */
+    public static final String ADMIN_ACCOUNT_STATUS_LOCK = "锁定";
+    /**
+     * 管理员账号状态禁用
+     */
+    public static final String ADMIN_ACCOUNT_STATUS_DISABLED = "禁用";
+
+    // ============ 审批结果 ============
+    /**
+     * 审批结果-批准
+     */
+    public static final String APPROVAL_RESULT_APPROVED = "批准";
+    /**
+     * 审批结果-驳回
+     */
+    public static final String APPROVAL_RESULT_REJECTED = "驳回";
 
 }

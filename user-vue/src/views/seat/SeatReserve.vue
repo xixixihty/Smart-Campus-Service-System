@@ -28,21 +28,24 @@
         <span class="legend-item"><span class="legend-dot dot-reserved"></span> 暂离</span>
         <span class="legend-item"><span class="legend-dot dot-maintenance"></span> 维修中</span>
       </div>
-      <div class="seat-grid">
-        <div v-for="seat in seatList" :key="seat.id" class="seat-item" :class="{
-          'seat-available': seat.status === '空闲',
-          'seat-occupied': seat.status === '使用中',
-          'seat-reserved': seat.status === '暂离',
-          'seat-maintenance': seat.status === '维修'
-        }" @click="handleSeatClick(seat)">
-          <el-icon :size="28"><Chair /></el-icon>
-          <div class="seat-number">{{ seat.seatNumber }}</div>
-          <div class="seat-status">
-            <el-tag :type="seat.status === '空闲' ? 'success' : seat.status === '使用中' ? 'warning' : seat.status === '暂离' ? 'warning' : 'info'" size="small">
-              {{ seat.status === '空闲' ? '空闲' : seat.status === '使用中' ? '使用中' : seat.status === '暂离' ? '暂离' : '维修' }}
-            </el-tag>
+      <div v-for="(seats, roomId) in groupedSeats" :key="roomId" class="floor-section">
+        <h3 class="floor-title">阅览室{{ roomId }}</h3>
+        <div class="seat-grid">
+          <div v-for="seat in seats" :key="seat.id" class="seat-item" :class="{
+            'seat-available': seat.status === '空闲',
+            'seat-occupied': seat.status === '使用中',
+            'seat-reserved': seat.status === '暂离',
+            'seat-maintenance': seat.status === '维修'
+          }" @click="handleSeatClick(seat)">
+            <el-icon :size="28"><Chair /></el-icon>
+            <div class="seat-number">{{ seat.seatNumber }}</div>
+            <div class="seat-status">
+              <el-tag :type="seat.status === '空闲' ? 'success' : seat.status === '使用中' ? 'warning' : seat.status === '暂离' ? 'warning' : 'info'" size="small">
+                {{ seat.status === '空闲' ? '空闲' : seat.status === '使用中' ? '使用中' : seat.status === '暂离' ? '暂离' : '维修' }}
+              </el-tag>
+            </div>
+            <div v-if="seat.status === '使用中'" class="seat-hint">可预约后续时段</div>
           </div>
-          <div v-if="seat.status === '使用中'" class="seat-hint">可预约后续时段</div>
         </div>
       </div>
       <el-empty v-if="seatList.length === 0 && !loading" description="暂无座位数据" />
@@ -86,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { reserveSeat } from '@/api/seatReservation'
 import request from '@/utils/request'
@@ -98,6 +101,18 @@ const currentSeat = ref(null)
 const seatList = ref([])
 const areaOptions = ref([])
 const seatSchedule = ref([])
+
+const groupedSeats = computed(() => {
+  const groups = {}
+  seatList.value.forEach(seat => {
+    const roomId = seat.roomId || '未知'
+    if (!groups[roomId]) {
+      groups[roomId] = []
+    }
+    groups[roomId].push(seat)
+  })
+  return groups
+})
 
 const queryForm = reactive({
   areaId: '',
@@ -189,6 +204,19 @@ onMounted(() => { loadAreas(); fetchSeats() })
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
+}
+
+.floor-section {
+  margin-bottom: 24px;
+}
+
+.floor-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+  margin: 0 0 12px 0;
+  padding-left: 8px;
+  border-left: 3px solid #409eff;
 }
 
 .seat-legend {

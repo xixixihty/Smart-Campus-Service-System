@@ -105,4 +105,47 @@
         where t.id = #{id}
         and t.status = '在职'
     </select>
+
+    <!-- 获取教师授课班级ID列表 -->
+    <select id="getTeachingClassIds" resultType="java.lang.Long">
+        SELECT DISTINCT cl.id
+        FROM course_schedule cs
+        JOIN course_schedule_class csc ON csc.schedule_id = cs.id
+        JOIN class cl ON csc.class_id = cl.id
+        WHERE cs.teacher_id = #{teacherId}
+          AND cs.semester_id = #{semesterId}
+    </select>
+
+    <!-- 获取教师授课课程ID列表 -->
+    <select id="getTeachingCourseIds" resultType="java.lang.Long">
+        SELECT DISTINCT cs.course_id
+        FROM course_schedule cs
+        WHERE cs.teacher_id = #{teacherId}
+          AND cs.semester_id = #{semesterId}
+    </select>
+
+    <!-- 获取教师授课学生ID列表 -->
+    <select id="getTeachingStudentIds" resultType="java.lang.Long">
+        SELECT DISTINCT s.id
+        FROM course_schedule cs
+        JOIN course_schedule_class csc ON csc.schedule_id = cs.id
+        JOIN class cl ON csc.class_id = cl.id
+        JOIN student s ON s.class_id = cl.id
+        WHERE cs.teacher_id = #{teacherId}
+          AND cs.semester_id = #{semesterId}
+    </select>
+
+    <!-- 获取教师授课班级详情列表 -->
+    <select id="getTeachingClassTeacherList" resultType="com.hxq.smart_campus.entity.vo.TeacherDetailVO">
+        SELECT DISTINCT t.id as teacherId, t.teacher_no, t.name, t.gender,
+               t.college_id, c.college_name, t.title, t.phone, t.email,
+               t.status, t.account_status, t.create_time, t.update_time
+        FROM course_schedule cs
+        JOIN course_schedule_class csc ON csc.schedule_id = cs.id
+        JOIN class cl ON csc.class_id = cl.id
+        JOIN teacher t ON cl.head_teacher_id = t.id
+        LEFT JOIN college c ON t.college_id = c.id
+        WHERE cs.teacher_id = #{teacherId}
+          AND cs.semester_id = #{semesterId}
+    </select>
 </mapper>

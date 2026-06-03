@@ -15,12 +15,15 @@ public interface LeaveApprovalService {
      * @return
      */
     LeaveRequestResponseDTO insertLeaveRequest(LeaveRequestCreateDTO leaveRequestCreateDTO);
+
     /**
      * 审批请假申请
+     * @param id
      * @param leaveApprovalDTO
      * @return
      */
     Boolean approveLeaveRequest(Long id, LeaveApprovalDTO leaveApprovalDTO);
+
     /**
      * 取消请假申请
      * @param id
@@ -67,4 +70,10 @@ public interface LeaveApprovalService {
      * @return
      */
     List<LeaveApprovalLogVO> getLeaveApprovalLogList(Long leaveRequestId);
+
+    /**
+     * 获取可选审批人列表
+     * @return
+     */
+    ApproverListVO getAvailableApprovers();
 }

@@ -5,13 +5,12 @@ import lombok.Data;
 @Data
 public class CourseSchedule {
     private Long id;
-    private Integer semesterId;
+    private Long semesterId;
     private Long courseId;
     private Long teacherId;
     private Long classroomId;
-    private String classIds;
     private Integer weekDay;
-    private Byte startSection;
-    private Byte endSection;
+    private Integer startSection;
+    private Integer endSection;
     private String weekRange;
 }

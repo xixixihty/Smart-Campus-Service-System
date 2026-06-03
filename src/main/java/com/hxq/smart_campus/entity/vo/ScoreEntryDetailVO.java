@@ -22,6 +22,6 @@ public class ScoreEntryDetailVO {
     private BigDecimal credit;      // 学分
     private String examStatus;      // 考试状态
     private Long makeupExamId;      // 补考安排ID
-    private String createTime;      // 创建时间（格式化显示）
-    private String updateTime;      // 修改时间（格式化显示）
+    private String createTime;      // 创建时间
+    private String updateTime;      // 更新时间
 }

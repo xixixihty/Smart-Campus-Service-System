@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS seat_reservation (
     start_time      TIME              NOT NULL                 COMMENT '开始时间',
     end_time        TIME              NOT NULL                 COMMENT '结束时间',
     leave_time      DATETIME          DEFAULT NULL             COMMENT '暂离/签退时间',
-    status          VARCHAR(20)       NOT NULL DEFAULT '预约中' COMMENT '状态：预约中 / 使用中 / 暂离 / 已完成 / 已取消',
+    status          VARCHAR(20)       NOT NULL DEFAULT '待签到' COMMENT '状态：待签到 / 使用中 / 暂离 / 已完成 / 已取消',
     create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (id),

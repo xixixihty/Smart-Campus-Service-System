@@ -11,11 +11,8 @@ public class Notice {
     private String title;
     private String content;
     private Long publisherId;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime publishTime;
-    private String targetType;
-    private Long targetId;
-    private String targetName;
+    private String type;
+    private String scope;
     private String status;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

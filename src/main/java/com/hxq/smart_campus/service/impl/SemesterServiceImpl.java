@@ -13,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
 
@@ -23,6 +25,25 @@ import static com.hxq.smart_campus.constant.MessageConstant.*;
 @Service
 public class SemesterServiceImpl implements SemesterService {
     private final SemesterMapper semesterMapper;
+
+    /**
+     * 当前学期缓存，TTL=60秒，避免短时间内重复查询数据库
+     */
+    private static final class CacheEntry {
+        final SemesterDetailVO value;
+        final LocalDateTime expireAt;
+        CacheEntry(SemesterDetailVO value, Duration ttl) {
+            this.value = value;
+            this.expireAt = LocalDateTime.now().plus(ttl);
+        }
+        boolean isExpired() {
+            return LocalDateTime.now().isAfter(expireAt);
+        }
+    }
+
+    private final ConcurrentHashMap<String, CacheEntry> semesterCache = new ConcurrentHashMap<>();
+    private static final String CURRENT_SEMESTER_KEY = "current";
+    private static final Duration CACHE_TTL = Duration.ofSeconds(60);
 
 
 
@@ -112,13 +133,22 @@ public class SemesterServiceImpl implements SemesterService {
         }
         return true;
     }
+
     /**
      * 获取当前学期
      * @return
      */
     @Override
     public SemesterDetailVO getCurrentSemester() {
-        return semesterMapper.getCurrentSemester();
+        CacheEntry entry = semesterCache.get(CURRENT_SEMESTER_KEY);
+        if (entry != null && !entry.isExpired()) {
+            return entry.value;
+        }
+        SemesterDetailVO current = semesterMapper.getCurrentSemester();
+        if (current != null) {
+            semesterCache.put(CURRENT_SEMESTER_KEY, new CacheEntry(current, CACHE_TTL));
+        }
+        return current;
     }
 
     /**
@@ -169,7 +199,10 @@ public class SemesterServiceImpl implements SemesterService {
             if (result <= 0) {
                 throw new RuntimeException("设置当前学期失败！");
             }
-            
+
+            // 清除缓存
+            semesterCache.remove(CURRENT_SEMESTER_KEY);
+
             return true;
         } catch (Exception e) {
             log.error("设置当前学期失败", e);

@@ -67,18 +67,8 @@ public class AiService {
                             userMessage, fullResponse.toString());
                 })
                 .onErrorResume(e -> {
-                    log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, userId={}, error={}",
-                            effectiveSessionId, userId, e.getMessage());
-                    try {
-                        String result = chatWithUserTools(systemPrompt, userMessage, effectiveSessionId, userId);
-                        if (StringUtils.hasText(result)) {
-                            fullResponse.append(result);
-                            return Flux.just(result);
-                        }
-                    } catch (Exception ex) {
-                        log.error("AI非流式降级也失败了: sessionId={}, userId={}", effectiveSessionId, userId, ex);
-                    }
-                    return Flux.error(new RuntimeException("AI服务调用失败，流式和非流式均不可用", e));
+                    log.warn("AI用户端流式调用失败, 将回退到非流式: {}", e.getMessage());
+                    return Flux.empty();
                 });
 
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
@@ -115,18 +105,8 @@ public class AiService {
                             userMessage, response);
                 })
                 .onErrorResume(e -> {
-                    log.warn("AI流式调用失败，自动降级为非流式模式: sessionId={}, error={}",
-                            effectiveSessionId, e.getMessage());
-                    try {
-                        String result = chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId);
-                        if (StringUtils.hasText(result)) {
-                            fullResponse.append(result);
-                            return Flux.just(result);
-                        }
-                    } catch (Exception ex) {
-                        log.error("AI非流式降级也失败了: sessionId={}", effectiveSessionId, ex);
-                    }
-                    return Flux.error(new RuntimeException("AI服务调用失败，流式和非流式均不可用", e));
+                    log.warn("AI管理端流式调用失败, 将回退到非流式: {}", e.getMessage());
+                    return Flux.empty();
                 });
 
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
@@ -196,34 +176,36 @@ public class AiService {
                         .build())
         );
 
-        return stream.switchIfEmpty(Flux.defer(() -> {
-            log.warn("AI流式响应为空，回退到非流式调用: sessionId={}", sessionId);
-            try {
-                String result = fallback.execute();
-                if (StringUtils.hasText(result)) {
-                    return Flux.just(
-                            ServerSentEvent.<String>builder()
-                                    .event("status")
-                                    .data("正在查询数据...")
-                                    .build(),
-                            ServerSentEvent.<String>builder()
-                                    .event("message")
-                                    .data(result)
-                                    .build(),
-                            ServerSentEvent.<String>builder()
-                                    .event("done")
-                                    .data("[DONE]")
-                                    .build()
-                    );
-                }
-            } catch (Exception e) {
-                log.error("非流式回退失败: sessionId={}", sessionId, e);
+        return stream
+                .switchIfEmpty(Flux.defer(() -> buildFallbackEvents(sessionId, fallback, "正在查询数据...")))
+                .onErrorResume(e -> buildFallbackOnError(sessionId, fallback, e));
+    }
+
+    private Flux<ServerSentEvent<String>> buildFallbackEvents(String sessionId, FallbackProvider fallback,
+                                                               String statusMsg) {
+        log.warn("AI流式响应为空，回退到非流式调用: sessionId={}", sessionId);
+        try {
+            String result = fallback.execute();
+            if (StringUtils.hasText(result)) {
+                return Flux.just(
+                        ServerSentEvent.<String>builder().event("status").data(statusMsg).build(),
+                        ServerSentEvent.<String>builder().event("message").data(result).build(),
+                        ServerSentEvent.<String>builder().event("done").data("[DONE]").build()
+                );
             }
-            return Flux.just(ServerSentEvent.<String>builder()
-                    .event("error")
-                    .data("抱歉，AI服务暂时不可用，请稍后再试。")
-                    .build());
-        }));
+        } catch (Exception e) {
+            log.error("非流式回退失败: sessionId={}", sessionId, e);
+        }
+        return Flux.just(ServerSentEvent.<String>builder()
+                .event("error")
+                .data("抱歉，AI服务暂时不可用，请稍后再试。")
+                .build());
+    }
+
+    private Flux<ServerSentEvent<String>> buildFallbackOnError(String sessionId, FallbackProvider fallback,
+                                                                Throwable error) {
+        log.error("AI流式异常，回退到非流式调用: sessionId={}", sessionId, error);
+        return buildFallbackEvents(sessionId, fallback, "AI服务响应较慢，已切换到文字模式...");
     }
 
     @FunctionalInterface

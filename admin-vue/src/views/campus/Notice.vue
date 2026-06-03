@@ -80,8 +80,8 @@
           </el-descriptions-item>
           <el-descriptions-item label="发布人">{{ form.publisherName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="发布时间">{{ form.publishTime || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="发布范围类型">{{ form.targetType || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="发布范围">{{ form.targetName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="通知类型">{{ form.type || form.noticeType || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="发布范围">{{ form.scope || '-' }}</el-descriptions-item>
           <el-descriptions-item label="通知内容" :span="2">
             <div class="detail-content">{{ form.content }}</div>
           </el-descriptions-item>
@@ -134,7 +134,7 @@ const total = ref(0)
 const formRef = ref(null)
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, title: '', noticeType: '', status: '' })
-const form = reactive({ id: null, title: '', noticeType: '系统通知', content: '', publisherName: '', publishTime: '', targetType: '', targetName: '', status: '', createTime: '', updateTime: '' })
+const form = reactive({ id: null, title: '', noticeType: '系统通知', content: '', publisherName: '', publishTime: '', type: '', scope: '', status: '', createTime: '', updateTime: '' })
 const rules = {
   title: [{ required: true, message: '请输入通知标题', trigger: 'blur' }],
   content: [{ required: true, message: '请输入通知内容', trigger: 'blur' }]
@@ -172,8 +172,8 @@ const handleView = async (row) => {
       content: data.content,
       publisherName: data.publisherName,
       publishTime: data.publishTime,
-      targetType: data.targetType,
-      targetName: data.targetName,
+      type: data.type,
+      scope: data.scope,
       status: data.status,
       createTime: data.createTime,
       updateTime: data.updateTime
@@ -198,8 +198,8 @@ const handleEdit = async (row) => {
       content: data.content,
       publisherName: data.publisherName,
       publishTime: data.publishTime,
-      targetType: data.targetType,
-      targetName: data.targetName,
+      type: data.type,
+      scope: data.scope,
       status: data.status,
       createTime: data.createTime,
       updateTime: data.updateTime

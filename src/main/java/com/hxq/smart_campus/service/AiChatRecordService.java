@@ -11,7 +11,7 @@ public interface AiChatRecordService {
 
     List<AiSessionDTO> listSessions(Long userId);
 
-    List<AiChatHistoryDTO> getSessionHistory(String sessionId, int limit);
+    List<AiChatHistoryDTO> getSessionHistory(String sessionId, Long userId, int limit);
 
     boolean deleteSession(String sessionId, Long userId);
 }
