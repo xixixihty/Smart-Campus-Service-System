@@ -17,4 +17,5 @@ public class TeacherDashboardVO {
     private BigDecimal scoreEntryRate;
     private List<ClassStudentCountVO> classStudentDistribution;
     private List<ScoreDistributionItem> scoreDistribution;
+    private List<java.util.Map<String, Object>> leaveTrend;
 }

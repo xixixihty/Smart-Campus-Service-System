@@ -51,7 +51,6 @@
               <div class="role-selector">
                 <el-radio-group v-model="form.userType" size="default" @change="onRoleChange">
                   <el-radio-button value="admin">管理员</el-radio-button>
-                  <el-radio-button value="teacher">教师</el-radio-button>
                 </el-radio-group>
               </div>
             </el-form-item>
@@ -59,7 +58,7 @@
             <el-form-item prop="username">
               <el-input
                 v-model="form.username"
-                :placeholder="form.userType === 'admin' ? '请输入管理员账号' : '请输入教师工号'"
+                :placeholder="form.userType === 'admin' ? '请输入管理员账号' : form.userType === 'teacher' ? '请输入教师工号' : '请输入学号'"
                 :prefix-icon="User"
                 clearable
                 autocomplete="off"
@@ -96,7 +95,7 @@
           <div class="card-footer">
             <div class="test-account">
               <el-icon :size="14"><InfoFilled /></el-icon>
-              <span>测试账号：T20230001 / Password123!</span>
+              <span>测试账号ADMIN001(管理员) / 密码：Password123!</span>
             </div>
           </div>
         </div>

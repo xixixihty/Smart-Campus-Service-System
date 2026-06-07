@@ -8,10 +8,9 @@
       <el-table :data="tableData" stripe border>
         <el-table-column prop="id" label="ID" width="70" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="160" />
-        <el-table-column prop="semesterName" label="学期" width="180" />
         <el-table-column prop="examDate" label="考试日期" width="120" />
-        <el-table-column prop="examTime" label="考试时间" width="120" />
-        <el-table-column prop="classroomName" label="考试地点" width="130" />
+        <el-table-column prop="location" label="考试地点" min-width="180" />
+        <el-table-column prop="status" label="状态" width="100" align="center" />
         <el-table-column label="详情" width="80" align="center">
           <template #default="{ row }">
             <el-button type="primary" link @click="showDetail(row)">查看</el-button>
@@ -28,10 +27,9 @@
     <el-dialog v-model="detailVisible" title="补考详情" width="450px">
       <el-descriptions :column="1" border v-if="currentExam">
         <el-descriptions-item label="课程名称">{{ currentExam.courseName }}</el-descriptions-item>
-        <el-descriptions-item label="学期">{{ currentExam.semesterName }}</el-descriptions-item>
         <el-descriptions-item label="考试日期">{{ currentExam.examDate }}</el-descriptions-item>
-        <el-descriptions-item label="考试时间">{{ currentExam.examTime }}</el-descriptions-item>
-        <el-descriptions-item label="考试地点">{{ currentExam.classroomName }}</el-descriptions-item>
+        <el-descriptions-item label="考试地点">{{ currentExam.location }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ currentExam.status }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>

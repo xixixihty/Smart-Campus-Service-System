@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class BorrowRecordListVO implements BorrowRecordBase {
     private Long id;                // 借阅记录ID
+    private Long bookId;            // 图书ID
     private String borrowNo;        // 借阅流水号
     private String userName;        // 借阅人姓名
     private String bookTitle;       // 图书标题

@@ -189,49 +189,21 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
     }
     /**
      * 学生退课
-     * @param id
+     * @param courseId 课程ID
      * @return
      */
     @Override
-    public boolean dropCourse(Long id) {
-
-//        // TODO: 需要从登陆信息中获取用户ID
-//        Long studentId = SecurityUtils.getCurrentUserId();
-//        // TODO: 需要从登陆信息中获取用户姓名
-//        String studentName = SecurityUtils.getCurrentUserName();
-//        // 根据学生ID获取到学生的个人选课信息
-//        CourseSelectionListVO courseSelectionListVO = courseSelectionMapper.getCourseSelectionListVO(id);
-//        // 根据学期名称获取到学期详情
-//        SemesterDetailVO semesterDetailVO = semesterMapper.getSemesterDetailByName(courseSelectionListVO.getSemesterName());
-//        if (semesterDetailVO == null) {
-//            throw new IllegalArgumentException("学期不存在");
-//        }
-//        // 判断课程是否存在
-//        if (courseSelectionListVO == null) {
-//            throw CourseSelectionException.courseSelectionNotExist("课程不存在");
-//        }
-//        // 判断是否是该学生的选课
-//        if (!courseSelectionListVO.getStudentName().equals(studentName)) {
-//            throw CourseSelectionException.courseSelectionNotExist("该课程不是该学生的选课");
-//        }
-//        // 先删除学生个人选课信息
-//        redisTemplate.delete(RedisConstant.MY_COURSE_SELECTION_KEY_PREFIX + studentId);
-//        // 再更新数据库
-//        int result = courseSelectionMapper.dropCourse(id);
-//        if (result <= 0) {
-//            throw CourseSelectionException.dropCourseFailed("退课失败，请稍后再试");
-//        }
-//        // 再查询我的选课课程列表
-//        List<CourseSelectionListVO> courseSelectionList = courseSelectionMapper.getCourseSelectionList(studentId, null, semesterDetailVO.getId(), courseSelectionListVO.getStatus());
-//        // 刷新Redis中的我的选课课程列表
-//        redisTemplate.opsForValue().set(RedisConstant.MY_COURSE_SELECTION_KEY_PREFIX + studentId, courseSelectionList, 1, TimeUnit.DAYS);
-//        // 返回数据
-//        return true;
-        log.info("学生退课，参数：{}", id);
-        CourseSelectionListVO selection = courseSelectionMapper.getCourseSelectionListVO(id);
-        if (selection == null) {
-            throw CourseSelectionException.courseSelectionNotExist("课程不存在");
+    public boolean dropCourse(Long courseId) {
+        Long studentId = SecurityUtils.getCurrentUserId();
+        log.info("学生退课，courseId={}, studentId={}", courseId, studentId);
+        
+        // 根据courseId + studentId查找选课记录
+        List<CourseSelectionListVO> selections = courseSelectionMapper.getCourseSelectionList(studentId, courseId, null, null);
+        if (selections == null || selections.isEmpty()) {
+            throw CourseSelectionException.courseSelectionNotExist("未选修该课程");
         }
+        CourseSelectionListVO selection = selections.get(0);
+        
         RLock lock = redissonClient.getLock(LOCK_COURSE_KEY_PREFIX + selection.getCourseId());
         try {
             if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
@@ -250,8 +222,8 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
                         throw CourseSelectionException.courseSelectionNotExist("Redis修复后仍无法退课，请联系管理员");
                     }
                 }
-                // 发送MQ消息异步落库
-                sendDropMessage(id, selection.getStudentId(), selection.getCourseId(), selection.getSemesterId());
+                // 发送MQ消息异步落库，使用选课记录ID
+                sendDropMessage(selection.getId(), selection.getStudentId(), selection.getCourseId(), selection.getSemesterId());
                 // 如果有候补用户，发送通知
                 if (!"1".equals(result)) {
                     sendWaitingNotification(selection.getCourseId(), Long.parseLong(result));

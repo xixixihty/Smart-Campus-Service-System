@@ -76,6 +76,12 @@ const routes = [
     name: 'ChangePassword',
     component: () => import('@/views/profile/ChangePassword.vue'),
     meta: { title: '修改密码' }
+  },
+  {
+    path: '/ai-assistant',
+    name: 'AiAssistant',
+    component: () => import('@/views/ai/AiChat.vue'),
+    meta: { title: 'AI 教学助手' }
   }
 ]
 

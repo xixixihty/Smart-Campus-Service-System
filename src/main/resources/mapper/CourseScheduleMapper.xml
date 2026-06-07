@@ -48,7 +48,6 @@
     <select id="getCourseScheduleDetail" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
                cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time as createTime, cs.update_time as updateTime,
                CAST((select GROUP_CONCAT(cl.class_name separator '、')
                 from course_schedule_class csc
                 join class cl on csc.class_id = cl.id
@@ -142,8 +141,7 @@
     <!-- 检测教师时间冲突 -->
     <select id="checkTeacherConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time as createTime, cs.update_time as updateTime
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id
@@ -159,8 +157,7 @@
     <!-- 检测教室时间冲突 -->
     <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO">
         select cs.id, cs.semester_id, s.name as semester_name, cs.course_id, c.course_name, t.id as teacher_id, t.name as teacher_name,
-               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range,
-               cs.create_time as createTime, cs.update_time as updateTime
+               cr.id as classroom_id, CONCAT(cr.building, cr.room_number) as classroom_name, cs.week_day, cs.start_section, cs.end_section, cs.week_range
         from course_schedule cs
         left join semester s on cs.semester_id = s.id
         left join course c on cs.course_id = c.id

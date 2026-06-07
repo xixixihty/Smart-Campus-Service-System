@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class CourseRescheduleCreateDTO {
     private Long leaveRequestId;
+    private String reason;
     private List<RescheduleItem> items;
 
     @Data

@@ -32,7 +32,7 @@
     </select>
     <!-- 获取借阅记录列表 -->
     <select id="getBorrowRecordList" resultType="com.hxq.smart_campus.entity.vo.BorrowRecordListVO">
-        select r.id, r.borrow_no as borrowNo,
+        select r.id, r.book_id as bookId, r.borrow_no as borrowNo,
                COALESCE(s.name, t.name) as userName,
                b.title as bookTitle, r.borrow_date as borrowDate, r.due_date as dueDate, r.status
         from borrow_record r

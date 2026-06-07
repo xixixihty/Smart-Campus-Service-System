@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.dto.LeaveApprovalDTO;
 import com.hxq.smart_campus.entity.vo.LeaveApprovalLogVO;
 import com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO;
+import com.hxq.smart_campus.entity.vo.MyLeaveRequestVO;
 import com.hxq.smart_campus.entity.vo.PendingLeaveRequestVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.LeaveApprovalService;
@@ -59,5 +60,13 @@ public class TeacherLeaveApprovalController {
         log.info("教师查看请假审批日志: id={}", id);
         List<LeaveApprovalLogVO> logs = leaveApprovalService.getLeaveApprovalLogList(id);
         return Result.success(logs);
+    }
+
+    @GetMapping("/leave-requests/my")
+    @Operation(summary = "获取我的请假申请列表（用于调课关联）")
+    public Result<List<MyLeaveRequestVO>> getMyLeaveRequests(@RequestParam(required = false) String status) {
+        log.info("教师查询自己的请假列表: status={}", status);
+        List<MyLeaveRequestVO> list = leaveApprovalService.getMyLeaveRequestList(status);
+        return Result.success(list);
     }
 }

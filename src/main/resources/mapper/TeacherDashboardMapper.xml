@@ -69,4 +69,16 @@
         order by cl.class_name
     </select>
 
+    <select id="getLeaveTrend" resultType="java.util.Map">
+        select
+            date_format(lr.create_time, '%Y-%m') as month,
+            count(case when lr.status = '已通过' then 1 end) as approved,
+            count(case when lr.status = '待审批' then 1 end) as pending
+        from leave_request lr
+        where lr.approver_id = #{teacherId}
+          and lr.create_time >= date_sub(now(), interval 6 month)
+        group by date_format(lr.create_time, '%Y-%m')
+        order by month
+    </select>
+
 </mapper>

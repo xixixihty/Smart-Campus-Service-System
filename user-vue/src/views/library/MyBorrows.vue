@@ -8,7 +8,7 @@
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="状态">
           <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 200px">
-            <el-option label="借出中" value="借出中" />
+            <el-option label="借阅中" value="借阅中" />
             <el-option label="已归还" value="已归还" />
             <el-option label="逾期" value="逾期" />
           </el-select>
@@ -29,7 +29,7 @@
         <el-table-column prop="dueDate" label="应还日期" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '借出中' ? 'warning' : row.status === '已归还' ? 'success' : 'danger'" size="small">
+            <el-tag :type="row.status === '借阅中' ? 'warning' : row.status === '已归还' ? 'success' : 'danger'" size="small">
               {{ row.status }}
             </el-tag>
           </template>
@@ -40,7 +40,7 @@
               <el-button type="info" size="small" @click="handleDetail(row)">
                 <el-icon><View /></el-icon>详情
               </el-button>
-              <el-button v-if="row.status === '借出中' || row.status === '逾期'" type="success" size="small" @click="handleReturn(row)">
+              <el-button v-if="row.status === '借阅中' || row.status === '逾期'" type="success" size="small" @click="handleReturn(row)">
                 归还
               </el-button>
             </div>
@@ -62,7 +62,7 @@
         <el-descriptions-item label="应还日期">{{ currentBorrow.dueDate }}</el-descriptions-item>
         <el-descriptions-item label="归还日期">{{ currentBorrow.returnDate || '未归还' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="currentBorrow.status === '借出中' ? 'warning' : currentBorrow.status === '已归还' ? 'success' : 'danger'" size="small">
+          <el-tag :type="currentBorrow.status === '借阅中' ? 'warning' : currentBorrow.status === '已归还' ? 'success' : 'danger'" size="small">
             {{ currentBorrow.status }}
           </el-tag>
         </el-descriptions-item>

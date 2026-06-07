@@ -85,7 +85,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Object handleException(Exception e, HttpServletRequest request, HttpServletResponse response) {
-        log.error("系统异常", e);
+        log.error("系统异常: type={}, message={}", e.getClass().getSimpleName(), e.getMessage());
+        log.debug("系统异常详情", e);
         // 响应已提交（如SSE流式进行中），无法再写入，仅记录日志
         if (response.isCommitted()) {
             log.warn("响应已提交，无法返回错误信息到客户端: {}", request.getRequestURI());

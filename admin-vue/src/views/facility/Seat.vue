@@ -29,13 +29,13 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="roomId" label="房间编号" width="120"  align="center" />
         <el-table-column prop="seatNumber" label="座位编号" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '空闲' ? 'success' : row.status === '使用中' ? 'warning' : row.status === '暂离' ? '' : 'info'" size="small">
+            <el-tag :type="row.status === '空闲' ? 'success' : row.status === '使用中' ? 'warning' : row.status === '暂离' ? 'warning' : 'info'" size="small">
               {{ row.status }}
             </el-tag>
           </template>

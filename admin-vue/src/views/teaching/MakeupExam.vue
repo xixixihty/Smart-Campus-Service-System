@@ -25,7 +25,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" min-width="120" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
@@ -90,7 +90,7 @@
         </el-form-item>
         <el-form-item label="考试地点" prop="classroomId">
           <el-select v-model="form.classroomId" placeholder="请选择教室" style="width: 100%" filterable>
-            <el-option v-for="r in classroomOptions" :key="r.id" :label="r.roomName" :value="r.id" />
+            <el-option v-for="r in classroomOptions" :key="r.id" :label="r.building + ' ' + r.roomNumber" :value="r.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="人数上限" prop="maxStudents">

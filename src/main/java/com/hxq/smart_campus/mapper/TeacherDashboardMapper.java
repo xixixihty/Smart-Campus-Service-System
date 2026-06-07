@@ -22,4 +22,6 @@ public interface TeacherDashboardMapper {
     BigDecimal getScoreEntryRate(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
 
     List<ClassStudentCountVO> getClassStudentDistribution(@Param("teacherId") Long teacherId, @Param("semesterId") Long semesterId);
+
+    List<java.util.Map<String, Object>> getLeaveTrend(@Param("teacherId") Long teacherId);
 }

@@ -25,11 +25,15 @@ public class TeacherDashboardController {
     @GetMapping("/dashboard")
     @Operation(summary = "获取教师工作台统计数据")
     public Result<TeacherDashboardVO> getDashboardStats(@RequestParam(required = false) Long semesterId) {
-        var currentSemester = semesterService.getCurrentSemester();
-        Long currentSemesterId = currentSemester.getId();
-        log.info("教师查询工作台统计: 前端传入semesterId={}, 强制使用当前学期: {} (ID={})", 
-                semesterId, currentSemester.getName(), currentSemesterId);
-        TeacherDashboardVO dashboard = teacherDashboardService.getTeacherDashboardStats(currentSemesterId);
+        if (semesterId == null) {
+            var currentSemester = semesterService.getCurrentSemester();
+            semesterId = currentSemester.getId();
+            log.info("教师查询工作台统计: 未传semesterId, 使用当前学期: {} (ID={})",
+                    currentSemester.getName(), semesterId);
+        } else {
+            log.info("教师查询工作台统计: 使用指定学期ID={}", semesterId);
+        }
+        TeacherDashboardVO dashboard = teacherDashboardService.getTeacherDashboardStats(semesterId);
         return Result.success(dashboard);
     }
 }

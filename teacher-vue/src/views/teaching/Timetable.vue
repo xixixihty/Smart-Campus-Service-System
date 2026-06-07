@@ -8,7 +8,7 @@
     <div class="toolbar">
       <span class="toolbar-label">学期：</span>
       <el-select v-model="semesterId" placeholder="请选择学期" @change="fetchTimetable" style="width: 240px">
-        <el-option v-for="s in semesterList" :key="s.id" :label="s.semesterName" :value="s.id" />
+        <el-option v-for="s in semesterList" :key="s.id" :label="s.name" :value="s.id" />
       </el-select>
     </div>
 
@@ -16,27 +16,30 @@
       <div v-if="timetableData.length === 0 && !loading" class="empty-state">
         <el-empty description="暂无课表数据" />
       </div>
-      <div v-else class="timetable-grid">
+      <div v-else class="timetable">
         <!-- 星期头 -->
         <div class="timetable-header">
-          <div class="time-label">节次</div>
-          <div v-for="day in weekDays" :key="day.value" class="day-header">
+          <div class="period-col">节次</div>
+          <div v-for="day in weekDays" :key="day.value" class="day-col">
             {{ day.label }}
           </div>
         </div>
         <!-- 节次行 -->
         <div v-for="section in maxSections" :key="section" class="timetable-row">
-          <div class="time-label">第{{ section }}节</div>
-          <div v-for="day in 7" :key="day" class="timetable-cell">
+          <div class="period-cell">第{{ section }}节</div>
+          <div v-for="day in 7" :key="day" class="course-cell">
             <div
               v-for="item in getCellItems(day, section)"
               :key="item.courseScheduleId"
               class="course-block"
-              :style="{ backgroundColor: getCourseColor(item.courseName) }"
+              :style="{
+                backgroundColor: getCourseColor(item.courseName),
+                height: (item.endSection - item.startSection + 1) * 48 + 'px'
+              }"
             >
-              <div class="course-name">{{ item.courseName }}</div>
-              <div class="course-info">{{ item.classroomName }}</div>
-              <div class="course-info">{{ item.classNames }}</div>
+              <div class="block-name">{{ item.courseName }}</div>
+              <div class="block-info">{{ item.classroomName }}</div>
+              <div class="block-info">{{ item.classNames }}</div>
             </div>
           </div>
         </div>
@@ -84,9 +87,10 @@ const getCourseColor = (courseName) => {
 
 const maxSections = ref(8)
 
+// 只在起始节次渲染课程块，避免重复
 const getCellItems = (day, section) => {
   return timetableData.value.filter(
-    t => t.weekDay === day && t.startSection <= section && t.endSection >= section
+    t => t.weekDay === day && t.startSection === section
   )
 }
 
@@ -94,7 +98,11 @@ const fetchSemesters = async () => {
   try {
     const res = await getSemesterList({ pageNum: 1, pageSize: 50 })
     semesterList.value = res.data?.list || []
-    if (semesterList.value.length > 0) {
+    // 默认选中当前学期（isCurrent=true），而非第一个学期
+    const current = semesterList.value.find(s => s.isCurrent)
+    if (current) {
+      semesterId.value = current.id
+    } else if (semesterList.value.length > 0) {
       semesterId.value = semesterList.value[0].id
     }
   } catch {
@@ -128,70 +136,118 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.timetable-grid {
-  width: 100%;
-  overflow-x: auto;
-}
+.timetable-page { }
 
-.timetable-header,
-.timetable-row {
-  display: grid;
-  grid-template-columns: 80px repeat(7, 1fr);
-  min-width: 900px;
+.toolbar { margin-bottom: 16px; }
+.toolbar-label { margin-right: 8px; font-size: 14px; color: #606266; }
+
+.timetable {
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .timetable-header {
+  display: flex;
   background: #f5f7fa;
-  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid #e4e7ed;
 }
 
-.time-label,
-.day-header {
-  padding: 10px 4px;
+.period-col {
+  width: 80px;
+  padding: 10px;
   text-align: center;
   font-weight: 600;
-  font-size: 13px;
   color: #606266;
-  border: 1px solid #ebeef5;
+  border-right: 1px solid #e4e7ed;
 }
 
-.timetable-cell {
-  border: 1px solid #ebeef5;
-  min-height: 60px;
-  padding: 2px;
-  vertical-align: top;
+.day-col {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-right: 1px solid #e4e7ed;
+  font-weight: 600;
+  color: #303133;
+  font-size: 14px;
 }
+
+.day-col:last-child { border-right: none; }
+
+.timetable-row {
+  display: flex;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.timetable-row:last-child { border-bottom: none; }
+
+.period-cell {
+  width: 80px;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 13px;
+  color: #909399;
+  border-right: 1px solid #e4e7ed;
+  background: #fafafa;
+}
+
+.course-cell {
+  flex: 1;
+  border-right: 1px solid #ebeef5;
+  position: relative;
+  min-height: 48px;
+}
+
+.course-cell:last-child { border-right: none; }
 
 .course-block {
-  padding: 6px 8px;
-  border-radius: 4px;
-  margin: 2px;
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 1px;
+  border-radius: 6px;
+  padding: 4px 6px;
+  overflow: hidden;
+  z-index: 1;
   color: #fff;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-.course-name {
+.block-name {
+  font-size: 12px;
   font-weight: 600;
-  font-size: 13px;
+  color: #fff;
+  line-height: 1.3;
 }
 
-.course-info {
-  opacity: 0.9;
-  font-size: 11px;
+.block-info {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 1px;
 }
 
 html.dark .timetable-header {
   background: #262727;
 }
 
-html.dark .time-label,
-html.dark .day-header {
+html.dark .period-col,
+html.dark .day-col {
   color: #cfd3dc;
   border-color: #363637;
 }
 
-html.dark .timetable-cell {
+html.dark .timetable-row {
+  border-color: #363637;
+}
+
+html.dark .period-cell {
+  color: #909399;
+  border-color: #363637;
+  background: #1a1a1a;
+}
+
+html.dark .course-cell {
   border-color: #363637;
 }
 </style>

@@ -35,7 +35,7 @@
     <el-card shadow="never" style="margin-top: 16px">
 
 
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="publisherName" label="发布人姓名" width="100" />
@@ -47,7 +47,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="100" align="center" />
+        <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
@@ -152,8 +152,8 @@ const fetchData = async () => {
 const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.title = ''; queryForm.noticeType = ''; queryForm.status = ''; handleSearch() }
 const getTypeTagColor = (type) => {
-  const colorMap = { '系统通知': '', '教学通知': 'success', '活动通知': 'warning', '紧急通知': 'danger' }
-  return colorMap[type] || ''
+  const colorMap = { '系统通知': 'info', '教学通知': 'success', '活动通知': 'warning', '紧急通知': 'danger' }
+  return colorMap[type] || 'info'
 }
 const handleAdd = () => {
   isEdit.value = false; dialogTitle.value = '发布通知'

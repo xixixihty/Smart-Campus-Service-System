@@ -29,7 +29,7 @@ public interface CourseRescheduleMapper {
 
     List<CourseRescheduleVO> getPendingList();
 
-    int approveReschedule(@Param("id") Long id);
+    int approveReschedule(@Param("id") Long id, @Param("adminId") Long adminId);
 
     int rejectReschedule(@Param("id") Long id, @Param("reason") String reason);
 
@@ -40,5 +40,6 @@ public interface CourseRescheduleMapper {
                                   @Param("weekDay") Integer weekDay,
                                   @Param("startSection") Integer startSection,
                                   @Param("endSection") Integer endSection,
+                                  @Param("weekRange") String weekRange,
                                   @Param("classroomId") Long classroomId);
 }

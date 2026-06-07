@@ -30,7 +30,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="majorName" label="专业名称" min-width="150" align="center" />
         <el-table-column prop="majorCode" label="专业代码" width="120" align="center" />

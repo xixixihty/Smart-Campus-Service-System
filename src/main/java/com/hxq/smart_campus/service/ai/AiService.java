@@ -24,15 +24,18 @@ public class AiService {
 
     private final ChatClient userChatClient;
     private final ChatClient adminChatClient;
+    private final ChatClient teacherChatClient;
     private final ChatMemory chatMemory;
     private final AiChatRecordService aiChatRecordService;
 
     public AiService(@Qualifier("userChatClient") ChatClient userChatClient,
                      @Qualifier("adminChatClient") ChatClient adminChatClient,
+                     @Qualifier("teacherChatClient") ChatClient teacherChatClient,
                      ChatMemory chatMemory,
                      AiChatRecordService aiChatRecordService) {
         this.userChatClient = userChatClient;
         this.adminChatClient = adminChatClient;
+        this.teacherChatClient = teacherChatClient;
         this.chatMemory = chatMemory;
         this.aiChatRecordService = aiChatRecordService;
     }
@@ -113,6 +116,44 @@ public class AiService {
                 chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId));
     }
 
+    public Flux<ServerSentEvent<String>> chatStreamWithTeacherTools(String systemPrompt, String userMessage,
+                                                                     String sessionId, Long userId) {
+        if (sessionId == null || sessionId.isEmpty()) {
+            sessionId = UUID.randomUUID().toString();
+        }
+        String effectiveSessionId = sessionId;
+        log.info("AI教师端流式请求: sessionId={}, userId={}, userMessage={}", effectiveSessionId, userId, userMessage);
+
+        StringBuilder fullResponse = new StringBuilder();
+
+        ChatClient.ChatClientRequestSpec spec = teacherChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+
+        Flux<String> contentStream = spec
+                .toolContext(Map.of("teacherId", userId))
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .stream()
+                .content()
+                .filter(msg -> msg != null && !msg.isEmpty())
+                .doOnNext(fullResponse::append)
+                .doOnComplete(() -> {
+                    log.info("AI教师端流式响应完成: sessionId={}, response={}",
+                            effectiveSessionId, fullResponse.toString());
+                    aiChatRecordService.saveMessagesAsync(userId, effectiveSessionId,
+                            userMessage, fullResponse.toString());
+                })
+                .onErrorResume(e -> {
+                    log.warn("AI教师端流式调用失败, 将回退到非流式: {}", e.getMessage());
+                    return Flux.empty();
+                });
+
+        return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
+                chatWithTeacherTools(systemPrompt, userMessage, effectiveSessionId, userId));
+    }
+
     private String chatWithUserTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
         log.info("AI用户端非流式回退: sessionId={}, userId={}", sessionId, userId);
         ChatClient.ChatClientRequestSpec spec = userChatClient.prompt()
@@ -141,6 +182,22 @@ public class AiService {
                 .call()
                 .content();
         log.info("AI管理端非流式响应: sessionId={}, response={}", sessionId, result);
+        return result;
+    }
+
+    private String chatWithTeacherTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
+        log.info("AI教师端非流式回退: sessionId={}, userId={}", sessionId, userId);
+        ChatClient.ChatClientRequestSpec spec = teacherChatClient.prompt()
+                .user(userMessage);
+        if (StringUtils.hasText(systemPrompt)) {
+            spec = spec.system(systemPrompt);
+        }
+        String result = spec
+                .toolContext(Map.of("teacherId", userId))
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .call()
+                .content();
+        log.info("AI教师端非流式响应: sessionId={}, response={}", sessionId, result);
         return result;
     }
 

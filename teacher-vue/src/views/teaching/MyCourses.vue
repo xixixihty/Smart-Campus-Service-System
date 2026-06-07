@@ -8,7 +8,7 @@
     <div class="toolbar">
       <span class="toolbar-label">学期：</span>
       <el-select v-model="semesterId" placeholder="请选择学期" @change="fetchCourses" style="width: 240px">
-        <el-option v-for="s in semesterList" :key="s.id" :label="s.semesterName" :value="s.id" />
+        <el-option v-for="s in semesterList" :key="s.id" :label="s.name" :value="s.id" />
       </el-select>
     </div>
 
@@ -28,8 +28,8 @@
         <el-table-column prop="capacity" label="容量" width="80" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'ENABLED' ? 'success' : 'info'" size="small">
-              {{ row.status === 'ENABLED' ? '开课' : '停课' }}
+            <el-tag :type="row.status === 'ENABLED' || row.status === '开课' ? 'success' : 'info'" size="small">
+              {{ row.status === 'ENABLED' ? '开课' : row.status === '开课' ? '开课' : '停课' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -80,7 +80,10 @@ const fetchSemesters = async () => {
   try {
     const res = await getSemesterList({ pageNum: 1, pageSize: 50 })
     semesterList.value = res.data?.list || []
-    if (semesterList.value.length > 0) {
+    const current = semesterList.value.find(s => s.isCurrent)
+    if (current) {
+      semesterId.value = current.id
+    } else if (semesterList.value.length > 0) {
       semesterId.value = semesterList.value[0].id
     }
   } catch {

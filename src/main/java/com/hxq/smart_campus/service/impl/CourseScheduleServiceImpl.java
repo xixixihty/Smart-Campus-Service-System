@@ -11,6 +11,7 @@ import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleListVO;
 import com.hxq.smart_campus.entity.vo.MyCourseSelectionVO;
 import com.hxq.smart_campus.entity.vo.StudentCourseVO;
+import com.hxq.smart_campus.entity.vo.StudentDashboardVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.exception.CourseScheduleException;
 import com.hxq.smart_campus.mapper.CourseScheduleMapper;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -607,5 +609,32 @@ public class CourseScheduleServiceImpl implements CourseScheduleService {
         return conflicts.stream()
                 .filter(c -> WeekRangeUtils.hasWeekRangeOverlap(targetWeekRange, c.getWeekRange()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentDashboardVO getStudentDashboardStats(Long studentId) {
+        log.info("获取学生工作台统计数据: studentId={}", studentId);
+        StudentDashboardVO vo = new StudentDashboardVO();
+
+        // 已选课程数
+        Integer courseCount = courseScheduleMapper.countStudentCourses(studentId);
+        vo.setCourseCount(courseCount != null ? courseCount : 0);
+
+        // 平均成绩
+        java.math.BigDecimal avgScore = courseScheduleMapper.getStudentAvgScore(studentId);
+        vo.setAvgScore(avgScore);
+
+        // 待审批请假数
+        Integer pendingLeaveCount = courseScheduleMapper.countStudentLeaves(studentId);
+        vo.setPendingLeaveCount(pendingLeaveCount != null ? pendingLeaveCount : 0);
+
+        // 今日课程数
+        int todayWeekDay = java.time.LocalDate.now().getDayOfWeek().getValue(); // 1=Monday, 7=Sunday
+        Integer todayCourseCount = courseScheduleMapper.countTodayCourses(studentId, todayWeekDay);
+        vo.setTodayCourseCount(todayCourseCount != null ? todayCourseCount : 0);
+
+        log.info("学生工作台统计数据: courseCount={}, avgScore={}, pendingLeaveCount={}, todayCourseCount={}",
+                vo.getCourseCount(), vo.getAvgScore(), vo.getPendingLeaveCount(), vo.getTodayCourseCount());
+        return vo;
     }
 }

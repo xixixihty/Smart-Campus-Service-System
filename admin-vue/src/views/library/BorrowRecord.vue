@@ -34,11 +34,11 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="borrowNo" label="借阅编号" width="120" align="center" />
         <el-table-column prop="userName" label="借阅人姓名" width="100" align="center" />
-        <el-table-column prop="bookTitle" label="图书标题" min-width="180px" align="center" />
+        <el-table-column prop="bookTitle" label="图书标题" min-width="180" align="center" />
         <el-table-column prop="borrowDate" label="借阅日期" width="120" align="center" />
         <el-table-column prop="dueDate" label="应还日期" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">

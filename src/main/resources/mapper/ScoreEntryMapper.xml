@@ -29,7 +29,7 @@
             <if test="examStatus != null">#{examStatus}</if>
         </trim>
     </insert>
-    <!-- 批量插入成绩 - 固定列版本 -->
+    <!-- 批量插入成绩 -->
     <insert id="batchInsertScore">
         insert into score_entry (
             course_id,
@@ -50,7 +50,7 @@
                 #{entry.finalScore},
                 #{entry.examStatus},
                 #{entry.totalScore},
-                #{entry.scorePoint},
+                #{entry.scorePoint}
             )
         </foreach>
     </insert>
@@ -59,12 +59,12 @@
     <update id="updateScore">
         update score_entry
         <set>
-            <if test="usualScore != null">usual_score = #{usualScore}</if>
-            <if test="finalScore != null">final_score = #{finalScore}</if>
-            <if test="totalScore != null">total_score = #{totalScore}</if>
-            <if test="scorePoint != null">score_point = #{scorePoint}</if>
-            <if test="makeupScore != null">makeup_score = #{makeupScore}</if>
-            <if test="examStatus != null">exam_status = #{examStatus}</if>
+            <if test="usualScore != null">usual_score = #{usualScore},</if>
+            <if test="finalScore != null">final_score = #{finalScore},</if>
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="scorePoint != null">score_point = #{scorePoint},</if>
+            <if test="makeupScore != null">makeup_score = #{makeupScore},</if>
+            <if test="examStatus != null">exam_status = #{examStatus},</if>
         </set>
         where id = #{id}
     </update>
@@ -74,7 +74,7 @@
         select se.id, se.course_id, c.course_name, se.student_id, s.name as studentName, s.student_no as studentNo,
                se.semester_id, sm.name as semesterName, se.usual_score,
                se.final_score, se.total_score, se.makeup_score, se.score_point, c.credit, se.exam_status,
-               me.id as makeup_exam_id, se.create_time as createTime, se.update_time as updateTime
+               me.id as makeup_exam_id
         from score_entry se
         left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id

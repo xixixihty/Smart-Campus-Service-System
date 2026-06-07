@@ -5,7 +5,7 @@
       <el-header>
         <div class="header-left">
           <img src="/logo.svg" class="header-logo" alt="Logo" />
-          <span class="header-title">智慧校园服务系统-管理端</span>
+          <span class="header-title">{{ headerTitle }}</span>
         </div>
         <div class="header-right">
           <el-badge :value="noticeCount" :hidden="noticeCount === 0">
@@ -44,129 +44,109 @@
             text-color="#bfcbd9"
             active-text-color="#409EFF"
           >
-            <el-menu-item index="/dashboard">
-              <el-icon><Odometer /></el-icon>
-              <span>工作台</span>
-            </el-menu-item>
+            <!-- ========== 管理员菜单 ========== -->
+            <template v-if="userType === 'admin'">
+              <el-menu-item index="/dashboard">
+                <el-icon><Odometer /></el-icon>
+                <span>工作台</span>
+              </el-menu-item>
+              <el-sub-menu index="org">
+                <template #title><el-icon><OfficeBuilding /></el-icon><span>组织架构</span></template>
+                <el-menu-item index="/college"><el-icon><School /></el-icon><span>学院管理</span></el-menu-item>
+                <el-menu-item index="/major"><el-icon><Collection /></el-icon><span>专业管理</span></el-menu-item>
+                <el-menu-item index="/class"><el-icon><Grid /></el-icon><span>班级管理</span></el-menu-item>
+                <el-menu-item index="/classroom"><el-icon><HomeFilled /></el-icon><span>教室管理</span></el-menu-item>
+              </el-sub-menu>
+              <el-sub-menu index="people">
+                <template #title><el-icon><UserFilled /></el-icon><span>人员管理</span></template>
+                <el-menu-item index="/teacher"><el-icon><Avatar /></el-icon><span>教师管理</span></el-menu-item>
+                <el-menu-item index="/student"><el-icon><User /></el-icon><span>学生管理</span></el-menu-item>
+              </el-sub-menu>
+              <el-sub-menu index="teaching">
+                <template #title><el-icon><Reading /></el-icon><span>教学管理</span></template>
+                <el-menu-item index="/semester"><el-icon><Calendar /></el-icon><span>学期管理</span></el-menu-item>
+                <el-menu-item index="/course"><el-icon><Notebook /></el-icon><span>课程管理</span></el-menu-item>
+                <el-menu-item index="/course-schedule"><el-icon><Timer /></el-icon><span>排课管理</span></el-menu-item>
+                <el-menu-item index="/course-selection-period"><el-icon><Clock /></el-icon><span>选课时段</span></el-menu-item>
+                <el-menu-item index="/score-entry"><el-icon><Tickets /></el-icon><span>成绩管理</span></el-menu-item>
+                <el-menu-item index="/makeup-exam"><el-icon><EditPen /></el-icon><span>补考管理</span></el-menu-item>
+              </el-sub-menu>
+              <el-sub-menu index="library">
+                <template #title><el-icon><Reading /></el-icon><span>图书管理</span></template>
+                <el-menu-item index="/book-category"><el-icon><FolderOpened /></el-icon><span>图书分类</span></el-menu-item>
+                <el-menu-item index="/book"><el-icon><CollectionTag /></el-icon><span>图书管理</span></el-menu-item>
+                <el-menu-item index="/borrow-record"><el-icon><Document /></el-icon><span>借阅记录</span></el-menu-item>
+              </el-sub-menu>
+              <el-sub-menu index="facility">
+                <template #title><el-icon><Monitor /></el-icon><span>设施管理</span></template>
+                <el-menu-item index="/seat"><el-icon><Place /></el-icon><span>座位管理</span></el-menu-item>
+              </el-sub-menu>
+              <el-sub-menu index="campus">
+                <template #title><el-icon><Management /></el-icon><span>校园管理</span></template>
+                <el-menu-item index="/notice"><el-icon><Bell /></el-icon><span>通知管理</span></el-menu-item>
+                <el-menu-item index="/leave-approval"><el-icon><Checked /></el-icon><span>请假审批</span></el-menu-item>
+                <el-menu-item index="/reschedule-approval"><el-icon><RefreshRight /></el-icon><span>调课审批</span></el-menu-item>
+              </el-sub-menu>
+              <el-menu-item index="/ai-assistant">
+                <el-icon><Cpu /></el-icon><span>AI 智慧助手</span>
+              </el-menu-item>
+            </template>
 
-            <el-sub-menu index="org">
-              <template #title>
-                <el-icon><OfficeBuilding /></el-icon>
-                <span>组织架构</span>
-              </template>
-              <el-menu-item index="/college">
-                <el-icon><School /></el-icon>
-                <span>学院管理</span>
+            <!-- ========== 教师菜单 ========== -->
+            <template v-else-if="userType === 'teacher'">
+              <el-menu-item index="/teacher/dashboard">
+                <el-icon><Odometer /></el-icon><span>工作台</span>
               </el-menu-item>
-              <el-menu-item index="/major">
-                <el-icon><Collection /></el-icon>
-                <span>专业管理</span>
+              <el-menu-item index="/teacher/timetable">
+                <el-icon><Timer /></el-icon><span>我的课表</span>
               </el-menu-item>
-              <el-menu-item index="/class">
-                <el-icon><Grid /></el-icon>
-                <span>班级管理</span>
+              <el-menu-item index="/teacher/score">
+                <el-icon><Tickets /></el-icon><span>成绩录入</span>
               </el-menu-item>
-              <el-menu-item index="/classroom">
-                <el-icon><HomeFilled /></el-icon>
-                <span>教室管理</span>
+              <el-menu-item index="/teacher/leave-approval">
+                <el-icon><Checked /></el-icon><span>请假审批</span>
               </el-menu-item>
-            </el-sub-menu>
+              <el-menu-item index="/teacher/reschedule">
+                <el-icon><Refresh /></el-icon><span>调课申请</span>
+              </el-menu-item>
+              <el-menu-item index="/teacher/notices">
+                <el-icon><Bell /></el-icon><span>通知公告</span>
+              </el-menu-item>
+              <el-menu-item index="/ai-assistant">
+                <el-icon><Cpu /></el-icon><span>AI 智慧助手</span>
+              </el-menu-item>
+            </template>
 
-            <el-sub-menu index="people">
-              <template #title>
-                <el-icon><UserFilled /></el-icon>
-                <span>人员管理</span>
-              </template>
-              <el-menu-item index="/teacher">
-                <el-icon><Avatar /></el-icon>
-                <span>教师管理</span>
+            <!-- ========== 学生菜单 ========== -->
+            <template v-else-if="userType === 'student'">
+              <el-menu-item index="/student/dashboard">
+                <el-icon><Odometer /></el-icon><span>工作台</span>
               </el-menu-item>
-              <el-menu-item index="/student">
-                <el-icon><User /></el-icon>
-                <span>学生管理</span>
+              <el-menu-item index="/student/timetable">
+                <el-icon><Timer /></el-icon><span>我的课表</span>
               </el-menu-item>
-            </el-sub-menu>
-
-            <el-sub-menu index="teaching">
-              <template #title>
-                <el-icon><Reading /></el-icon>
-                <span>教学管理</span>
-              </template>
-              <el-menu-item index="/semester">
-                <el-icon><Calendar /></el-icon>
-                <span>学期管理</span>
+              <el-menu-item index="/student/courses">
+                <el-icon><Notebook /></el-icon><span>选课中心</span>
               </el-menu-item>
-              <el-menu-item index="/course">
-                <el-icon><Notebook /></el-icon>
-                <span>课程管理</span>
+              <el-menu-item index="/student/scores">
+                <el-icon><Tickets /></el-icon><span>成绩查询</span>
               </el-menu-item>
-              <el-menu-item index="/course-schedule">
-                <el-icon><Timer /></el-icon>
-                <span>排课管理</span>
+              <el-menu-item index="/student/leave">
+                <el-icon><EditPen /></el-icon><span>请假申请</span>
               </el-menu-item>
-              <el-menu-item index="/course-selection-period">
-                <el-icon><Clock /></el-icon>
-                <span>选课时段</span>
+              <el-menu-item index="/student/books">
+                <el-icon><Reading /></el-icon><span>图书借阅</span>
               </el-menu-item>
-              <el-menu-item index="/score-entry">
-                <el-icon><Tickets /></el-icon>
-                <span>成绩管理</span>
+              <el-menu-item index="/student/seats">
+                <el-icon><Place /></el-icon><span>座位预约</span>
               </el-menu-item>
-              <el-menu-item index="/makeup-exam">
-                <el-icon><EditPen /></el-icon>
-                <span>补考管理</span>
+              <el-menu-item index="/student/notices">
+                <el-icon><Bell /></el-icon><span>通知公告</span>
               </el-menu-item>
-            </el-sub-menu>
-
-            <el-sub-menu index="library">
-              <template #title>
-                <el-icon><Reading /></el-icon>
-                <span>图书管理</span>
-              </template>
-              <el-menu-item index="/book-category">
-                <el-icon><FolderOpened /></el-icon>
-                <span>图书分类</span>
+              <el-menu-item index="/ai-assistant">
+                <el-icon><Cpu /></el-icon><span>AI 智慧助手</span>
               </el-menu-item>
-              <el-menu-item index="/book">
-                <el-icon><CollectionTag /></el-icon>
-                <span>图书管理</span>
-              </el-menu-item>
-              <el-menu-item index="/borrow-record">
-                <el-icon><Document /></el-icon>
-                <span>借阅记录</span>
-              </el-menu-item>
-            </el-sub-menu>
-
-            <el-sub-menu index="facility">
-              <template #title>
-                <el-icon><Monitor /></el-icon>
-                <span>设施管理</span>
-              </template>
-              <el-menu-item index="/seat">
-                <el-icon><Place /></el-icon>
-                <span>座位管理</span>
-              </el-menu-item>
-            </el-sub-menu>
-
-            <el-sub-menu index="campus">
-              <template #title>
-                <el-icon><Management /></el-icon>
-                <span>校园管理</span>
-              </template>
-              <el-menu-item index="/notice">
-                <el-icon><Bell /></el-icon>
-                <span>通知管理</span>
-              </el-menu-item>
-              <el-menu-item index="/leave-approval">
-                <el-icon><Checked /></el-icon>
-                <span>请假审批</span>
-              </el-menu-item>
-            </el-sub-menu>
-
-            <el-menu-item index="/ai-assistant">
-              <el-icon><Cpu /></el-icon>
-              <span>AI 智慧助手</span>
-            </el-menu-item>
+            </template>
           </el-menu>
         </el-aside>
         <el-main>
@@ -192,14 +172,21 @@ const route = useRoute()
 const { isDark, toggleTheme } = useTheme()
 const { connect, subscribe, disconnect } = useWebSocket()
 
+const userType = ref(localStorage.getItem('userType') || 'admin')
 const username = ref(localStorage.getItem('username') || '管理员')
 const noticeCount = ref(0)
+
+const headerTitle = computed(() => {
+  const titles = { admin: '智慧校园服务系统-管理端', teacher: '智慧校园服务系统-教师端', student: '智慧校园服务系统-学生端' }
+  return titles[userType.value] || '智慧校园服务系统'
+})
 
 const activeMenu = computed(() => route.path)
 const isLoginPage = computed(() => route.path === '/login')
 const defaultOpeneds = ref([])
 
 watch(() => route.path, () => {
+  userType.value = localStorage.getItem('userType') || 'admin'
   username.value = localStorage.getItem('username') || '管理员'
 })
 
@@ -268,7 +255,9 @@ const handleBellClick = async () => {
   try {
     await markAllNotificationsAsRead()
   } catch {}
-  router.push('/leave-approval')
+  const userType = localStorage.getItem('userType') || 'admin'
+  const redirectMap = { admin: '/leave-approval', teacher: '/teacher/leave-approval', student: '/student/notice' }
+  router.push(redirectMap[userType] || '/leave-approval')
 }
 
 

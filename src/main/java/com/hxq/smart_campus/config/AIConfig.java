@@ -2,6 +2,7 @@ package com.hxq.smart_campus.config;
 
 import com.hxq.smart_campus.model.AlibabaOpenAiChatModel;
 import com.hxq.smart_campus.service.ai.AdminAITools;
+import com.hxq.smart_campus.service.ai.TeacherAITools;
 import com.hxq.smart_campus.service.ai.UserAITools;
 import io.micrometer.observation.ObservationRegistry;
 import org.springframework.ai.chat.client.ChatClient;
@@ -58,6 +59,18 @@ public class AIConfig {
                         "当用户询问需要数据支撑的问题时，请主动调用相应的工具获取数据后再进行分析回答。" +
                         "请基于真实数据给出简洁、专业的分析报告和改进建议。")
                 .defaultTools(adminTools)
+                .build();
+    }
+
+    @Bean("teacherChatClient")
+    public ChatClient teacherChatClient(ChatClient.Builder builder, TeacherAITools teacherTools) {
+        return builder
+                .defaultSystem(
+                        "你是一个智慧校园系统的教师端AI助手，为教师提供教学管理和数据分析方面的帮助。" +
+                        "你可以调用工具来查询教师的课表、授课班级、学生成绩、请假审批、调课记录等真实数据。" +
+                        "当教师询问需要数据支撑的问题时，请主动调用相应的工具获取数据后再进行分析回答。" +
+                        "请基于真实数据给出简洁、实用、有针对性的回答，帮助教师提高教学管理效率。")
+                .defaultTools(teacherTools)
                 .build();
     }
 }

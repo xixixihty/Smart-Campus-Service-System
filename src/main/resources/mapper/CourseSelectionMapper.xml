@@ -45,7 +45,7 @@
     </select>
 
     <select id="selectDroppedRecord" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time as createTime, cs.update_time as updateTime
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -57,7 +57,7 @@
     </select>
 
     <select id="selectWaitingRecord" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time as createTime, cs.update_time as updateTime
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -112,7 +112,7 @@
     </select>
     <!-- 获取单一选课信息 -->
     <select id="getCourseSelectionListVO" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.semester_id as semesterId, cs.status, cs.score, cs.score_point, cs.create_time as createTime, cs.update_time as updateTime
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.semester_id as semesterId, cs.status, cs.score, cs.score_point
         from course_selection cs
         left join course c on cs.course_id = c.id
         left join student stu on cs.student_id = stu.id
@@ -121,7 +121,7 @@
     </select>
     <!-- 查询选课列表 -->
     <select id="getCourseSelectionList" resultType="com.hxq.smart_campus.entity.vo.CourseSelectionListVO">
-        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point, cs.create_time as createTime, cs.update_time as updateTime
+        select cs.id, cs.course_id, cs.student_id as studentId, stu.name as student_name, c.course_name, c.credit, s.name as semester_name, cs.status, cs.score, cs.score_point
         from course_selection cs
                  left join course c on cs.course_id = c.id
                  left join student stu on cs.student_id = stu.id

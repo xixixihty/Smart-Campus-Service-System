@@ -33,7 +33,7 @@ public interface CourseMapper {
      * @param id
      * @return
      */
-    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time, usual_weight, final_weight from course where id = #{id}")
+    @Select("select id, course_code, course_name, credit, hours, type, status, capacity, create_time, update_time from course where id = #{id}")
     CourseDetailVO getCourseDetail(Long id);
     /**
      * 新增课程

@@ -224,3 +224,112 @@ html.dark .ai-assistant-page .tip-text {
 html.dark .ai-assistant-page .main-card {
   background: #1d1d1d !important;
 }
+
+/* ============================================================
+ * 教师端 & 学生端 暗色模式覆盖
+ * ============================================================ */
+
+/* ---- 页面容器 ---- */
+html.dark .page-header h2 {
+  color: #e5e5e5 !important;
+}
+
+/* ---- 统计卡片 ---- */
+html.dark .stat-card {
+  background: #1d1d1d !important;
+}
+
+html.dark .stat-value {
+  color: #e5e5e5 !important;
+}
+
+html.dark .stat-label {
+  color: #a3a3a3 !important;
+}
+
+/* ---- 卡片头部 ---- */
+html.dark .card-header {
+  color: #e5e5e5 !important;
+}
+
+/* ---- 通知列表 ---- */
+html.dark .notice-item {
+  border-bottom-color: #333 !important;
+}
+
+html.dark .notice-title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .notice-title:hover {
+  color: #409EFF !important;
+}
+
+html.dark .notice-time {
+  color: #737373 !important;
+}
+
+/* ---- 快捷操作 ---- */
+html.dark .quick-action {
+  background: #1a1a1a !important;
+}
+
+html.dark .quick-action span {
+  color: #a3a3a3 !important;
+}
+
+html.dark .quick-action:hover {
+  background: #262626 !important;
+}
+
+/* ---- 加载骨架屏 / 错误区 ---- */
+html.dark .loading-area,
+html.dark .error-area {
+  background: #1d1d1d !important;
+}
+
+/* ---- 图表容器 ---- */
+html.dark .chart-container canvas {
+  filter: brightness(0.9);
+}
+
+/* ---- 表格（全局） ---- */
+html.dark .el-table {
+  --el-table-bg-color: #1d1d1d;
+  --el-table-tr-bg-color: #1d1d1d;
+  --el-table-header-bg-color: #252525;
+  --el-table-row-hover-bg-color: #2a2a2a;
+  --el-table-border-color: #333;
+  --el-table-text-color: #e5e5e5;
+  --el-table-header-text-color: #e5e5e5;
+}
+
+/* ---- 搜索表单卡片 ---- */
+html.dark .search-form .el-card,
+html.dark .table-card .el-card {
+  background: #1d1d1d !important;
+}
+
+/* ---- 空状态描述 ---- */
+html.dark .el-empty__description p {
+  color: #737373 !important;
+}
+
+/* ---- 结果组件 ---- */
+html.dark .el-result__title {
+  color: #e5e5e5 !important;
+}
+
+html.dark .el-result__subtitle {
+  color: #a3a3a3 !important;
+}
+
+/* ---- 教师工作台 ---- */
+html.dark .teacher-dashboard .page-title {
+  color: #e5e5e5 !important;
+}
+
+/* ---- 学生工作台 ---- */
+html.dark .student-dashboard .page-title {
+  color: #e5e5e5 !important;
+}

@@ -1,6 +1,7 @@
 package com.hxq.smart_campus.controller.user;
 
 import com.hxq.smart_campus.entity.vo.StudentCourseVO;
+import com.hxq.smart_campus.entity.vo.StudentDashboardVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.CourseScheduleService;
@@ -67,5 +68,18 @@ public class CourseScheduleUserController {
         log.info("获取我的全部课程: semesterId={}, studentId={}", semesterId, studentId);
         List<StudentCourseVO> result = courseScheduleService.getStudentAllCourses(semesterId, studentId);
         return Result.success(result);
+    }
+
+    /**
+     * 获取学生工作台统计数据
+     * @return
+     */
+    @GetMapping("/dashboard")
+    @Operation(summary = "获取学生工作台统计数据")
+    public Result<StudentDashboardVO> getDashboardStats() {
+        Long studentId = SecurityUtils.getCurrentUserId();
+        log.info("获取学生工作台统计数据: studentId={}", studentId);
+        StudentDashboardVO dashboard = courseScheduleService.getStudentDashboardStats(studentId);
+        return Result.success(dashboard);
     }
 }

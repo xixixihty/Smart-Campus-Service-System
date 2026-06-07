@@ -3,11 +3,9 @@ package com.hxq.smart_campus.service.impl;
 import com.hxq.smart_campus.entity.dto.CourseRescheduleCreateDTO;
 import com.hxq.smart_campus.entity.vo.CourseRescheduleVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
-import com.hxq.smart_campus.entity.vo.LeaveRequestDetailVO;
 import com.hxq.smart_campus.exception.BusinessException;
 import com.hxq.smart_campus.mapper.CourseRescheduleMapper;
 import com.hxq.smart_campus.mapper.CourseScheduleMapper;
-import com.hxq.smart_campus.mapper.LeaveApprovalMapper;
 import com.hxq.smart_campus.service.CourseRescheduleService;
 import com.hxq.smart_campus.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
@@ -26,34 +23,19 @@ import static com.hxq.smart_campus.constant.MessageConstant.*;
 public class CourseRescheduleServiceImpl implements CourseRescheduleService {
 
     private final CourseRescheduleMapper courseRescheduleMapper;
-    private final LeaveApprovalMapper leaveApprovalMapper;
     private final CourseScheduleMapper courseScheduleMapper;
 
     @Override
     @Transactional
     public List<CourseRescheduleVO> createReschedule(CourseRescheduleCreateDTO dto) {
-        if (dto == null || dto.getLeaveRequestId() == null) {
+        if (dto == null) {
             throw new IllegalArgumentException("调课参数不能为空");
         }
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
             throw new IllegalArgumentException("请至少选择一门课程进行调课");
         }
 
-        LeaveRequestDetailVO leave = leaveApprovalMapper.getLeaveRequestDetail(dto.getLeaveRequestId());
-        if (leave == null) {
-            throw new BusinessException("请假申请不存在");
-        }
-        if (!LEAVE_APPLY_STATUS_APPROVED.equals(leave.getStatus())) {
-            throw new BusinessException("请假申请未审批通过，无法调课");
-        }
-        if (!APPLICANT_TYPE_TEACHER.equals(leave.getApplicantType())) {
-            throw new BusinessException("仅教师可以调课");
-        }
-
         Long teacherId = SecurityUtils.getCurrentUserId();
-        if (!teacherId.equals(leave.getApplicantId())) {
-            throw new BusinessException("只能对自己的请假进行调课");
-        }
 
         for (CourseRescheduleCreateDTO.RescheduleItem item : dto.getItems()) {
             if (item.getNewWeekDay() == null || item.getNewStartSection() == null || item.getNewEndSection() == null) {
@@ -85,36 +67,20 @@ public class CourseRescheduleServiceImpl implements CourseRescheduleService {
                     throw new BusinessException("目标教室在该时间段已被占用，请选择其他教室");
                 }
             }
-            // 校验调课日期必须在请假时间范围内
-            if (leave.getStartTime() != null && leave.getEndTime() != null) {
-                if (item.getNewWeekDay() != null) {
-                    int leaveStartDayOfWeek = leave.getStartTime().getDayOfWeek().getValue();
-                    int leaveEndDayOfWeek = leave.getEndTime().getDayOfWeek().getValue();
-                    int newDay = item.getNewWeekDay();
-                    // 周一=1 ... 周日=7，java.time的DayOfWeek也是周一=1
-                    boolean inRange;
-                    if (leaveStartDayOfWeek <= leaveEndDayOfWeek) {
-                        inRange = newDay >= leaveStartDayOfWeek && newDay <= leaveEndDayOfWeek;
-                    } else {
-                        inRange = newDay >= leaveStartDayOfWeek || newDay <= leaveEndDayOfWeek;
-                    }
-                    if (!inRange) {
-                        throw new BusinessException("调课日期超出了请假时间范围，请假日期为每周"
-                                + leaveStartDayOfWeek + "至" + leaveEndDayOfWeek);
-                    }
-                }
-            }
         }
 
-        List<CourseRescheduleVO> results = new ArrayList<>();
         for (CourseRescheduleCreateDTO.RescheduleItem item : dto.getItems()) {
+            // A3: 将顶层调课原因赋到每个调课项
+            if (dto.getReason() != null) {
+                item.setReason(dto.getReason());
+            }
             int row = courseRescheduleMapper.insert(item, dto.getLeaveRequestId(), teacherId);
             if (row <= 0) {
                 throw new BusinessException("调课创建失败");
             }
         }
 
-        return courseRescheduleMapper.getRescheduleListByLeaveRequest(dto.getLeaveRequestId());
+        return courseRescheduleMapper.getRescheduleListByTeacher(teacherId);
     }
 
     @Override
@@ -136,6 +102,9 @@ public class CourseRescheduleServiceImpl implements CourseRescheduleService {
         CourseRescheduleVO vo = courseRescheduleMapper.getRescheduleDetail(id);
         if (vo == null) {
             throw new BusinessException("调课记录不存在");
+        }
+        if (!RESCHEDULE_STATUS_PENDING.equals(vo.getStatus())) {
+            throw new BusinessException("只能取消待审批的调课记录");
         }
         // 管理员可以取消任意调课，教师只能取消自己的调课
         if (!USER_TYPE_ADMIN.equals(currentUserType) && !currentUserId.equals(vo.getTeacherId())) {
@@ -185,16 +154,18 @@ public class CourseRescheduleServiceImpl implements CourseRescheduleService {
         if (!RESCHEDULE_STATUS_PENDING.equals(vo.getStatus())) {
             throw new BusinessException("该调课记录已处理");
         }
-        int row = courseRescheduleMapper.approveReschedule(id);
+        Long adminId = SecurityUtils.getCurrentUserId();
+        int row = courseRescheduleMapper.approveReschedule(id, adminId);
         if (row <= 0) {
             throw new BusinessException("调课审批失败");
         }
-        // 将调课变更应用到排课表
+        // 将调课变更应用到排课表（同步更新时间、周次、教室）
         courseRescheduleMapper.applyRescheduleToSchedule(
                 vo.getCourseScheduleId(),
                 vo.getNewWeekDay(),
                 vo.getNewStartSection(),
                 vo.getNewEndSection(),
+                vo.getNewWeekRange(),
                 vo.getNewClassroomId()
         );
     }

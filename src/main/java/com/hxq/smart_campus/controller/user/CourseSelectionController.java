@@ -56,15 +56,15 @@ public class CourseSelectionController {
         return Result.success(courseSelectionResponseDTO);
     }
     /**
-     * 学生选课
-     * @param id
+     * 学生退课
+     * @param courseId 课程ID
      * @return
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{courseId}")
     @Operation(summary = "学生退课")
-    public Result<Boolean> dropCourse(@PathVariable Long id) {
-        log.info("学生退课，id：{}", id);
-        boolean b = courseSelectionService.dropCourse(id);
+    public Result<Boolean> dropCourse(@PathVariable Long courseId) {
+        log.info("学生退课，courseId：{}", courseId);
+        boolean b = courseSelectionService.dropCourse(courseId);
         return Result.success(b);
     }
 

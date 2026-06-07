@@ -44,3 +44,7 @@ application-local.yml
 面试/
 loggerAI
 hs_err_pid*.log
+logADMIN
+logTeacher
+logUser
+logger

@@ -30,12 +30,15 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center"/>
         <el-table-column prop="courseName" label="课程名称" min-width="180" align="center" />
         <el-table-column prop="courseCode" label="课程代码" width="120" align="center" />
-        <el-table-column prop="status" label="状态" width="80" align="center"/>
-        <el-table-column prop="status" label="状态" width="80" align="center" />
+        <el-table-column prop="status" label="状态" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.status === '开课' ? 'success' : 'info'" size="small">{{ row.status }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="type" label="课程类型" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.type === '必修' ? 'success' : row.type === '选修' ? 'warning' : 'info'" size="small">

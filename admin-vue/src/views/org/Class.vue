@@ -28,7 +28,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="className" label="班级名称" min-width="150" align="center" />
         <el-table-column prop="majorName" label="所属专业" width="130" align="center"/>

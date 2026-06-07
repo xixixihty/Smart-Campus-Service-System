@@ -4,8 +4,8 @@
     <el-container>
       <el-header>
         <div class="header-left">
-          <img src="/favicon.svg" class="header-logo" alt="Logo" />
-          <span class="header-title">智慧校园 - 教师端</span>
+          <img src="/logo.svg" class="header-logo" alt="Logo" />
+          <span class="header-title">智慧校园服务系统-教师端</span>
         </div>
         <div class="header-right">
           <el-badge :value="unreadCount" :hidden="unreadCount === 0">
@@ -90,6 +90,17 @@
                 <span>通知中心</span>
               </el-menu-item>
             </el-sub-menu>
+
+            <el-sub-menu index="ai">
+              <template #title>
+                <el-icon><Cpu /></el-icon>
+                <span>AI 助手</span>
+              </template>
+              <el-menu-item index="/ai-assistant">
+                <el-icon><ChatDotRound /></el-icon>
+                <span>AI 教学助手</span>
+              </el-menu-item>
+            </el-sub-menu>
           </el-menu>
         </el-aside>
         <el-main>
@@ -121,7 +132,7 @@ const unreadCount = ref(0)
 
 const activeMenu = computed(() => route.path)
 const isLoginPage = computed(() => route.path === '/login')
-const defaultOpeneds = ref(['teaching', 'campus'])
+const defaultOpeneds = ref(['teaching', 'campus', 'ai'])
 
 const fetchUnreadCount = async () => {
   try {
@@ -147,3 +158,125 @@ onMounted(() => {
   fetchUnreadCount()
 })
 </script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+.common-layout {
+  height: 100%;
+}
+
+.common-layout > .el-container {
+  height: 100%;
+}
+
+.el-header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d6aa0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+}
+
+.header-logo {
+  height: 32px;
+  width: auto;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: #fff;
+}
+
+.header-right .el-badge {
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.el-aside {
+  background-color: #304156;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.el-aside .el-menu {
+  border-right: none;
+}
+
+.el-main {
+  background-color: #f0f2f5;
+  padding: 20px;
+  min-height: 0;
+}
+
+.theme-toggle {
+  margin-left: 6px;
+  background: rgba(255,255,255,0.12) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.25) !important;
+}
+
+html.dark .theme-toggle {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+html.dark .theme-toggle:hover {
+  background: rgba(255,255,255,0.15) !important;
+}
+
+/* 页面过渡动画 */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.25s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+</style>

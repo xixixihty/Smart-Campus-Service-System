@@ -280,7 +280,7 @@ public class MessageConstant {
     /**
      * 请假申请已批准
      */
-    public static final String LEAVE_APPLY_STATUS_APPROVED = "已批准";
+    public static final String LEAVE_APPLY_STATUS_APPROVED = "已通过";
     /**
      * 请假申请已驳回
      */
@@ -364,10 +364,10 @@ public class MessageConstant {
     /**
      * 审批结果-批准
      */
-    public static final String APPROVAL_RESULT_APPROVED = "批准";
+    public static final String APPROVAL_RESULT_APPROVED = "approved";
     /**
      * 审批结果-驳回
      */
-    public static final String APPROVAL_RESULT_REJECTED = "驳回";
+    public static final String APPROVAL_RESULT_REJECTED = "rejected";
 
 }

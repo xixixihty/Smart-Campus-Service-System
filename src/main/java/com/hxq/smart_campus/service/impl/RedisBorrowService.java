@@ -116,6 +116,9 @@ public class RedisBorrowService {
             java.util.List<Long> bookIds = entry.getValue();
             String borrowedKey = "book:borrowed:" + userId;
             
+            // 先清除旧缓存，再同步数据库最新数据
+            redisTemplate.delete(borrowedKey);
+            
             // 使用Set批量添加
             String[] bookIdStrs = bookIds.stream().map(String::valueOf).toArray(String[]::new);
             redisTemplate.opsForSet().add(borrowedKey, bookIdStrs);

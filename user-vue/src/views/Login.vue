@@ -92,7 +92,7 @@
           <div class="card-footer">
             <div class="test-account">
               <el-icon :size="14"><InfoFilled /></el-icon>
-              <span>测试账号：20233001 / Password123!</span>
+              <span>测试账号：20211001001 / Password123!</span>
             </div>
           </div>
         </div>

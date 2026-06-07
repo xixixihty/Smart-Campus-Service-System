@@ -19,10 +19,10 @@ public interface CourseSelectionService {
 
     /**
      * 学生退课
-     * @param id
+     * @param courseId 课程ID
      * @return
      */
-    boolean dropCourse(Long id);
+    boolean dropCourse(Long courseId);
 
     /**
      * 查询学生选课列表

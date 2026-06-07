@@ -9,6 +9,7 @@ import com.hxq.smart_campus.entity.vo.ConflictCheckResultVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleDetailVO;
 import com.hxq.smart_campus.entity.vo.CourseScheduleListVO;
 import com.hxq.smart_campus.entity.vo.StudentCourseVO;
+import com.hxq.smart_campus.entity.vo.StudentDashboardVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 
 import java.util.List;
@@ -73,4 +74,11 @@ public interface CourseScheduleService {
      * @return
      */
     List<StudentCourseVO> getStudentAllCourses(Long semesterId, Long studentId);
+
+    /**
+     * 获取学生工作台统计数据
+     * @param studentId 学生ID
+     * @return
+     */
+    StudentDashboardVO getStudentDashboardStats(Long studentId);
 }

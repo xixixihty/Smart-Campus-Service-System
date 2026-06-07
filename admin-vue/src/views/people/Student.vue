@@ -36,13 +36,13 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="70" align="center" />
         <el-table-column prop="studentNo" label="学号" width="130" align="center" />
         <el-table-column prop="name" label="姓名" width="100" />
         <el-table-column prop="gender" label="性别" width="70" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.gender === '男' ? '' : 'danger'" size="small">{{ row.gender }}</el-tag>
+            <el-tag :type="row.gender === '男' ? 'info' : 'danger'" size="small">{{ row.gender }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="className" label="所属班级" min-width="160" align="center" />
@@ -57,10 +57,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
-        <el-table-column label="操作" width="240" align="center" fixed="right">
+        <el-table-column label="操作" width="300" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
+            <el-button type="warning" link @click="handleResetPwd(row)"><el-icon><Lock /></el-icon>重置密码</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
@@ -79,7 +80,7 @@
         <el-descriptions-item label="学号">{{ detailData.studentNo }}</el-descriptions-item>
         <el-descriptions-item label="姓名">{{ detailData.name }}</el-descriptions-item>
         <el-descriptions-item label="性别">
-          <el-tag :type="detailData.gender === '男' ? '' : 'danger'" size="small">{{ detailData.gender }}</el-tag>
+          <el-tag :type="detailData.gender === '男' ? 'info' : 'danger'" size="small">{{ detailData.gender }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="所属班级">{{ detailData.className }}</el-descriptions-item>
         <el-descriptions-item label="入学日期">{{ detailData.enrollmentDate }}</el-descriptions-item>
@@ -190,7 +191,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getStudentList, getStudentDetail, createStudent, updateStudent, deleteStudent } from '@/api/student'
+import { getStudentList, getStudentDetail, createStudent, updateStudent, deleteStudent, resetStudentPassword } from '@/api/student'
 import { getCollegeList } from '@/api/college'
 import { getMajorList } from '@/api/major'
 import { getClassList } from '@/api/class'
@@ -338,6 +339,12 @@ const handleEdit = async (row) => {
   await nextTick()
   dialogVisible.value = true
 }
+const handleResetPwd = (row) => {
+  ElMessageBox.confirm(`确定要重置学生 ${row.name} 的密码吗？`, '提示', { type: 'warning' }).then(async () => {
+    await resetStudentPassword(row.id); ElMessage.success('密码重置成功')
+  }).catch(() => {})
+}
+
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该学生吗？', '提示', { type: 'warning' }).then(async () => {
     await deleteStudent(row.id); ElMessage.success('删除成功'); fetchData()

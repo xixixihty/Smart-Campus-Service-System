@@ -16,6 +16,7 @@ public class SeatScheduleVO {
     public static class TimeSlotVO {
         private String time;
         private Boolean available;
+        private String reason;      // 不可用原因: PASSED=已过期, BOOKED=已预约
         private String reservedBy;
     }
 }

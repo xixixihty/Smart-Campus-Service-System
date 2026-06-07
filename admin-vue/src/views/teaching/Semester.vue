@@ -28,7 +28,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="学期名称" min-width="180"  align="center" />
         <el-table-column prop="startDate" label="开始日期" width="120" align="center" />

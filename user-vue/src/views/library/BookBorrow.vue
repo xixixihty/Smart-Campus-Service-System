@@ -65,7 +65,8 @@
               <el-button type="info" size="small" @click="handlePreview(row)">
                 <el-icon><View /></el-icon>详情
               </el-button>
-              <el-button type="primary" size="small" :disabled="row.availableQuantity <= 0" @click="handleBorrow(row)">
+              <el-tag v-if="borrowedBookIds.has(row.id)" type="warning" size="small">已借</el-tag>
+              <el-button v-else type="primary" size="small" :disabled="row.availableCopies <= 0" @click="handleBorrow(row)">
                 <el-icon><Reading /></el-icon>借阅
               </el-button>
             </div>
@@ -147,7 +148,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { View, Reading } from '@element-plus/icons-vue'
-import { borrowBook } from '@/api/borrowRecord'
+import { borrowBook, getMyBorrows } from '@/api/borrowRecord'
 import request from '@/utils/request'
 
 const loading = ref(false)
@@ -159,13 +160,22 @@ const previewBook = ref(null)
 const tableData = ref([])
 const total = ref(0)
 const categoryOptions = ref([])
+const borrowedBookIds = ref(new Set())
 
-const queryForm = reactive({ pageNum: 1, pageSize: 10, bookName: '', author: '', categoryId: '' })
+const queryForm = reactive({ pageNum: 1, pageSize: 10, keyword: '', categoryId: '' })
+
+const fetchBorrowedBooks = async () => {
+  try {
+    const res = await getMyBorrows({ status: '借阅中', pageNum: 1, pageSize: 100 })
+    const list = res.data.list || []
+    borrowedBookIds.value = new Set(list.map(item => item.bookId).filter(Boolean))
+  } catch {}
+}
 
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await request.get('/books/admin', { params: queryForm })
+    const res = await request.get('/books/user', { params: queryForm })
     tableData.value = res.data.list || []
     total.value = res.data.total || 0
   } finally { loading.value = false }
@@ -197,11 +207,13 @@ const handleBorrowSubmit = async () => {
     await borrowBook({ bookId: currentBook.value.id })
     ElMessage.success('借阅成功')
     borrowVisible.value = false
+    // 借阅成功后刷新已借列表和图书列表
+    fetchBorrowedBooks()
     fetchData()
   } finally { borrowLoading.value = false }
 }
 
-onMounted(() => { loadCategories(); fetchData() })
+onMounted(() => { loadCategories(); fetchData(); fetchBorrowedBooks() })
 </script>
 
 <style scoped>

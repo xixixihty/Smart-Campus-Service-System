@@ -36,11 +36,11 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="applicantType" label="类型" width="80" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.applicantType === 'STUDENT' ? '' : 'success'" size="small">
+            <el-tag :type="row.applicantType === 'STUDENT' ? 'primary' : 'success'" size="small">
               {{ row.applicantType === 'STUDENT' ? '学生' : '教师' }}
             </el-tag>
           </template>
@@ -140,14 +140,14 @@
           <el-timeline-item
             v-for="(log, index) in detailForm.approvalLogs"
             :key="index"
-            :type="log.result === '批准' ? 'success' : 'danger'"
+            :type="log.result === 'approved' ? 'success' : 'danger'"
             :timestamp="formatDateTime(log.approveTime)"
             placement="top"
           >
             <el-card shadow="hover">
               <p><strong>审批人：</strong>{{ log.approverName }}</p>
               <p><strong>审批结果：</strong>
-                <span :class="log.result === '批准' ? 'result-approved' : 'result-rejected'">{{ log.result }}</span>
+                <span :class="log.result === 'approved' ? 'result-approved' : 'result-rejected'">{{ log.result === 'approved' ? '批准' : '驳回' }}</span>
               </p>
               <p v-if="log.comment"><strong>审批意见：</strong>{{ log.comment }}</p>
             </el-card>
@@ -198,7 +198,7 @@ const approveForm = reactive({ status: '', comment: '' })
 
 const getLeaveTypeColor = (type) => {
   const colorMap = { '事假': 'warning', '病假': 'danger', '公假': 'success' }
-  return colorMap[type] || ''
+  return colorMap[type] || 'info'
 }
 
 const formatDateTime = (dateTime) => {
@@ -273,8 +273,8 @@ const handleApprove = (row, status) => {
 const handleApproveSubmit = async () => {
   approveLoading.value = true
   try {
-    const result = approveForm.status === '已批准' ? '批准' : '驳回'
-    await approveLeaveRequest(currentRow.value.id, { result: result, comment: approveForm.comment })
+    const action = approveForm.status === '已批准' ? 'approved' : 'rejected'
+    await approveLeaveRequest(currentRow.value.id, { action: action, comment: approveForm.comment })
     ElMessage.success('审批完成')
     approveVisible.value = false
     fetchData()

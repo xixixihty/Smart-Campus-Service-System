@@ -92,14 +92,14 @@ public interface BorrowRecordMapper {
     /**
      * 直接插入借阅记录（MQ消费者使用，带borrow_no）
      */
-    @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_no, borrow_date, due_date, status, create_time, update_time) " +
-            "VALUES (#{userId}, #{bookId}, #{borrowNo}, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), '借出中', now(), now())")
+    @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_no, borrow_date, due_date, status) " +
+            "VALUES (#{userId}, #{bookId}, #{borrowNo}, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), '借阅中')")
     int insertBorrowRecordDirect(@Param("userId") Long userId, @Param("bookId") Long bookId, @Param("borrowNo") String borrowNo);
 
     /**
      * 根据borrow_no归还图书
      */
-    @Update("UPDATE borrow_record SET status = '已归还', return_date = CURDATE(), update_time = now() WHERE borrow_no = #{borrowNo}")
+    @Update("UPDATE borrow_record SET status = '已归还', return_date = CURDATE() WHERE borrow_no = #{borrowNo}")
     int returnBookByBorrowNo(@Param("borrowNo") String borrowNo);
 
     /**
@@ -107,6 +107,6 @@ public interface BorrowRecordMapper {
      * @return 借阅记录列表
      */
     @Select("SELECT id, borrow_no as borrowNo, user_id as userId, book_id as bookId, status " +
-            "FROM borrow_record WHERE status IN ('借出中', '逾期')")
+            "FROM borrow_record WHERE status IN ('借阅中', '逾期')")
     List<Map<String, Object>> getActiveBorrowRecords();
 }

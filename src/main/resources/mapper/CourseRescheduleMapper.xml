@@ -9,25 +9,25 @@
             leave_request_id, course_schedule_id, teacher_id,
             original_week_day, original_start_section, original_end_section, original_week_range, original_classroom_id,
             new_week_day, new_start_section, new_end_section, new_week_range, new_classroom_id,
-            reason
+            reason, status
         )
         select
             #{leaveRequestId}, #{dto.courseScheduleId}, #{teacherId},
             cs.week_day, cs.start_section, cs.end_section, cs.week_range, cs.classroom_id,
-            #{dto.newWeekDay}, #{dto.newStartSection}, #{dto.newEndSection}, #{dto.newWeekRange}, #{dto.newClassroomId},
-            #{dto.reason}
+            #{dto.newWeekDay}, #{dto.newStartSection}, #{dto.newEndSection}, coalesce(#{dto.newWeekRange}, cs.week_range), #{dto.newClassroomId},
+            #{dto.reason}, '待确认'
         from course_schedule cs
         where cs.id = #{dto.courseScheduleId}
     </insert>
 
     <update id="confirmReschedule">
         update course_reschedule set status = '已确认', update_time = now()
-        where id = #{id}
+        where id = #{id} and status = '待确认'
     </update>
 
     <update id="cancelReschedule">
         update course_reschedule set status = '已取消', update_time = now()
-        where id = #{id}
+        where id = #{id} and status = '待确认'
     </update>
 
     <select id="getRescheduleListByLeaveRequest" resultType="com.hxq.smart_campus.entity.vo.CourseRescheduleVO">
@@ -147,9 +147,13 @@
         order by cr.id desc
     </select>
 
-    <!-- 确认调课并更新排课表 -->
+    <!-- 确认调课并更新排课表（管理员审批通过） -->
     <update id="approveReschedule">
-        update course_reschedule set status = '已确认', update_time = now()
+        update course_reschedule
+        set status = '已确认',
+            approver_id = #{adminId},
+            approve_time = now(),
+            update_time = now()
         where id = #{id} and status = '待确认'
     </update>
 
@@ -159,13 +163,14 @@
         where id = #{id} and status = '待确认'
     </update>
 
-    <!-- 将调课变更应用到排课表 -->
+    <!-- 将调课变更应用到排课表（仅更新非空字段） -->
     <update id="applyRescheduleToSchedule">
         update course_schedule
         set week_day = #{weekDay},
             start_section = #{startSection},
             end_section = #{endSection},
-            classroom_id = #{classroomId}
+            week_range = #{weekRange}
+            <if test="classroomId != null">, classroom_id = #{classroomId}</if>
         where id = #{scheduleId}
     </update>
 

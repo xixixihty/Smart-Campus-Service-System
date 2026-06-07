@@ -1,9 +1,12 @@
 package com.hxq.smart_campus.controller.teacher;
 
 import com.hxq.smart_campus.entity.dto.CourseRescheduleCreateDTO;
+import com.hxq.smart_campus.entity.vo.ClassroomListVO;
 import com.hxq.smart_campus.entity.vo.CourseRescheduleVO;
 import com.hxq.smart_campus.result.Result;
+import com.hxq.smart_campus.service.ClassroomService;
 import com.hxq.smart_campus.service.CourseRescheduleService;
+import com.github.pagehelper.PageInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +26,12 @@ import java.util.List;
 public class TeacherCourseRescheduleController {
 
     private final CourseRescheduleService courseRescheduleService;
+    private final ClassroomService classroomService;
 
     @PostMapping("/reschedule")
     @Operation(summary = "创建调课申请")
     public Result<List<CourseRescheduleVO>> createReschedule(@Valid @RequestBody CourseRescheduleCreateDTO dto) {
-        log.info("教师创建调课申请: leaveRequestId={}, itemCount={}", dto.getLeaveRequestId(),
+        log.info("教师创建调课申请: reason={}, itemCount={}", dto.getReason(),
                 dto.getItems() != null ? dto.getItems().size() : 0);
         List<CourseRescheduleVO> result = courseRescheduleService.createReschedule(dto);
         return Result.success(result);
@@ -63,5 +67,14 @@ public class TeacherCourseRescheduleController {
         log.info("教师取消调课: id={}", id);
         courseRescheduleService.cancelReschedule(id);
         return Result.success();
+    }
+
+    @GetMapping("/classrooms")
+    @Operation(summary = "获取教室列表（用于调课选择）")
+    public Result<PageInfo<ClassroomListVO>> getClassrooms(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "200") Integer pageSize) {
+        PageInfo<ClassroomListVO> pageInfo = classroomService.getClassroomList(pageNum, pageSize, null, null, null);
+        return Result.success(pageInfo);
     }
 }

@@ -40,13 +40,10 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
         <el-table-column prop="semesterName" label="学期名称" width="130" align="center" />
-        <el-table-column prop="semesterName" label="学期名称" width="130" align="center" />
-        <el-table-column prop="teacherName" label="授课教师" width="100" align="center" />
-        <el-table-column prop="classroomName" label="教室" width="130" align="center" />
         <el-table-column prop="teacherName" label="授课教师" width="100" align="center" />
         <el-table-column prop="classroomName" label="教室" width="130" align="center" />
         <el-table-column prop="classNames" label="授课班级名称" width="150" />

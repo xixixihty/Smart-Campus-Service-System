@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -156,4 +157,33 @@ public interface CourseScheduleMapper {
      * 删除排课班级关联
      */
     int deleteCourseScheduleClasses(@Param("scheduleId") Long scheduleId);
+
+    // ============ 学生Dashboard相关 ============
+
+    /**
+     * 统计学生已选课程数
+     */
+    @Select("SELECT COUNT(*) FROM course_selection WHERE student_id = #{studentId} AND status = '已选'")
+    Integer countStudentCourses(@Param("studentId") Long studentId);
+
+    /**
+     * 获取学生平均成绩
+     */
+    @Select("SELECT AVG(score) FROM course_selection WHERE student_id = #{studentId} AND score IS NOT NULL")
+    BigDecimal getStudentAvgScore(@Param("studentId") Long studentId);
+
+    /**
+     * 统计学生待审批请假数
+     */
+    @Select("SELECT COUNT(*) FROM leave_request WHERE student_id = #{studentId} AND status = '待审批'")
+    Integer countStudentLeaves(@Param("studentId") Long studentId);
+
+    /**
+     * 统计学生今日课程数
+     */
+    @Select("SELECT COUNT(DISTINCT cs.schedule_id) FROM course_schedule cs " +
+            "LEFT JOIN course_schedule_classes csc ON cs.id = csc.schedule_id " +
+            "LEFT JOIN student s ON s.class_id = csc.class_id " +
+            "WHERE s.id = #{studentId} AND cs.week_day = #{weekDay}")
+    Integer countTodayCourses(@Param("studentId") Long studentId, @Param("weekDay") int weekDay);
 }

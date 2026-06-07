@@ -63,9 +63,9 @@
         <h4>当日时段占用情况</h4>
         <div class="time-schedule">
           <div v-for="slot in seatSchedule" :key="slot.time" 
-            class="time-slot" :class="{ 'slot-occupied': !slot.available }">
+            class="time-slot" :class="{ 'slot-occupied': !slot.available, 'slot-passed': slot.reason === 'PASSED' }">
             <span class="slot-time">{{ slot.time }}</span>
-            <span class="slot-status">{{ slot.available ? '可选' : '已预约' }}</span>
+            <span class="slot-status">{{ slot.available ? '可选' : slot.reason === 'PASSED' ? '已过期' : '已预约' }}</span>
           </div>
         </div>
       </div>
@@ -140,9 +140,9 @@ const fetchSeatSchedule = async (seatId) => {
 
 const loadAreas = async () => {
   try {
-    const res = await request.get('/seats/admin', { params: { pageNum: 1, pageSize: 100 } })
+    const res = await request.get('/seat-reservations/user/available', { params: { date: queryForm.date } })
     const roomMap = new Map()
-    ;(res.data.list || []).forEach(s => {
+    ;(res.data || []).forEach(s => {
       if (s.roomId && !roomMap.has(s.roomId)) {
         roomMap.set(s.roomId, { id: s.roomId, name: `阅览室${s.roomId}` })
       }
@@ -292,7 +292,13 @@ onMounted(() => { loadAreas(); fetchSeats() })
   background: #fff1f0;
 }
 
+.time-slot.slot-passed {
+  background: #f5f5f5;
+  opacity: 0.6;
+}
+
 .slot-time { font-size: 12px; font-weight: 500; color: #606266; }
 .slot-status { font-size: 10px; color: #909399; margin-top: 2px; }
 .time-slot.slot-occupied .slot-status { color: #f56c6c; }
+.time-slot.slot-passed .slot-status { color: #c0c4cc; }
 </style>

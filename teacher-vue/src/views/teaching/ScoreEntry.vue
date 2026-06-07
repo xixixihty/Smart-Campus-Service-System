@@ -8,7 +8,7 @@
     <div class="toolbar">
       <span class="toolbar-label">学期：</span>
       <el-select v-model="semesterId" placeholder="请选择学期" @change="onSemesterChange" style="width: 200px">
-        <el-option v-for="s in semesterList" :key="s.id" :label="s.semesterName" :value="s.id" />
+        <el-option v-for="s in semesterList" :key="s.id" :label="s.name" :value="s.id" />
       </el-select>
       <span class="toolbar-label">课程：</span>
       <el-select v-model="courseId" placeholder="请选择课程" @change="onCourseChange" style="width: 200px">
@@ -57,14 +57,19 @@
         <el-table-column prop="studentName" label="姓名" min-width="120" />
         <el-table-column prop="usualScore" label="平时成绩" width="100" />
         <el-table-column prop="finalScore" label="期末成绩" width="100" />
-        <el-table-column prop="totalScore" label="总评成绩" width="100">
+      <el-table-column label="总评成绩" width="110">
           <template #default="{ row }">
             <span :style="{ color: row.totalScore >= 60 ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">
               {{ row.totalScore }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="scorePoint" label="绩点" width="80" />
+        <el-table-column label="绩点" width="80">
+          <template #default="{ row }">
+            <span v-if="row.scorePoint != null">{{ row.scorePoint }}</span>
+            <span v-else class="text-secondary">自动计算</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="credit" label="学分" width="80" />
         <el-table-column prop="examStatus" label="考试状态" width="100">
           <template #default="{ row }">
@@ -106,10 +111,12 @@
           <el-input-number v-model="editForm.finalScore" :min="0" :max="100" :precision="1" />
         </el-form-item>
         <el-form-item label="总评成绩">
-          <el-input-number v-model="editForm.totalScore" :min="0" :max="100" :precision="1" />
+          <span v-if="editForm.totalScore != null" style="font-size:16px;font-weight:bold;line-height:32px">{{ editForm.totalScore }}</span>
+          <span v-else class="text-secondary" style="line-height:32px">保存后将自动计算</span>
         </el-form-item>
         <el-form-item label="绩点">
-          <el-input-number v-model="editForm.scorePoint" :min="0" :max="5" :precision="1" :step="0.1" />
+          <span v-if="editForm.scorePoint != null" style="font-size:16px;font-weight:bold;line-height:32px">{{ editForm.scorePoint }}</span>
+          <span v-else class="text-secondary" style="line-height:32px">保存后将自动计算</span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -135,12 +142,12 @@
         </el-table-column>
         <el-table-column label="总评成绩" width="120">
           <template #default="{ row }">
-            <el-input-number v-model="row.totalScore" :min="0" :max="100" :precision="1" size="small" controls-position="right" />
+            <span style="line-height:32px;color:#909399">自动计算</span>
           </template>
         </el-table-column>
         <el-table-column label="绩点" width="100">
           <template #default="{ row }">
-            <el-input-number v-model="row.scorePoint" :min="0" :max="5" :precision="1" :step="0.1" size="small" controls-position="right" />
+            <span style="line-height:32px;color:#909399">自动计算</span>
           </template>
         </el-table-column>
         <el-table-column label="考试状态" width="100">
@@ -220,7 +227,10 @@ const fetchSemesters = async () => {
   try {
     const res = await getSemesterList({ pageNum: 1, pageSize: 50 })
     semesterList.value = res.data?.list || []
-    if (semesterList.value.length > 0) {
+    const current = semesterList.value.find(s => s.isCurrent)
+    if (current) {
+      semesterId.value = current.id
+    } else if (semesterList.value.length > 0) {
       semesterId.value = semesterList.value[0].id
     }
   } catch { /* ignore */ }
@@ -300,9 +310,7 @@ const submitEdit = async () => {
     await updateScore({
       id: editForm.id,
       usualScore: editForm.usualScore,
-      finalScore: editForm.finalScore,
-      totalScore: editForm.totalScore,
-      scorePoint: editForm.scorePoint
+      finalScore: editForm.finalScore
     })
     ElMessage.success('成绩修改成功')
     editVisible.value = false
@@ -314,26 +322,34 @@ const submitEdit = async () => {
 
 const openBatchDialog = () => {
   batchForm.scores = unrecordedList.value.map(s => ({
+    courseId: courseId.value,
+    semesterId: semesterId.value,
+    studentId: s.studentId,
     studentNo: s.studentNo,
     studentName: s.studentName,
-    studentId: s.id || s.studentId,
     usualScore: null,
     finalScore: null,
-    totalScore: null,
-    scorePoint: null,
     examStatus: 'NORMAL'
   }))
   batchVisible.value = true
 }
 
 const submitBatch = async () => {
+  // 过滤掉平时成绩和期末成绩都为空的学生
+  const validScores = batchForm.scores.filter(s => s.usualScore != null && s.finalScore != null)
+  if (validScores.length === 0) {
+    ElMessage.warning('请至少录入一名学生的平时成绩和期末成绩')
+    batchSubmitting.value = false
+    return
+  }
   batchSubmitting.value = true
   try {
     await batchInsertScore({
       courseId: courseId.value,
-      scoreEntries: batchForm.scores
+      semesterId: semesterId.value,
+      scoreEntries: validScores
     })
-    ElMessage.success('批量录入成功')
+    ElMessage.success(`批量录入成功，共录入 ${validScores.length} 名学生成绩`)
     batchVisible.value = false
     fetchScoreList()
     fetchScoreStats()

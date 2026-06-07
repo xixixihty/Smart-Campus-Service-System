@@ -86,6 +86,8 @@ public class TeacherDashboardService {
         fillPercentage(distribution, result.getTeachingStudentCount());
         result.setScoreDistribution(distribution);
 
+        result.setLeaveTrend(teacherDashboardMapper.getLeaveTrend(teacherId));
+
         // 写入缓存
         try {
             stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(result), DASHBOARD_CACHE_TTL, TimeUnit.MINUTES);

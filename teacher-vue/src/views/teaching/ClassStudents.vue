@@ -39,8 +39,8 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'ENABLED' ? 'success' : 'info'" size="small">
-              {{ row.status === 'ENABLED' ? '在读' : '休学' }}
+            <el-tag :type="row.status === 'ENABLED' || row.status === '正常' || row.status === '在读' ? 'success' : 'info'" size="small">
+              {{ row.status === 'ENABLED' ? '在读' : row.status === '正常' ? '正常' : row.status || '-' }}
             </el-tag>
           </template>
         </el-table-column>

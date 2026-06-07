@@ -12,7 +12,7 @@
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="学期">
           <el-select v-model="queryForm.semesterId" placeholder="请选择学期" clearable style="width: 180px">
-            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
+            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="课程">
@@ -33,7 +33,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
         <el-table-column prop="studentNo" label="学号" width="120" align="center" />
@@ -93,7 +93,7 @@
       <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="学期" prop="semesterId">
           <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">
-            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.semesterName" :value="s.id" />
+            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="课程" prop="courseId">

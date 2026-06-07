@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 
 @Data
 public class ScoreEntryListVO {
-    private Long id;                // 成绩ID
+    private Long id;                // 成绩ID（未录入成绩的学生列表中为null）
+    private Long studentId;         // 学生ID（用于未录入成绩的学生列表）
+    private Long courseId;          // 课程ID（用于未录入成绩的学生列表）
     private String courseName;      // 课程名称
     private String studentName;     // 学生姓名
     private String studentNo;       // 学号

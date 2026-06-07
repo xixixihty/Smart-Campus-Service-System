@@ -23,7 +23,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="semesterName" label="学期名称" width="180"  align="center" />
         <el-table-column prop="startTime" label="选课开始时间" width="170" align="center" />
@@ -56,9 +56,9 @@
       </el-descriptions>
       <!-- 新增/编辑：表单 -->
       <el-form v-else ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="所属学期" prop="semesterName">
-          <el-select v-model="form.semesterName" placeholder="请选择学期" style="width: 100%">  
-            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.name" />
+        <el-form-item label="所属学期" prop="semesterId">
+          <el-select v-model="form.semesterId" placeholder="请选择学期" style="width: 100%">  
+            <el-option v-for="s in semesterOptions" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
@@ -101,7 +101,7 @@ const detailData = reactive({
 const queryForm = reactive({ pageNum: 1, pageSize: 10, semesterId: '', periodName: '' })
 const form = reactive({ id: null, semesterId: '', semesterName: '', periodName: '', startTime: '', endTime: '', maxSelections: 3 })
 const rules = {
-  semesterName: [{ required: true, message: '请选择学期', trigger: 'change' }],
+  semesterId: [{ required: true, message: '请选择学期', trigger: 'change' }],
   startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
   endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
 }

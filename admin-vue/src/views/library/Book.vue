@@ -29,7 +29,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column label="封面" width="80" align="center">
           <template #default="{ row }">
@@ -162,13 +162,13 @@
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">
-            <el-form-item label="总数量" prop="totalQuantity">
-              <el-input-number v-model="form.totalQuantity" :min="1" :max="999" style="width: 100%" />
+            <el-form-item label="总数量" prop="totalCopies">
+              <el-input-number v-model="form.totalCopies" :min="1" :max="999" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="可借数量" prop="availableQuantity">
-              <el-input-number v-model="form.availableQuantity" :min="0" :max="999" style="width: 100%" />
+            <el-form-item label="可借数量" prop="availableCopies">
+              <el-input-number v-model="form.availableCopies" :min="0" :max="999" style="width: 100%" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -240,7 +240,7 @@ const detailData = reactive({
 })
 
 const queryForm = reactive({ pageNum: 1, pageSize: 10, categoryId: '', title: '', isbn: '', author: '' })
-const form = reactive({ id: null, title: '', isbn: '', author: '', publisher: '', categoryId: '', publishYear: new Date().getFullYear(), totalQuantity: 10, availableQuantity: 10, description: '', coverImage: '' })
+const form = reactive({ id: null, title: '', isbn: '', author: '', publisher: '', categoryId: '', publishYear: new Date().getFullYear(), totalCopies: 10, availableCopies: 10, description: '', coverImage: '' })
 const rules = {
   title: [{ required: true, message: '请输入书名', trigger: 'blur' }],
   isbn: [{ required: true, message: '请输入ISBN', trigger: 'blur' }],
@@ -267,7 +267,7 @@ const handleSearch = () => { queryForm.pageNum = 1; fetchData() }
 const handleReset = () => { queryForm.categoryId = ''; queryForm.title = ''; queryForm.isbn = ''; queryForm.author = ''; handleSearch() }
 const handleAdd = () => {
   isEdit.value = false; isView.value = false; dialogTitle.value = '新增图书'
-  Object.assign(form, { id: null, title: '', isbn: '', author: '', publisher: '', categoryId: '', publishYear: new Date().getFullYear(), totalQuantity: 10, availableQuantity: 10, description: '', coverImage: '' })
+  Object.assign(form, { id: null, title: '', isbn: '', author: '', publisher: '', categoryId: '', publishYear: new Date().getFullYear(), totalCopies: 10, availableCopies: 10, description: '', coverImage: '' })
   dialogVisible.value = true
 }
 

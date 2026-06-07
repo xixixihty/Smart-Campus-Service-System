@@ -267,9 +267,18 @@ public class SeatReservationServiceImpl implements SeatReservationService {
             
             LocalTime slotTime = LocalTime.parse(time);
             
+            // 如果是当天，过滤已过时段（当前时间5分钟之后的时段才可选）
+            if (date.equals(LocalDate.now()) && slotTime.isBefore(LocalTime.now().plusMinutes(5))) {
+                slot.setAvailable(false);
+                slot.setReason("PASSED");
+                timeSlots.add(slot);
+                continue;
+            }
+            
             for (SeatReservationListVO res : reservations) {
                 if (!slotTime.isBefore(res.getStartTime()) && slotTime.isBefore(res.getEndTime())) {
                     slot.setAvailable(false);
+                    slot.setReason("BOOKED");
                     slot.setReservedBy(res.getUserName());
                     break;
                 }

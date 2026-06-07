@@ -14,3 +14,6 @@ export const getTeachingCourseSchedules = () => request.get('/teacher/reschedule
 
 // 取消调课申请
 export const cancelReschedule = (id) => request.put(`/teacher/reschedule/${id}/cancel`)
+
+// 获取教室列表（用于调课选择）
+export const getClassroomList = () => request.get('/teacher/classrooms', { params: { pageSize: 200 } })

@@ -26,13 +26,13 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border>
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="teacherNo" label="工号" width="120" align="center" />
         <el-table-column prop="name" label="姓名" width="100" align="center" />
         <el-table-column prop="gender" label="性别" width="70" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.gender === '男' ? '' : 'danger'" size="small">{{ row.gender }}</el-tag>
+            <el-tag :type="row.gender === '男' ? 'info' : 'danger'" size="small">{{ row.gender }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="collegeName" label="所属学院" width="130" align="center" />
@@ -66,7 +66,7 @@
         <el-descriptions-item label="工号">{{ detailData.teacherNo }}</el-descriptions-item>
         <el-descriptions-item label="姓名">{{ detailData.name }}</el-descriptions-item>
         <el-descriptions-item label="性别">
-          <el-tag :type="detailData.gender === '男' ? '' : 'danger'" size="small">{{ detailData.gender }}</el-tag>
+          <el-tag :type="detailData.gender === '男' ? 'info' : 'danger'" size="small">{{ detailData.gender }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="所属学院">{{ detailData.collegeName }}</el-descriptions-item>
         <el-descriptions-item label="职称">{{ detailData.title }}</el-descriptions-item>
