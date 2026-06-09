@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.utils;
+package com.hxq.smart_campus.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

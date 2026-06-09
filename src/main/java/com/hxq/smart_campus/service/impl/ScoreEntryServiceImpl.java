@@ -11,7 +11,7 @@ import com.hxq.smart_campus.mapper.ScoreAuditLogMapper;
 import com.hxq.smart_campus.mapper.ScoreEntryMapper;
 import com.hxq.smart_campus.service.ScoreEntryService;
 import com.hxq.smart_campus.service.SemesterService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
 import static com.hxq.smart_campus.constant.MessageConstant.USER_TYPE_ADMIN;
@@ -209,15 +208,33 @@ public class ScoreEntryServiceImpl implements ScoreEntryService {
     }
 
     private BigDecimal calculateScorePoint(BigDecimal totalScore) {
-        if (totalScore.compareTo(new BigDecimal("90")) >= 0) return new BigDecimal("4.0");
-        if (totalScore.compareTo(new BigDecimal("85")) >= 0) return new BigDecimal("3.7");
-        if (totalScore.compareTo(new BigDecimal("82")) >= 0) return new BigDecimal("3.3");
-        if (totalScore.compareTo(new BigDecimal("78")) >= 0) return new BigDecimal("3.0");
-        if (totalScore.compareTo(new BigDecimal("75")) >= 0) return new BigDecimal("2.7");
-        if (totalScore.compareTo(new BigDecimal("72")) >= 0) return new BigDecimal("2.3");
-        if (totalScore.compareTo(new BigDecimal("68")) >= 0) return new BigDecimal("2.0");
-        if (totalScore.compareTo(new BigDecimal("64")) >= 0) return new BigDecimal("1.5");
-        if (totalScore.compareTo(new BigDecimal("60")) >= 0) return new BigDecimal("1.0");
+        if (totalScore.compareTo(new BigDecimal("90")) >= 0) {
+            return new BigDecimal("4.0");
+        }
+        if (totalScore.compareTo(new BigDecimal("85")) >= 0) {
+            return new BigDecimal("3.7");
+        }
+        if (totalScore.compareTo(new BigDecimal("82")) >= 0) {
+            return new BigDecimal("3.3");
+        }
+        if (totalScore.compareTo(new BigDecimal("78")) >= 0) {
+            return new BigDecimal("3.0");
+        }
+        if (totalScore.compareTo(new BigDecimal("75")) >= 0) {
+            return new BigDecimal("2.7");
+        }
+        if (totalScore.compareTo(new BigDecimal("72")) >= 0) {
+            return new BigDecimal("2.3");
+        }
+        if (totalScore.compareTo(new BigDecimal("68")) >= 0) {
+            return new BigDecimal("2.0");
+        }
+        if (totalScore.compareTo(new BigDecimal("64")) >= 0) {
+            return new BigDecimal("1.5");
+        }
+        if (totalScore.compareTo(new BigDecimal("60")) >= 0) {
+            return new BigDecimal("1.0");
+        }
         return BigDecimal.ZERO;
     }
 

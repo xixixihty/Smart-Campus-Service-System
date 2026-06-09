@@ -1,7 +1,7 @@
 package com.hxq.smart_campus.controller.admin;
 
 import com.hxq.smart_campus.result.Result;
-import com.hxq.smart_campus.utils.AliOSSUtils;
+import com.hxq.smart_campus.util.AliOSSUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

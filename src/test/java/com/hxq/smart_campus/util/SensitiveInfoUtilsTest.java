@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.utils;
+package com.hxq.smart_campus.util;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

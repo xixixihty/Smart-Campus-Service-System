@@ -14,7 +14,7 @@ import com.hxq.smart_campus.mapper.BookMapper;
 import com.hxq.smart_campus.mapper.BorrowRecordMapper;
 import com.hxq.smart_campus.service.BorrowRecordService;
 import com.hxq.smart_campus.service.mq.BorrowRecordProducer;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -229,17 +229,31 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     }
 
     private Integer getIntValue(Object value) {
-        if (value == null) return 0;
-        if (value instanceof Integer) return (Integer) value;
-        if (value instanceof Long) return ((Long) value).intValue();
-        if (value instanceof Number) return ((Number) value).intValue();
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Integer) {
+            return (Integer) value;
+        }
+        if (value instanceof Long) {
+            return ((Long) value).intValue();
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
         return 0;
     }
 
     private Double getDoubleValue(Object value) {
-        if (value == null) return 0.0;
-        if (value instanceof Double) return (Double) value;
-        if (value instanceof Number) return ((Number) value).doubleValue();
+        if (value == null) {
+            return 0.0;
+        }
+        if (value instanceof Double) {
+            return (Double) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
         return 0.0;
     }
 

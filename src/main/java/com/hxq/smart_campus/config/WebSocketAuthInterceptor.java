@@ -1,7 +1,6 @@
 package com.hxq.smart_campus.config;
 
-import com.hxq.smart_campus.entity.info.LoginUserInfo;
-import com.hxq.smart_campus.utils.JwtUtils;
+import com.hxq.smart_campus.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

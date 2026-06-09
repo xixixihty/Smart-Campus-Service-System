@@ -13,7 +13,7 @@ import com.hxq.smart_campus.mapper.MakeupExamMapper;
 import com.hxq.smart_campus.mapper.ScoreEntryMapper;
 import com.hxq.smart_campus.mapper.StudentMapper;
 import com.hxq.smart_campus.service.MakeupExamService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

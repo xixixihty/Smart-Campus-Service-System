@@ -5,7 +5,7 @@ import com.hxq.smart_campus.entity.vo.StudentDashboardVO;
 import com.hxq.smart_campus.entity.vo.TimetableVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.CourseScheduleService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

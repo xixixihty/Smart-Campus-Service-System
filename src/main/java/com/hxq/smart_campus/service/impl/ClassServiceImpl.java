@@ -11,13 +11,12 @@ import com.hxq.smart_campus.entity.vo.ClassListVO;
 import com.hxq.smart_campus.entity.vo.StudentBasicVO;
 import com.hxq.smart_campus.mapper.ClassMapper;
 import com.hxq.smart_campus.service.ClassService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.hxq.smart_campus.constant.MessageConstant.CLASS_STATUS_GRADUATED;

@@ -15,18 +15,15 @@ import com.hxq.smart_campus.mapper.SeatMapper;
 import com.hxq.smart_campus.mapper.SeatReservationMapper;
 import com.hxq.smart_campus.service.SeatReservationService;
 import com.hxq.smart_campus.service.mq.SeatReservationProducer;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
-
-import static com.hxq.smart_campus.constant.MessageConstant.SEAT_STATUS_FREE;
 
 @Service
 @Slf4j

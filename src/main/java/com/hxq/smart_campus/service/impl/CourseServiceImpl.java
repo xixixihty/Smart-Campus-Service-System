@@ -14,7 +14,7 @@ import com.hxq.smart_campus.mapper.CourseMapper;
 import com.hxq.smart_campus.mapper.TeacherMapper;
 import com.hxq.smart_campus.service.CourseService;
 import com.hxq.smart_campus.service.SemesterService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static com.hxq.smart_campus.constant.MessageConstant.DATE_TIME_FORMATTER;
 import static com.hxq.smart_campus.constant.RedisConstant.AVAILABLE_COURSE_KEY_PREFIX;

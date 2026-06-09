@@ -9,7 +9,7 @@ import com.hxq.smart_campus.entity.vo.*;
 import com.hxq.smart_campus.exception.BusinessException;
 import com.hxq.smart_campus.mapper.*;
 import com.hxq.smart_campus.service.NoticeService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
 import static com.hxq.smart_campus.constant.RedisConstant.MY_NOTICE_KEY_PREFIX;

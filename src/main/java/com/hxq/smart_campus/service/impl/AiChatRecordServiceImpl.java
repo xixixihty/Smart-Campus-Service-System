@@ -215,8 +215,12 @@ public class AiChatRecordServiceImpl implements AiChatRecordService {
 
     private Integer getInt(Map<?, ?> map, String key) {
         Object value = map.get(key);
-        if (value == null) return 0;
-        if (value instanceof Number) return ((Number) value).intValue();
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
         try {
             return Integer.parseInt(value.toString());
         } catch (NumberFormatException e) {
@@ -225,7 +229,9 @@ public class AiChatRecordServiceImpl implements AiChatRecordService {
     }
 
     private LocalDateTime parseDateTime(String timestamp) {
-        if (timestamp == null || timestamp.isEmpty()) return null;
+        if (timestamp == null || timestamp.isEmpty()) {
+            return null;
+        }
         try {
             long millis = Long.parseLong(timestamp);
             return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());

@@ -55,8 +55,12 @@ public class BookRecommendService {
                 .sorted((a, b) -> {
                     boolean aInCategory = historyCategories.contains(a.getCategoryName());
                     boolean bInCategory = historyCategories.contains(b.getCategoryName());
-                    if (aInCategory && !bInCategory) return -1;
-                    if (!aInCategory && bInCategory) return 1;
+                    if (aInCategory && !bInCategory) {
+                        return -1;
+                    }
+                    if (!aInCategory && bInCategory) {
+                        return 1;
+                    }
                     // 同分类下按可借数排序（可借少=热门）
                     int aAvail = a.getAvailableCopies() != null ? a.getAvailableCopies() : 999;
                     int bAvail = b.getAvailableCopies() != null ? b.getAvailableCopies() : 999;

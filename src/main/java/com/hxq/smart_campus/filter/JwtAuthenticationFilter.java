@@ -2,7 +2,7 @@ package com.hxq.smart_campus.filter;
 
 import com.hxq.smart_campus.context.SecurityContext;
 import com.hxq.smart_campus.entity.info.LoginUserInfo;
-import com.hxq.smart_campus.utils.JwtUtils;
+import com.hxq.smart_campus.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;

@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.utils;
+package com.hxq.smart_campus.util;
 
 
 import lombok.extern.slf4j.Slf4j;

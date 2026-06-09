@@ -9,7 +9,7 @@ import com.hxq.smart_campus.entity.vo.SeatReservationListVO;
 import com.hxq.smart_campus.entity.vo.SeatScheduleVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.SeatReservationService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

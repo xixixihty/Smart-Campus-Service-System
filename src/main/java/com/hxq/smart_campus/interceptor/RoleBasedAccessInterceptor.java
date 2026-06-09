@@ -2,7 +2,7 @@ package com.hxq.smart_campus.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxq.smart_campus.result.Result;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

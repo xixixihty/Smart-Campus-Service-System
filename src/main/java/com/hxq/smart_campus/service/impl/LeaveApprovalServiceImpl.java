@@ -12,7 +12,7 @@ import com.hxq.smart_campus.exception.NotFoundException;
 import com.hxq.smart_campus.mapper.LeaveApprovalMapper;
 import com.hxq.smart_campus.service.LeaveApprovalService;
 import com.hxq.smart_campus.service.LeaveNotificationService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

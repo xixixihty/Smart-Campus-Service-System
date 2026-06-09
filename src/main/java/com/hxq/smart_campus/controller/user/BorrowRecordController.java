@@ -7,7 +7,7 @@ import com.hxq.smart_campus.entity.vo.BorrowRecordDetailVO;
 import com.hxq.smart_campus.entity.vo.BorrowRecordListVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.BorrowRecordService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

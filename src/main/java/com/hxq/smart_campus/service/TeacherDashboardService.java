@@ -4,7 +4,7 @@ import com.hxq.smart_campus.entity.vo.TeacherDashboardVO;
 import com.hxq.smart_campus.entity.vo.ScoreDistributionItem;
 import com.hxq.smart_campus.mapper.TeacherDashboardMapper;
 import com.hxq.smart_campus.mapper.ScoreEntryMapper;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

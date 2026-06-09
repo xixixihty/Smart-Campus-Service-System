@@ -432,14 +432,20 @@ public class AlibabaOpenAiChatModel implements ChatModel {
      * 从文本中提取JSON对象
      */
     private String extractJsonFromText(String text) {
-        if (text == null) return null;
+        if (text == null) {
+            return null;
+        }
 
         // 尝试找到JSON对象的开始和结束位置
         int firstBrace = text.indexOf('{');
-        if (firstBrace == -1) return null;
+        if (firstBrace == -1) {
+            return null;
+        }
 
         int lastBrace = text.lastIndexOf('}');
-        if (lastBrace <= firstBrace) return null;
+        if (lastBrace <= firstBrace) {
+            return null;
+        }
 
         String potentialJson = text.substring(firstBrace, lastBrace + 1);
         return potentialJson;

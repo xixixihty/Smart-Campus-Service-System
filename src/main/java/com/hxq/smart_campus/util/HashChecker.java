@@ -1,4 +1,4 @@
-package com.hxq.smart_campus.utils;
+package com.hxq.smart_campus.util;
 
 import cn.hutool.crypto.digest.BCrypt;
 /**

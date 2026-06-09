@@ -4,7 +4,7 @@ import com.hxq.smart_campus.entity.pojo.Notification;
 import com.hxq.smart_campus.entity.vo.NotificationVO;
 import com.hxq.smart_campus.mapper.NotificationMapper;
 import com.hxq.smart_campus.service.NotificationService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

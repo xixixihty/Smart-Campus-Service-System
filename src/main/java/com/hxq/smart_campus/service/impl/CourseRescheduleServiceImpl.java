@@ -7,7 +7,7 @@ import com.hxq.smart_campus.exception.BusinessException;
 import com.hxq.smart_campus.mapper.CourseRescheduleMapper;
 import com.hxq.smart_campus.mapper.CourseScheduleMapper;
 import com.hxq.smart_campus.service.CourseRescheduleService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

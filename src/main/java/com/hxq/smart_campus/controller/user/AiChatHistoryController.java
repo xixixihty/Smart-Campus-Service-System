@@ -4,7 +4,7 @@ import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.entity.dto.AiChatHistoryDTO;
 import com.hxq.smart_campus.entity.dto.AiSessionDTO;
 import com.hxq.smart_campus.service.AiChatRecordService;
-import com.hxq.smart_campus.utils.SecurityUtils;
+import com.hxq.smart_campus.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
