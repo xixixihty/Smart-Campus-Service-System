@@ -57,7 +57,6 @@ public class ReadingReportController {
         return Result.success(readingReportListVOPageInfo);
     }
 
-    // TODO: 从登陆信息中获取用户信息
     @GetMapping("/my")
     @Operation(summary = "获取我的读书报告详情")
     public Result<ReadingReportDetailVO> getMyReadingReportDetail(

@@ -42,7 +42,7 @@ public class ReadingReportServiceImpl implements ReadingReportService {
     }
 
 
-    // TODO： 改模块需要AI配合实现
+
     /**
      * 创建阅读报告
      * @param readingReportCreateDTO
@@ -66,7 +66,6 @@ public class ReadingReportServiceImpl implements ReadingReportService {
         return convertToResponseDTO(readingReportDetailVO);
     }
 
-    // TODO： 从登陆信息中获取用户信息
 
     /**
      * 获取我的读书报告详情

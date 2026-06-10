@@ -42,7 +42,6 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public PageInfo<CourseListVO> getCourseList(Integer pageNum, Integer pageSize, String courseCode, String courseName, String type, String status) {
-        // TODO: 实现Redis缓存课程列表
         // 如果Redis中没有，则从数据库中获取
         PageHelper.startPage(pageNum, pageSize);
         List<CourseListVO> courseList = courseMapper.getCourseList(courseCode, courseName, type, status);
@@ -150,7 +149,6 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public List<AvailableCourseVO> getAvailableCourseList(Long semesterId, Long studentId) {
-        // TODO : 根据学期ID获取可选课程列表
         List<AvailableCourseVO> availableCourseVOList = courseMapper.getAvailableCourseList(semesterId, studentId);
         return availableCourseVOList;
     }

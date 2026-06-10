@@ -149,7 +149,6 @@ public class RedisCourseService {
      * @return
      */
     private List<Long> loadAllCourseIds() {
-        // TODO: 调用CourseMapper获取所有课程ID
         // 查询所有课程ID
         List<Long> courseIds = courseMapper.selectAllCourseIds();
         // 从数据库加载所有课程ID
