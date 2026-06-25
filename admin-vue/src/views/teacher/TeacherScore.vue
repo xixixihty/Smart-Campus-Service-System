@@ -29,7 +29,7 @@
 
     <div class="table-card">
       <el-card shadow="never">
-        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
           <el-table-column prop="studentNo" label="学号" width="120" align="center" />
@@ -46,9 +46,10 @@
             <template #default="{ row }">
               <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
               <el-button type="success" link @click="handleMakeup(row)"><el-icon><EditPen /></el-icon>补考</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+          </template>
+        </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
+      </el-table>
         <div class="pagination">
           <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
             :page-sizes="[10, 20, 50]" :total="total" layout="total, sizes, prev, pager, next"

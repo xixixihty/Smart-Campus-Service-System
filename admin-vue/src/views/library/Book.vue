@@ -29,7 +29,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column label="封面" width="80" align="center">
           <template #default="{ row }">
@@ -65,9 +65,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '在库' ? 'success' : row.status === '借出' ? 'warning' : row.status === '维修' ? 'info' : 'danger'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center" fixed="right">
@@ -77,6 +75,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -114,9 +113,7 @@
         <el-descriptions-item label="总册数">{{ detailData.totalCopies }}</el-descriptions-item>
         <el-descriptions-item label="可借册数">{{ detailData.availableCopies }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '在库' ? 'success' : detailData.status === '借出' ? 'warning' : detailData.status === '维修' ? 'info' : 'danger'" size="small">
-            {{ detailData.status }}
-          </el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="封面图片">{{ detailData.coverImage || '无' }}</el-descriptions-item>
         <el-descriptions-item label="简介" :span="2">{{ detailData.description || '无' }}</el-descriptions-item>
@@ -206,6 +203,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getBookList, createBook, updateBook, deleteBook, getBookDetail, uploadImage } from '@/api/book'
 import { getCategoryList } from '@/api/bookCategory'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const defaultCover = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2Y1ZjdmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM5MDkzOTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='
 

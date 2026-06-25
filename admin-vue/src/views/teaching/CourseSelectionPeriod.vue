@@ -23,7 +23,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="semesterName" label="学期名称" width="180"  align="center" />
         <el-table-column prop="startTime" label="选课开始时间" width="170" align="center" />
@@ -36,6 +36,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"

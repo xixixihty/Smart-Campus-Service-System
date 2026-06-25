@@ -19,12 +19,12 @@
         </el-card>
 
         <el-card shadow="never" class="table-card">
-          <el-table :data="seatData" v-loading="seatLoading" stripe border max-height="calc(100vh - 340px)">
+          <el-table :data="seatData" v-loading="seatLoading" stripe border max-height="calc(100vh - 340px)" scrollbar-always-on>
             <el-table-column prop="id" label="ID" width="80" align="center" />
             <el-table-column prop="seatNumber" label="座位号" width="120" align="center" />
             <el-table-column prop="status" label="状态" width="100" align="center">
               <template #default="{ row }">
-                <el-tag :type="row.status === '可用' ? 'success' : 'info'" size="small">{{ row.status }}</el-tag>
+                <StatusBadge :status="row.status" />
               </template>
             </el-table-column>
             <el-table-column label="时段" min-width="300" align="center">
@@ -40,13 +40,14 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
           </el-table>
         </el-card>
       </el-tab-pane>
 
       <el-tab-pane label="我的预约" name="my">
         <el-card shadow="never" class="table-card">
-          <el-table :data="myReservationData" v-loading="myReservationLoading" stripe border max-height="calc(100vh - 280px)" empty-text="暂无预约记录">
+          <el-table :data="myReservationData" v-loading="myReservationLoading" stripe border max-height="calc(100vh - 280px)" empty-text="暂无预约记录" scrollbar-always-on>
             <el-table-column prop="id" label="ID" width="80" align="center" />
             <el-table-column prop="seatNumber" label="座位号" width="120" align="center" />
             <el-table-column prop="areaName" label="区域" width="120" align="center" />
@@ -71,6 +72,7 @@
                 </el-button>
               </template>
             </el-table-column>
+            <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
           </el-table>
           <div class="pagination">
             <el-pagination v-model:current-page="myReservationQuery.pageNum" v-model:page-size="myReservationQuery.pageSize"
@@ -87,6 +89,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getStudentSeatList, getStudentSeatSchedule, reserveSeat, cancelSeatReservation, checkInSeat, checkOutSeat, getMySeatReservations } from '@/api/student'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const activeTab = ref('seats')
 

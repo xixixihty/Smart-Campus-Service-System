@@ -331,6 +331,18 @@ public class MessageConstant {
      * 通知类型-课程已调整
      */
     public static final String NOTIFY_BIZ_COURSE_RESCHEDULED = "COURSE_RESCHEDULED";
+    /**
+     * 通知类型-图书逾期提醒
+     */
+    public static final String NOTIFY_BIZ_BOOK_OVERDUE = "BOOK_OVERDUE";
+    /**
+     * 通知类型-座位预约提醒
+     */
+    public static final String NOTIFY_BIZ_SEAT_REMINDER = "SEAT_REMINDER";
+    /**
+     * 通知类型-系统通知
+     */
+    public static final String NOTIFY_BIZ_GENERAL = "NOTIFICATION";
 
     // ============ 调课状态 ============
     /**

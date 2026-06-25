@@ -28,16 +28,14 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="className" label="班级名称" min-width="150" align="center" />
         <el-table-column prop="majorName" label="所属专业" width="130" align="center"/>
         <el-table-column prop="headTeacherName" label="班主任姓名" width="130" align="center"/>
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '在读' ? 'success' : 'info'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" />
@@ -48,6 +46,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -64,7 +63,7 @@
         <el-descriptions-item label="所属专业">{{ detailData.majorName }}</el-descriptions-item>
         <el-descriptions-item label="班主任">{{ detailData.headTeacherName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '在读' ? 'success' : 'info'" size="small">{{ detailData.status }}</el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间" :span="2">{{ detailData.updateTime }}</el-descriptions-item>
@@ -108,6 +107,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { getClassList, getClassDetail, createClass, updateClass, deleteClass } from '@/api/class'
 import { getCollegeList } from '@/api/college'
 import { getMajorList } from '@/api/major'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

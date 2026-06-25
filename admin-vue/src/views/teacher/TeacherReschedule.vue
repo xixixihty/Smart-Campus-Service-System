@@ -23,7 +23,7 @@
 
     <div class="table-card">
       <el-card shadow="never">
-        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
           <el-table-column prop="originalWeekDay" label="原星期" width="80" align="center">
@@ -41,7 +41,7 @@
           <el-table-column prop="reason" label="调课原因" min-width="150" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" width="100" align="center">
             <template #default="{ row }">
-              <el-tag :type="statusType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
+              <StatusBadge :status="statusLabel(row.status)" />
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="申请时间" width="170" align="center" />
@@ -53,6 +53,7 @@
               <span v-else style="color: #909399">--</span>
             </template>
           </el-table-column>
+          <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
         </el-table>
         <div class="pagination">
           <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -98,6 +99,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getTeacherRescheduleList, createTeacherReschedule, cancelTeacherReschedule } from '@/api/teacher'
 import { getTeacherTimetable } from '@/api/teacher'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const weekDays = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
 

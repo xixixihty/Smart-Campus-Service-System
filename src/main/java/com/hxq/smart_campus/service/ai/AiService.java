@@ -25,20 +25,28 @@ public class AiService {
     private final ChatClient userChatClient;
     private final ChatClient adminChatClient;
     private final ChatClient teacherChatClient;
-    private final ChatMemory chatMemory;
+    private final ChatMemory userChatMemory;
+    private final ChatMemory adminChatMemory;
+    private final ChatMemory teacherChatMemory;
     private final AiChatRecordService aiChatRecordService;
 
     public AiService(@Qualifier("userChatClient") ChatClient userChatClient,
                      @Qualifier("adminChatClient") ChatClient adminChatClient,
                      @Qualifier("teacherChatClient") ChatClient teacherChatClient,
-                     ChatMemory chatMemory,
+                     @Qualifier("userChatMemory") ChatMemory userChatMemory,
+                     @Qualifier("adminChatMemory") ChatMemory adminChatMemory,
+                     @Qualifier("teacherChatMemory") ChatMemory teacherChatMemory,
                      AiChatRecordService aiChatRecordService) {
         this.userChatClient = userChatClient;
         this.adminChatClient = adminChatClient;
         this.teacherChatClient = teacherChatClient;
-        this.chatMemory = chatMemory;
+        this.userChatMemory = userChatMemory;
+        this.adminChatMemory = adminChatMemory;
+        this.teacherChatMemory = teacherChatMemory;
         this.aiChatRecordService = aiChatRecordService;
     }
+
+    // ===== 用户端流式 =====
 
     public Flux<ServerSentEvent<String>> chatStreamWithUserTools(String systemPrompt, String userMessage,
                                                                   String sessionId, Long userId) {
@@ -58,14 +66,13 @@ public class AiService {
 
         Flux<String> contentStream = spec
                 .toolContext(Map.of("studentId", userId))
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(userChatMemory).conversationId(effectiveSessionId).build())
                 .stream()
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
                 .doOnComplete(() -> {
-                    log.info("AI用户端流式响应完成: sessionId={}, response={}",
-                            effectiveSessionId, fullResponse.toString());
+                    log.info("AI用户端流式响应完成: sessionId={}", effectiveSessionId);
                     aiChatRecordService.saveMessagesAsync(userId, effectiveSessionId,
                             userMessage, fullResponse.toString());
                 })
@@ -77,6 +84,8 @@ public class AiService {
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
                 chatWithUserTools(systemPrompt, userMessage, effectiveSessionId, userId));
     }
+
+    // ===== 管理端流式 =====
 
     public Flux<ServerSentEvent<String>> chatStreamWithAdminTools(String systemPrompt, String userMessage,
                                                                    String sessionId) {
@@ -95,15 +104,14 @@ public class AiService {
         }
 
         Flux<String> contentStream = spec
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(adminChatMemory).conversationId(effectiveSessionId).build())
                 .stream()
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
                 .doOnComplete(() -> {
                     String response = fullResponse.toString();
-                    log.info("AI管理端流式响应完成: sessionId={}, response={}",
-                            effectiveSessionId, response);
+                    log.info("AI管理端流式响应完成: sessionId={}", effectiveSessionId);
                     aiChatRecordService.saveMessagesAsync(ADMIN_USER_ID, effectiveSessionId,
                             userMessage, response);
                 })
@@ -115,6 +123,8 @@ public class AiService {
         return wrapStreamWithEvents(contentStream, effectiveSessionId, () ->
                 chatWithAdminTools(systemPrompt, userMessage, effectiveSessionId));
     }
+
+    // ===== 教师端流式 =====
 
     public Flux<ServerSentEvent<String>> chatStreamWithTeacherTools(String systemPrompt, String userMessage,
                                                                      String sessionId, Long userId) {
@@ -134,14 +144,13 @@ public class AiService {
 
         Flux<String> contentStream = spec
                 .toolContext(Map.of("teacherId", userId))
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(effectiveSessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(teacherChatMemory).conversationId(effectiveSessionId).build())
                 .stream()
                 .content()
                 .filter(msg -> msg != null && !msg.isEmpty())
                 .doOnNext(fullResponse::append)
                 .doOnComplete(() -> {
-                    log.info("AI教师端流式响应完成: sessionId={}, response={}",
-                            effectiveSessionId, fullResponse.toString());
+                    log.info("AI教师端流式响应完成: sessionId={}", effectiveSessionId);
                     aiChatRecordService.saveMessagesAsync(userId, effectiveSessionId,
                             userMessage, fullResponse.toString());
                 })
@@ -154,8 +163,10 @@ public class AiService {
                 chatWithTeacherTools(systemPrompt, userMessage, effectiveSessionId, userId));
     }
 
-    private String chatWithUserTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
-        log.info("AI用户端非流式回退: sessionId={}, userId={}", sessionId, userId);
+    // ===== 非流式（用户端） =====
+
+    public String chatWithUserTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
+        log.info("AI用户端非流式请求: sessionId={}, userId={}", sessionId, userId);
         ChatClient.ChatClientRequestSpec spec = userChatClient.prompt()
                 .user(userMessage);
         if (StringUtils.hasText(systemPrompt)) {
@@ -163,12 +174,26 @@ public class AiService {
         }
         String result = spec
                 .toolContext(Map.of("studentId", userId))
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(userChatMemory).conversationId(sessionId).build())
                 .call()
                 .content();
-        log.info("AI用户端非流式响应: sessionId={}, response={}", sessionId, result);
+        log.info("AI用户端非流式响应: sessionId={}", sessionId);
         return result;
     }
+
+    // ===== 非流式（管理端） =====
+
+    public String analyzeWithAdminTools(String systemPrompt, String userMessage) {
+        String sessionId = UUID.randomUUID().toString();
+        log.info("AI管理端非流式请求: sessionId={}", sessionId);
+        return adminChatClient.prompt()
+                .user(userMessage)
+                .advisors(MessageChatMemoryAdvisor.builder(adminChatMemory).conversationId(sessionId).build())
+                .call()
+                .content();
+    }
+
+    // ===== 非流式回退（管理端） =====
 
     private String chatWithAdminTools(String systemPrompt, String userMessage, String sessionId) {
         log.info("AI管理端非流式回退: sessionId={}", sessionId);
@@ -178,12 +203,14 @@ public class AiService {
             spec = spec.system(systemPrompt);
         }
         String result = spec
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(adminChatMemory).conversationId(sessionId).build())
                 .call()
                 .content();
-        log.info("AI管理端非流式响应: sessionId={}, response={}", sessionId, result);
+        log.info("AI管理端非流式回退完成: sessionId={}", sessionId);
         return result;
     }
+
+    // ===== 非流式回退（教师端） =====
 
     private String chatWithTeacherTools(String systemPrompt, String userMessage, String sessionId, Long userId) {
         log.info("AI教师端非流式回退: sessionId={}, userId={}", sessionId, userId);
@@ -194,79 +221,39 @@ public class AiService {
         }
         String result = spec
                 .toolContext(Map.of("teacherId", userId))
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(sessionId).build())
+                .advisors(MessageChatMemoryAdvisor.builder(teacherChatMemory).conversationId(sessionId).build())
                 .call()
                 .content();
-        log.info("AI教师端非流式响应: sessionId={}, response={}", sessionId, result);
+        log.info("AI教师端非流式回退完成: sessionId={}", sessionId);
         return result;
     }
 
-    public String analyzeWithAdminTools(String systemPrompt, String userMessage) {
-        return chatWithAdminTools(systemPrompt, userMessage, UUID.randomUUID().toString());
-    }
+    // ===== 流式事件包装 =====
 
     private Flux<ServerSentEvent<String>> wrapStreamWithEvents(Flux<String> contentStream,
                                                                 String sessionId,
-                                                                FallbackProvider fallback) {
-        Flux<ServerSentEvent<String>> messageEvents = contentStream
-                .map(content -> ServerSentEvent.<String>builder()
-                        .event("message")
-                        .data(content)
-                        .build());
-
-        Flux<ServerSentEvent<String>> heartbeatFlux = Flux.interval(Duration.ofSeconds(15))
-                .map(tick -> ServerSentEvent.<String>builder()
-                        .event("heartbeat")
-                        .data("")
-                        .build())
-                .takeUntilOther(messageEvents.then(Mono.just(true)));
-
-        Flux<ServerSentEvent<String>> stream = Flux.concat(
-                Flux.just(ServerSentEvent.<String>builder()
-                        .event("status")
-                        .data("正在分析您的问题...")
-                        .build()),
-                Flux.merge(messageEvents, heartbeatFlux),
-                Flux.just(ServerSentEvent.<String>builder()
-                        .event("done")
-                        .data("[DONE]")
-                        .build())
-        );
-
-        return stream
-                .switchIfEmpty(Flux.defer(() -> buildFallbackEvents(sessionId, fallback, "正在查询数据...")))
-                .onErrorResume(e -> buildFallbackOnError(sessionId, fallback, e));
-    }
-
-    private Flux<ServerSentEvent<String>> buildFallbackEvents(String sessionId, FallbackProvider fallback,
-                                                               String statusMsg) {
-        log.warn("AI流式响应为空，回退到非流式调用: sessionId={}", sessionId);
-        try {
-            String result = fallback.execute();
-            if (StringUtils.hasText(result)) {
-                return Flux.just(
-                        ServerSentEvent.<String>builder().event("status").data(statusMsg).build(),
-                        ServerSentEvent.<String>builder().event("message").data(result).build(),
-                        ServerSentEvent.<String>builder().event("done").data("[DONE]").build()
-                );
+                                                                java.util.function.Supplier<String> fallback) {
+        return Flux.concat(
+                Flux.just(ServerSentEvent.builder("connected").event("status").build()),
+                contentStream.map(data -> ServerSentEvent.builder(data).event("message").build()),
+                Flux.just(ServerSentEvent.builder("[DONE]").event("message").build())
+        )
+        .timeout(Duration.ofSeconds(60))
+        .onErrorResume(e -> {
+            log.warn("AI流式调用超时或出错, 回退到非流式: {}", e.getMessage());
+            try {
+                String fallbackResult = fallback.get();
+                if (fallbackResult != null && !fallbackResult.isEmpty()) {
+                    return Flux.just(
+                            ServerSentEvent.builder(fallbackResult).event("message").build(),
+                            ServerSentEvent.builder("[DONE]").event("message").build()
+                    );
+                }
+            } catch (Exception ex) {
+                log.error("非流式回退也失败", ex);
             }
-        } catch (Exception e) {
-            log.error("非流式回退失败: sessionId={}", sessionId, e);
-        }
-        return Flux.just(ServerSentEvent.<String>builder()
-                .event("error")
-                .data("抱歉，AI服务暂时不可用，请稍后再试。")
-                .build());
-    }
-
-    private Flux<ServerSentEvent<String>> buildFallbackOnError(String sessionId, FallbackProvider fallback,
-                                                                Throwable error) {
-        log.error("AI流式异常，回退到非流式调用: sessionId={}", sessionId, error);
-        return buildFallbackEvents(sessionId, fallback, "AI服务响应较慢，已切换到文字模式...");
-    }
-
-    @FunctionalInterface
-    private interface FallbackProvider {
-        String execute();
+            return Flux.just(ServerSentEvent.builder("抱歉，AI服务暂时不可用，请稍后再试。").event("message").build(),
+                    ServerSentEvent.builder("[DONE]").event("message").build());
+        });
     }
 }

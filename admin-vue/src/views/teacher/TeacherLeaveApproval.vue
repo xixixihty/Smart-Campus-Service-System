@@ -25,7 +25,7 @@
 
     <div class="table-card">
       <el-card shadow="never">
-        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
           <el-table-column prop="studentNo" label="学号" width="120" align="center" />
@@ -36,7 +36,7 @@
           <el-table-column prop="reason" label="请假原因" min-width="150" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" width="100" align="center">
             <template #default="{ row }">
-              <el-tag :type="statusType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
+              <StatusBadge :status="row.status" />
             </template>
           </el-table-column>
           <el-table-column label="操作" width="180" align="center" fixed="right">
@@ -48,6 +48,7 @@
               <span v-else style="color: #909399">--</span>
             </template>
           </el-table-column>
+          <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
         </el-table>
         <div class="pagination">
           <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -80,6 +81,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getTeacherLeaveList, approveTeacherLeave } from '@/api/teacher'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const tableData = ref([])

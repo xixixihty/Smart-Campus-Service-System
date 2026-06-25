@@ -26,20 +26,20 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="teacherNo" label="工号" width="120" align="center" />
         <el-table-column prop="name" label="姓名" width="100" align="center" />
         <el-table-column prop="gender" label="性别" width="70" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.gender === '男' ? 'info' : 'danger'" size="small">{{ row.gender }}</el-tag>
+            <StatusBadge :status="row.gender" />
           </template>
         </el-table-column>
         <el-table-column prop="collegeName" label="所属学院" width="130" align="center" />
         <el-table-column prop="title" label="职称" width="100" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center"> 
           <template #default="{ row }">
-            <el-tag :type="row.status === '正常' || row.status === '在职' ? 'success' : 'danger'" size="small">{{ row.status }}</el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" />
@@ -47,10 +47,11 @@
           <template #default="{ row }">
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
-            <el-button type="warning" link @click="handleResetPwd(row)"><el-icon><Lock /></el-icon>重置密码</el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
+            <el-button type="warning" link @click="handleResetPwd(row)"><el-icon><Key /></el-icon>重置密码</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -66,17 +67,17 @@
         <el-descriptions-item label="工号">{{ detailData.teacherNo }}</el-descriptions-item>
         <el-descriptions-item label="姓名">{{ detailData.name }}</el-descriptions-item>
         <el-descriptions-item label="性别">
-          <el-tag :type="detailData.gender === '男' ? 'info' : 'danger'" size="small">{{ detailData.gender }}</el-tag>
+          <StatusBadge :status="detailData.gender" />
         </el-descriptions-item>
         <el-descriptions-item label="所属学院">{{ detailData.collegeName }}</el-descriptions-item>
         <el-descriptions-item label="职称">{{ detailData.title }}</el-descriptions-item>
         <el-descriptions-item label="手机号">{{ detailData.phone || '-' }}</el-descriptions-item>
         <el-descriptions-item label="邮箱">{{ detailData.email || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '正常' || detailData.status === '在职' ? 'success' : 'danger'" size="small">{{ detailData.status }}</el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="账号状态">
-          <el-tag :type="detailData.accountStatus === '正常' ? 'success' : 'warning'" size="small">{{ detailData.accountStatus }}</el-tag>
+          <StatusBadge :status="detailData.accountStatus" />
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
@@ -171,6 +172,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getTeacherList, getTeacherDetail, createTeacher, updateTeacher, deleteTeacher, resetTeacherPassword } from '@/api/teacher'
 import { getCollegeList } from '@/api/college'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

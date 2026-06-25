@@ -17,7 +17,7 @@
     </el-card>
 
     <el-card shadow="never" class="table-card">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="publisherName" label="发布人" width="100" align="center" />
@@ -27,6 +27,7 @@
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"

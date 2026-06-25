@@ -56,6 +56,14 @@ public class LeaveNotificationServiceImpl implements LeaveNotificationService {
     }
 
     @Override
+    public void notifyGeneral(Notification notification) {
+        if (notification.getType() == null || notification.getType().isEmpty()) {
+            notification.setType(NOTIFY_BIZ_GENERAL);
+        }
+        handleNotification(notification, "/queue/notification");
+    }
+
+    @Override
     public void sendToUser(Long userId, String userType, String destination, Object payload) {
         messagingTemplate.convertAndSendToUser(String.valueOf(userId), destination, payload);
         log.debug("WebSocket推送: userId={}, userType={}, dest={}", userId, userType, destination);

@@ -35,29 +35,27 @@
     <el-card shadow="never" style="margin-top: 16px">
 
 
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
         <el-table-column prop="publisherName" label="发布人姓名" width="100" />
         <el-table-column prop="publishTime" label="发布时间" width="170" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '发布' ? 'success' : 'info'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button v-if="row.status === '草稿'" type="primary" link @click="handlePublish(row)"><el-icon><Promotion /></el-icon>发布</el-button>
+            <el-button v-if="row.status === '发布'" type="warning" link @click="handleWithdraw(row)"><el-icon><TurnOff /></el-icon>撤回</el-button>
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             <el-button type="primary" link @click="handleEdit(row)"><el-icon><Edit /></el-icon>编辑</el-button>
-            <el-button v-if="row.status === '发布'" type="warning" link @click="handleWithdraw(row)">
-              <el-icon><RefreshLeft /></el-icon>撤回
-            </el-button>
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -74,9 +72,7 @@
             <span class="detail-title">{{ form.title }}</span>
           </el-descriptions-item>
           <el-descriptions-item label="状态">
-            <el-tag :type="form.status === '发布' ? 'success' : 'info'" size="small">
-              {{ form.status }}
-            </el-tag>
+            <StatusBadge :status="form.status" />
           </el-descriptions-item>
           <el-descriptions-item label="发布人">{{ form.publisherName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="发布时间">{{ form.publishTime || '-' }}</el-descriptions-item>
@@ -122,6 +118,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getNoticeList, createNotice, updateNotice, withdrawNotice, deleteNotice, getNoticeDetail } from '@/api/notice'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

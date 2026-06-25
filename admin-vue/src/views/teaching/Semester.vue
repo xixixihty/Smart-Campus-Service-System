@@ -28,23 +28,19 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="学期名称" min-width="180"  align="center" />
         <el-table-column prop="startDate" label="开始日期" width="120" align="center" />
         <el-table-column prop="endDate" label="结束日期" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '进行中' ? 'success' : row.status === '未开始' ? 'warning' : 'info'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="isCurrent" label="当前学期" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.isCurrent ? 'success' : 'info'" size="small">
-              {{ row.isCurrent ? '是' : '否' }}
-            </el-tag>
+            <StatusBadge :status="row.isCurrent ? '已同步' : '未同步'" mode="syncStatus" />
           </template>
         </el-table-column>
         <el-table-column label="设为当前" width="110" align="center">
@@ -62,6 +58,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -77,14 +74,10 @@
         <el-descriptions-item label="开始日期">{{ detailData.startDate }}</el-descriptions-item>
         <el-descriptions-item label="结束日期">{{ detailData.endDate }}</el-descriptions-item>
         <el-descriptions-item label="当前学期">
-          <el-tag :type="detailData.isCurrent ? 'success' : 'info'" size="small">
-            {{ detailData.isCurrent ? '是' : '否' }}
-          </el-tag>
+          <StatusBadge :status="detailData.isCurrent ? '已同步' : '未同步'" mode="syncStatus" />
         </el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '进行中' ? 'success' : detailData.status === '未开始' ? 'warning' : 'info'" size="small">
-            {{ detailData.status }}
-          </el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
@@ -120,6 +113,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Calendar, Plus, Search, Refresh, View, Edit, Delete, Check, Star } from '@element-plus/icons-vue'
 import { getSemesterList, getSemesterDetail, getCurrentSemester, setCurrentSemester, createSemester, updateSemester, deleteSemester } from '@/api/semester'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

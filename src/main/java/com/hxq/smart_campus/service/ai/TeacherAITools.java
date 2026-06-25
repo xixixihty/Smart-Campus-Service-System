@@ -31,17 +31,19 @@ public class TeacherAITools {
         log.info("Tool调用: getMyTeachingSchedule, teacherId={}", teacherId);
         List<CourseRescheduleVO> schedules = courseRescheduleMapper.getTeacherCourseSchedules(teacherId);
         if (schedules.isEmpty()) {
-            return "当前没有排课记录。";
+            return MarkdownFormatter.noData("课表");
         }
-        return schedules.stream()
-                .map(s -> String.format("课程：%s | 星期%d | 第%d-%d节 | 教室：%s | 周次：%s",
+        String[] headers = {"课程", "星期", "节次", "教室", "周次"};
+        List<String[]> rows = schedules.stream()
+                .map(s -> new String[]{
                         s.getCourseName(),
-                        s.getOriginalWeekDay(),
-                        s.getOriginalStartSection(),
-                        s.getOriginalEndSection(),
+                        "星期" + s.getOriginalWeekDay(),
+                        "第" + s.getOriginalStartSection() + "-" + s.getOriginalEndSection() + "节",
                         s.getOriginalClassroomName() != null ? s.getOriginalClassroomName() : "未安排",
-                        s.getOriginalWeekRange() != null ? s.getOriginalWeekRange() : "全学期"))
-                .collect(Collectors.joining("\n"));
+                        s.getOriginalWeekRange() != null ? s.getOriginalWeekRange() : "全学期"
+                })
+                .collect(Collectors.toList());
+        return MarkdownFormatter.header("我的课表") + "\n\n" + MarkdownFormatter.toTable(headers, rows);
     }
 
     @Tool(description = "获取当前教师的教学统计数据。当教师询问授课班级数、学生数、待批请假数等统计信息时调用此工具。")
@@ -54,18 +56,13 @@ public class TeacherAITools {
         Integer pendingLeave = teacherDashboardMapper.getPendingLeaveCount(teacherId);
         Integer pendingReschedule = teacherDashboardMapper.getPendingRescheduleCount(teacherId);
 
-        return String.format(
-                "教学数据统计：\n" +
-                "- 所授课程数：%d\n" +
-                "- 授课班级数：%d\n" +
-                "- 授课学生数：%d\n" +
-                "- 待批请假数：%d\n" +
-                "- 待处理调课数：%d",
-                courseCount != null ? courseCount : 0,
-                classCount != null ? classCount : 0,
-                studentCount != null ? studentCount : 0,
-                pendingLeave != null ? pendingLeave : 0,
-                pendingReschedule != null ? pendingReschedule : 0);
+        return MarkdownFormatter.header("教学数据统计") + "\n\n"
+                + MarkdownFormatter.toKeyValueList(
+                        "所授课程数", String.valueOf(courseCount != null ? courseCount : 0),
+                        "授课班级数", String.valueOf(classCount != null ? classCount : 0),
+                        "授课学生数", String.valueOf(studentCount != null ? studentCount : 0),
+                        "待批请假数", String.valueOf(pendingLeave != null ? pendingLeave : 0),
+                        "待处理调课数", String.valueOf(pendingReschedule != null ? pendingReschedule : 0));
     }
 
     @Tool(description = "获取当前教师的授课班级列表。当教师询问班级信息、授课班级时调用此工具。")
@@ -74,12 +71,16 @@ public class TeacherAITools {
         log.info("Tool调用: getMyTeachingClasses, teacherId={}", teacherId);
         List<ClassStudentCountVO> classes = teacherDashboardMapper.getClassStudentDistribution(teacherId, null);
         if (classes.isEmpty()) {
-            return "当前没有授课班级。";
+            return MarkdownFormatter.noData("授课班级");
         }
-        return classes.stream()
-                .map(c -> String.format("班级：%s | 学生数：%d",
-                        c.getClassName(), c.getStudentCount()))
-                .collect(Collectors.joining("\n"));
+        String[] headers = {"班级", "学生数"};
+        List<String[]> rows = classes.stream()
+                .map(c -> new String[]{
+                        c.getClassName(),
+                        String.valueOf(c.getStudentCount())
+                })
+                .collect(Collectors.toList());
+        return MarkdownFormatter.header("授课班级列表") + "\n\n" + MarkdownFormatter.toTable(headers, rows);
     }
 
     @Tool(description = "获取待审批的请假申请列表。当教师询问待批请假、请假审批时调用此工具。")
@@ -88,16 +89,19 @@ public class TeacherAITools {
         log.info("Tool调用: getPendingLeaveApprovals, teacherId={}", teacherId);
         List<PendingLeaveRequestVO> list = leaveApprovalMapper.getPendingApprovalList("待审批", teacherId);
         if (list.isEmpty()) {
-            return "当前没有待审批的请假申请。";
+            return MarkdownFormatter.noData("待审批请假");
         }
-        return list.stream()
-                .map(l -> String.format("学生：%s | 请假类型：%s | 时间：%s ~ %s | 原因：%s",
+        String[] headers = {"学生", "请假类型", "开始时间", "结束时间", "原因"};
+        List<String[]> rows = list.stream()
+                .map(l -> new String[]{
                         l.getStudentName(),
                         l.getLeaveType() != null ? l.getLeaveType() : "--",
-                        l.getStartTime() != null ? l.getStartTime() : "--",
-                        l.getEndTime() != null ? l.getEndTime() : "--",
-                        l.getReason() != null ? l.getReason() : "--"))
-                .collect(Collectors.joining("\n"));
+                        l.getStartTime() != null ? l.getStartTime().toString() : "--",
+                        l.getEndTime() != null ? l.getEndTime().toString() : "--",
+                        l.getReason() != null ? l.getReason() : "--"
+                })
+                .collect(Collectors.toList());
+        return MarkdownFormatter.header("待审批请假申请）") + "\n\n" + MarkdownFormatter.toTable(headers, rows);
     }
 
     @Tool(description = "获取当前教师的调课记录。当教师询问调课状态、调课历史时调用此工具。")
@@ -106,16 +110,19 @@ public class TeacherAITools {
         log.info("Tool调用: getMyRescheduleRecords, teacherId={}", teacherId);
         List<CourseRescheduleVO> records = courseRescheduleMapper.getRescheduleListByTeacher(teacherId);
         if (records.isEmpty()) {
-            return "当前没有调课记录。";
+            return MarkdownFormatter.noData("调课记录");
         }
-        return records.stream()
-                .map(r -> String.format("课程：%s | 原：星期%d 第%d-%d节 | 新：星期%d 第%d-%d节 | 状态：%s | 原因：%s",
+        String[] headers = {"课程", "原时间", "新时间", "状态", "原因"};
+        List<String[]> rows = records.stream()
+                .map(r -> new String[]{
                         r.getCourseName(),
-                        r.getOriginalWeekDay(), r.getOriginalStartSection(), r.getOriginalEndSection(),
-                        r.getNewWeekDay(), r.getNewStartSection(), r.getNewEndSection(),
+                        "星期" + r.getOriginalWeekDay() + " 第" + r.getOriginalStartSection() + "-" + r.getOriginalEndSection() + "节",
+                        "星期" + r.getNewWeekDay() + " 第" + r.getNewStartSection() + "-" + r.getNewEndSection() + "节",
                         r.getStatus(),
-                        r.getReason() != null ? r.getReason() : "--"))
-                .collect(Collectors.joining("\n"));
+                        r.getReason() != null ? r.getReason() : "--"
+                })
+                .collect(Collectors.toList());
+        return MarkdownFormatter.header("调课记录") + "\n\n" + MarkdownFormatter.toTable(headers, rows);
     }
 
     @Tool(description = "获取指定班级的学生成绩列表。当教师询问班级成绩、学生成绩分布时调用此工具。参数classId为班级ID。")
@@ -123,15 +130,18 @@ public class TeacherAITools {
         log.info("Tool调用: getClassScores, classId={}", classId);
         List<ScoreEntryListVO> scores = scoreEntryMapper.getScoreListByClassId(classId, null);
         if (scores.isEmpty()) {
-            return "该班级暂无成绩记录。";
+            return MarkdownFormatter.noData("成绩");
         }
-        return scores.stream()
-                .map(s -> String.format("学生：%s | 课程：%s | 平时分：%s | 期末分：%s | 总分：%s",
+        String[] headers = {"学生", "课程", "平时分", "期末分", "总分"};
+        List<String[]> rows = scores.stream()
+                .map(s -> new String[]{
                         s.getStudentName(),
                         s.getCourseName(),
-                        s.getUsualScore() != null ? s.getUsualScore() : "--",
-                        s.getFinalScore() != null ? s.getFinalScore() : "--",
-                        s.getTotalScore() != null ? s.getTotalScore() : "--"))
-                .collect(Collectors.joining("\n"));
+                        s.getUsualScore() != null ? String.valueOf(s.getUsualScore()) : "--",
+                        s.getFinalScore() != null ? String.valueOf(s.getFinalScore()) : "--",
+                        s.getTotalScore() != null ? String.valueOf(s.getTotalScore()) : "--"
+                })
+                .collect(Collectors.toList());
+        return MarkdownFormatter.header("班级成绩列表") + "\n\n" + MarkdownFormatter.toTable(headers, rows);
     }
 }

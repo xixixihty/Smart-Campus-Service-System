@@ -30,20 +30,18 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center"/>
         <el-table-column prop="courseName" label="课程名称" min-width="180" align="center" />
         <el-table-column prop="courseCode" label="课程代码" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '开课' ? 'success' : 'info'" size="small">{{ row.status }}</el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="type" label="课程类型" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.type === '必修' ? 'success' : row.type === '选修' ? 'warning' : 'info'" size="small">
-              {{ row.type }}
-            </el-tag>
+            <StatusBadge :status="row.type" />
           </template>
         </el-table-column>
         <el-table-column prop="credit" label="学分" width="80" align="center" />
@@ -56,6 +54,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -140,7 +139,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Notebook, Plus, Search, Refresh, View, Edit, Delete } from '@element-plus/icons-vue'
 import { getCourseList, createCourse, updateCourse, deleteCourse, getCourseDetail } from '@/api/course'
-import { getCollegeList } from '@/api/college'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

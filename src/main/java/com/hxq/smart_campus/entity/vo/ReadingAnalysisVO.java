@@ -13,5 +13,6 @@ public class ReadingAnalysisVO {
     private Integer totalBorrows;
     private Integer monthBorrows;
     private String preference;
+    private String favCategory;
     private String analysis;
 }

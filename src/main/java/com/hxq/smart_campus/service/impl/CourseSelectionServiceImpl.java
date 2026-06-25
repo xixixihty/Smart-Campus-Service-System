@@ -72,7 +72,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             RedisCourseService redisCourseService,
             RedissonClient redissonClient,
             CourseCacheService courseCacheService,
-            @Qualifier("borrowRabbitTemplate") RabbitTemplate rabbitTemplate) {
+            @Qualifier("courseSelectionRabbitTemplate") RabbitTemplate rabbitTemplate) {
         this.courseSelectionMapper = courseSelectionMapper;
         this.courseSelectionPeriodService = courseSelectionPeriodService;
         this.courseService = courseService;

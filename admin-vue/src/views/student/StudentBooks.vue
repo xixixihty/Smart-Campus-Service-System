@@ -19,7 +19,7 @@
         </el-card>
 
         <el-card shadow="never" class="table-card">
-          <el-table :data="bookData" v-loading="bookLoading" stripe border max-height="calc(100vh - 340px)">
+          <el-table :data="bookData" v-loading="bookLoading" stripe border max-height="calc(100vh - 340px)" scrollbar-always-on>
             <el-table-column prop="id" label="ID" width="80" align="center" />
             <el-table-column prop="title" label="书名" min-width="180" align="center" />
             <el-table-column prop="author" label="作者" width="120" align="center" />
@@ -33,6 +33,7 @@
                 </el-button>
               </template>
             </el-table-column>
+            <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
           </el-table>
           <div class="pagination">
             <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -44,14 +45,14 @@
 
       <el-tab-pane label="我的借阅" name="my">
         <el-card shadow="never" class="table-card">
-          <el-table :data="myBorrowData" v-loading="myBorrowLoading" stripe border max-height="calc(100vh - 280px)" empty-text="暂无借阅记录">
+          <el-table :data="myBorrowData" v-loading="myBorrowLoading" stripe border max-height="calc(100vh - 280px)" empty-text="暂无借阅记录" scrollbar-always-on>
             <el-table-column prop="id" label="ID" width="80" align="center" />
             <el-table-column prop="bookTitle" label="书名" min-width="180" align="center" />
             <el-table-column prop="borrowDate" label="借阅日期" width="120" align="center" />
             <el-table-column prop="dueDate" label="应还日期" width="120" align="center" />
             <el-table-column prop="status" label="状态" width="100" align="center">
               <template #default="{ row }">
-                <el-tag :type="row.status === '借出中' || row.status === '借阅中' ? 'warning' : 'success'" size="small">{{ row.status }}</el-tag>
+                <StatusBadge :status="row.status" />
               </template>
             </el-table-column>
             <el-table-column label="操作" width="120" align="center" fixed="right">
@@ -61,6 +62,7 @@
                 </el-button>
               </template>
             </el-table-column>
+            <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
           </el-table>
           <div class="pagination">
             <el-pagination v-model:current-page="myBorrowQuery.pageNum" v-model:page-size="myBorrowQuery.pageSize"
@@ -77,6 +79,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getStudentBookList, borrowBook, returnBook, getMyBorrowRecords } from '@/api/student'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const activeTab = ref('books')
 

@@ -14,5 +14,10 @@ public interface LeaveNotificationService {
 
     void notifyCourseRescheduled(Notification notification);
 
+    /**
+     * 通用通知推送（图书逾期、座位提醒等）
+     */
+    void notifyGeneral(Notification notification);
+
     void sendToUser(Long userId, String userType, String destination, Object payload);
 }

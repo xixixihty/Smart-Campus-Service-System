@@ -25,7 +25,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" min-width="120" align="center" />
         <el-table-column prop="courseName" label="课程名称" min-width="150" align="center" />
@@ -33,9 +33,7 @@
         <el-table-column prop="location" label="考试地点" min-width="150" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '已考' ? 'success' : row.status === '待考' ? 'warning' : 'info'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="160" align="center" />
@@ -46,6 +44,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -63,9 +62,7 @@
         <el-descriptions-item label="补考日期">{{ detailData.examDate }}</el-descriptions-item>
         <el-descriptions-item label="考试地点">{{ detailData.location }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '已考' ? 'success' : detailData.status === '待考' ? 'warning' : 'info'" size="small">
-            {{ detailData.status }}
-          </el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
@@ -112,6 +109,7 @@ import { getMakeupExamList, createMakeupExam, updateMakeupExam, deleteMakeupExam
 import { getSemesterList } from '@/api/semester'
 import { getCourseList } from '@/api/course'
 import { getClassroomList } from '@/api/classroom'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

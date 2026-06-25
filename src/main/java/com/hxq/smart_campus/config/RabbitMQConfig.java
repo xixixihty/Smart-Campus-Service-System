@@ -1,24 +1,16 @@
 package com.hxq.smart_campus.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.QueueBuilder;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
-
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.Message;
 
 @Slf4j
 @Configuration
@@ -71,6 +63,15 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public RabbitTemplate courseSelectionRabbitTemplate(
+            ConnectionFactory connectionFactory,
+            MessageConverter courseSelectionMessageConverter) {
+        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        template.setMessageConverter(courseSelectionMessageConverter);
+        return template;
+    }
+
+    @Bean
     public RabbitListenerContainerFactory<?> courseSelectionContainerFactory(
             ConnectionFactory connectionFactory,
             MessageConverter courseSelectionMessageConverter) {
@@ -79,10 +80,5 @@ public class RabbitMQConfig {
         factory.setMessageConverter(courseSelectionMessageConverter);
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return factory;
-    }
-
-    @RabbitListener(queues = DLX_QUEUE_NAME)
-    public void handleDlxMessage(Message message) {
-        log.error("选课消息进入死信队列: {}", new String(message.getBody()));
     }
 }

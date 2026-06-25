@@ -2,7 +2,6 @@ package com.hxq.smart_campus.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -81,10 +80,5 @@ public class BorrowRabbitMQConfig {
     @Bean
     public Binding borrowDlxBinding(@Qualifier("borrowDlxQueue") Queue borrowDlxQueue, @Qualifier("borrowDlxExchange") TopicExchange borrowDlxExchange) {
         return BindingBuilder.bind(borrowDlxQueue).to(borrowDlxExchange).with(BORROW_DLX_ROUTING_KEY);
-    }
-
-    @RabbitListener(queues = BORROW_DLX_QUEUE)
-    public void handleDlxMessage(Message message) {
-        log.error("借阅消息进入死信队列: {}", new String(message.getBody()));
     }
 }

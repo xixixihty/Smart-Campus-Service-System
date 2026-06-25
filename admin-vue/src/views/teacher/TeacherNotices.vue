@@ -18,14 +18,14 @@
 
     <div class="table-card">
       <el-card shadow="never">
-        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+        <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
           <el-table-column prop="publisherName" label="发布人" width="100" align="center" />
           <el-table-column prop="publishTime" label="发布时间" width="170" align="center" />
           <el-table-column prop="status" label="状态" width="100" align="center">
             <template #default="{ row }">
-              <el-tag :type="row.status === '发布' || row.status === '已发布' ? 'success' : 'info'" size="small">{{ row.status }}</el-tag>
+              <StatusBadge :status="row.status" />
             </template>
           </el-table-column>
           <el-table-column label="操作" width="100" align="center" fixed="right">
@@ -33,6 +33,7 @@
               <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
             </template>
           </el-table-column>
+          <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
         </el-table>
         <div class="pagination">
           <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -61,6 +62,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getTeacherNoticeList, getTeacherNoticeDetail } from '@/api/teacher'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const tableData = ref([])

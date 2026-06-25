@@ -36,7 +36,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="applicantType" label="类型" width="80" align="center">
           <template #default="{ row }">
@@ -62,26 +62,22 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '已批准' ? 'success' : row.status === '已驳回' ? 'danger' : row.status === '待审批' ? 'warning' : 'info'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="170" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button v-if="row.status === '待审批'" type="success" link @click="handleApprove(row)">
+              <el-icon><Select /></el-icon>批准
+            </el-button>
+            <el-button v-if="row.status === '待审批'" type="danger" link @click="handleReject(row)">
+              <el-icon><CloseBold /></el-icon>驳回
+            </el-button>
             <el-button type="info" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
-            <template v-if="row.status === '待审批'">
-              <el-button type="success" link @click="handleApprove(row, '已批准')">
-                <el-icon><Select /></el-icon>通过
-              </el-button>
-              <el-button type="danger" link @click="handleApprove(row, '已驳回')">
-                <el-icon><CloseBold /></el-icon>拒绝
-              </el-button>
-            </template>
-            <el-text v-else type="info" size="small">已处理</el-text>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -166,6 +162,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getLeaveRequestList, approveLeaveRequest, getLeaveRequestDetail } from '@/api/leaveApproval'
+import StatusBadge from '@/components/StatusBadge.vue'
 import { useWebSocket } from '@/composables/useWebSocket'
 
 const loading = ref(false)

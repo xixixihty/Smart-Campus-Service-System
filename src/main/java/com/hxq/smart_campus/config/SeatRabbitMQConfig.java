@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -85,10 +84,5 @@ public class SeatRabbitMQConfig {
     @Bean
     public Binding seatDlxBinding(@Qualifier("seatDlxQueue") Queue seatDlxQueue, @Qualifier("seatDlxExchange") TopicExchange seatDlxExchange) {
         return BindingBuilder.bind(seatDlxQueue).to(seatDlxExchange).with(SEAT_DLX_ROUTING_KEY);
-    }
-
-    @RabbitListener(queues = SEAT_DLX_QUEUE)
-    public void handleDlxMessage(Message message) {
-        log.error("座位预约消息进入死信队列: {}", new String(message.getBody()));
     }
 }

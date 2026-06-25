@@ -34,7 +34,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="borrowNo" label="借阅编号" width="120" align="center" />
         <el-table-column prop="userName" label="借阅人姓名" width="100" align="center" />
@@ -43,17 +43,17 @@
         <el-table-column prop="dueDate" label="应还日期" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '借出中' ? 'warning' : row.status === '已归还' ? 'success' : 'danger'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="overdueDays" label="逾期天数" width="100" align="center" />
         <el-table-column label="操作" width="100" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleView(row)"><el-icon><View /></el-icon>详情</el-button>
+            <el-button v-if="row.status === '借出中'" type="warning" link size="small" @click="handleReturn(row)">归还</el-button>
+            <span v-else style="color: #999; font-size: 12px;">-</span>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -183,6 +183,7 @@ import * as echarts from 'echarts'
 import { Reading, Checked, Warning, PieChart, TrendCharts, DataAnalysis } from '@element-plus/icons-vue'
 import { getBorrowRecordList, getBorrowRecordDetail, getBorrowStatistics } from '@/api/borrowRecord'
 import { getStudentList } from '@/api/student'
+import StatusBadge from '@/components/StatusBadge.vue'
 import { getBookList } from '@/api/book'
 
 const loading = ref(false)

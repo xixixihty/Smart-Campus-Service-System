@@ -29,7 +29,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="roomNumber" label="教室门牌号" min-width="150" align="center" />
         <el-table-column prop="building" label="教学楼" width="120" align="center" />
@@ -37,11 +37,8 @@
         <el-table-column prop="capacity" label="容量" width="80" align="center" />
 
         <el-table-column prop="status" label="状态" width="100" align="center">
-        
           <template #default="{ row }">
-            <el-tag :type="row.status === '正常' || row.status === '可用' ? 'success' : row.status === '停用' ? 'danger' : 'warning'" size="small">
-              {{ row.status }}
-            </el-tag>
+            <StatusBadge :status="row.status" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" />
@@ -52,6 +49,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -69,7 +67,7 @@
         <el-descriptions-item label="教室类型">{{ detailData.type }}</el-descriptions-item>
         <el-descriptions-item label="座位容量">{{ detailData.capacity }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detailData.status === '正常' || detailData.status === '可用' ? 'success' : detailData.status === '停用' ? 'danger' : 'warning'" size="small">{{ detailData.status }}</el-tag>
+          <StatusBadge :status="detailData.status" />
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ detailData.updateTime }}</el-descriptions-item>
@@ -113,6 +111,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getClassroomList, getClassroomDetail, createClassroom, updateClassroom, deleteClassroom } from '@/api/classroom'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

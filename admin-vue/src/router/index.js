@@ -171,6 +171,12 @@ const routes = [
     component: () => import('@/views/teacher/TeacherNotices.vue'),
     meta: { title: '通知公告', roles: ['teacher'] }
   },
+  {
+    path: '/teacher/ai-assistant',
+    name: 'TeacherAiAssistant',
+    component: () => import('@/views/teacher/TeacherAiAssistant.vue'),
+    meta: { title: 'AI智慧助手', roles: ['teacher'] }
+  },
 
   // ==================== 学生路由 ====================
   {

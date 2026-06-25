@@ -22,7 +22,7 @@
     </el-card>
 
     <el-card shadow="never" class="table-card">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="type" label="请假类型" width="100" align="center" />
         <el-table-column prop="startTime" label="开始时间" width="170" align="center" />
@@ -34,6 +34,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="170" align="center" />
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -73,6 +74,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getStudentLeaveList, createStudentLeave } from '@/api/student'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const tableData = ref([])

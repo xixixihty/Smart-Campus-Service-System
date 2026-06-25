@@ -3,18 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hxq.smart_campus.mapper.ReadingReportMapper">
-    <!-- 新增读书报告 -->
-    <insert id="insertReadingReport">
-        insert into reading_report
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">user_id</if>
-            <if test="semester != null">semester</if>
-        </trim>
-        values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">#{userId}</if>
-            <if test="semester != null">#{semester}</if>
-        </trim>
+    <!-- 新增读书报告（完整字段） -->
+    <insert id="insertFullReport" useGeneratedKeys="true" keyProperty="id">
+        insert into reading_report (user_id, semester, total_borrow, fav_category, analysis_text, create_time)
+        values (#{userId}, #{semester}, #{totalBorrow}, #{favCategory}, #{analysisText}, #{createTime})
     </insert>
 
     <!-- 获取读书报告列表 -->
@@ -26,12 +18,36 @@
             <if test="userId != null">r.user_id = #{userId}</if>
             <if test="semester != null">and r.semester = #{semester}</if>
         </where>
+        order by r.create_time desc
     </select>
-    <!-- 获取读书报告详情 -->
+
+    <!-- 根据用户ID和学期获取最新报告 -->
+    <select id="getReadingReportByUser" resultType="com.hxq.smart_campus.entity.vo.ReadingReportDetailVO">
+        select r.id, r.user_id as userId, stu.name as user_name, r.semester,
+               r.total_borrow, r.fav_category, r.analysis_text, r.create_time
+        from reading_report r
+        left join student stu on r.user_id = stu.id
+        where r.user_id = #{userId}
+        <if test="semester != null and semester != ''">and r.semester = #{semester}</if>
+        order by r.create_time desc
+        limit 1
+    </select>
+
+    <!-- 根据ID获取阅读报告详情 -->
     <select id="getReadingReportDetailById" resultType="com.hxq.smart_campus.entity.vo.ReadingReportDetailVO">
-        select r.id, stu.name as user_name, r.semester, r.total_borrow, r.fav_category, r.analysis_text, r.create_time
+        select r.id, r.user_id as userId, stu.name as user_name, r.semester,
+               r.total_borrow, r.fav_category, r.analysis_text, r.create_time
         from reading_report r
         left join student stu on r.user_id = stu.id
         where r.id = #{id}
     </select>
+
+    <!-- 更新阅读报告的分析数据 -->
+    <update id="updateReportAnalysis">
+        update reading_report
+        set total_borrow = #{totalBorrow},
+            fav_category = #{favCategory},
+            analysis_text = #{analysisText}
+        where id = #{id}
+    </update>
 </mapper>

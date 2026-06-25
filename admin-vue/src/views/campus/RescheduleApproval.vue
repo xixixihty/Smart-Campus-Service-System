@@ -5,7 +5,7 @@
     </div>
 
     <el-card shadow="never">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="courseName" label="课程" min-width="140" align="center" />
         <el-table-column prop="teacherName" label="申请教师" width="100" align="center" />
@@ -35,6 +35,7 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <el-empty v-if="tableData.length === 0 && !loading" description="暂无待审批调课申请" />
     </el-card>

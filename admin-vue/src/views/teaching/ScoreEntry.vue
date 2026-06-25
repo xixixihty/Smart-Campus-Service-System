@@ -33,7 +33,7 @@
     </el-card>
 
     <el-card shadow="never" style="margin-top: 16px">
-      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)">
+      <el-table :data="tableData" v-loading="loading" stripe border max-height="calc(100vh - 280px)" scrollbar-always-on>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="studentName" label="学生姓名" width="100" align="center" />
         <el-table-column prop="studentNo" label="学号" width="120" align="center" />
@@ -46,9 +46,7 @@
         <el-table-column prop="credit" label="学分" width="80" align="center" />
         <el-table-column prop="examStatus" label="考试状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.examStatus === '正常' ? 'success' : row.examStatus === '缺考' ? 'danger' : 'warning'" size="small">
-              {{ row.examStatus }}
-            </el-tag>
+            <StatusBadge :status="row.examStatus" />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center" fixed="right">
@@ -58,6 +56,7 @@
             <el-button type="danger" link @click="handleDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>
+        <el-table-column width="12" class-name="scroll-hint-column" fixed="right" />
       </el-table>
       <div class="pagination">
         <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize"
@@ -84,9 +83,7 @@
         <el-descriptions-item label="总评成绩">{{ detailData.totalScore }}</el-descriptions-item>
         <el-descriptions-item label="绩点">{{ detailData.scorePoint }}</el-descriptions-item>
         <el-descriptions-item label="考试状态">
-          <el-tag :type="detailData.examStatus === '正常' ? 'success' : detailData.examStatus === '缺考' ? 'danger' : 'warning'" size="small">
-            {{ detailData.examStatus }}
-          </el-tag>
+          <StatusBadge :status="detailData.examStatus" />
         </el-descriptions-item>
       </el-descriptions>
       <!-- 新增/编辑：表单 -->
@@ -142,6 +139,7 @@ import { getScoreList, createScore, updateScore, deleteScore, batchScore, getSco
 import { getSemesterList } from '@/api/semester'
 import { getCourseList } from '@/api/course'
 import { getStudentList } from '@/api/student'
+import StatusBadge from '@/components/StatusBadge.vue'
 
 const loading = ref(false)
 const submitLoading = ref(false)

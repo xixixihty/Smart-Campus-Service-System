@@ -5,7 +5,10 @@
 
 /* ---------- 页面容器 ---------- */
 .page-container {
-  min-height: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -196,4 +199,39 @@
 /* ---------- 空状态 ---------- */
 .empty-state {
   padding: 40px 0;
+}
+
+/* ============================================================
+ * 表格横向滚动条优化（滚动条完全限制在表格内部，不影响外层布局）
+ * ============================================================ */
+
+/* 表格横向滚动条常显 */
+.el-table .el-scrollbar__bar.is-horizontal {
+  height: 8px;
+  opacity: 1;
+}
+
+.el-table .el-scrollbar__thumb {
+  background-color: #c0c4cc;
+  border-radius: 4px;
+}
+
+.el-table .el-scrollbar__thumb:hover {
+  background-color: #909399;
+}
+
+/* 表格最右侧滚动条专用列：作为表格内部滚动条的视觉锚点 */
+.scroll-hint-column {
+  background: #f8f9fa;
+  cursor: col-resize;
+  min-width: 14px !important;
+  width: 14px !important;
+  padding: 0 !important;
+  border-left: 1px solid #ebeef5;
+}
+
+/* 三层防御：确保外层容器不横向溢出 */
+.el-main .el-card {
+  max-width: 100%;
+  box-sizing: border-box;
 }
