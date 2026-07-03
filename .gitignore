@@ -41,6 +41,8 @@ build/
 application-local.yml
 
 ### Misc ###
+.trae/
+replay_pid*.log
 面试/
 优化方案
 优化方案v2.1/
