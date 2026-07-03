@@ -16,5 +16,5 @@ export function getMyReadingReports(params) {
 }
 
 export function getReadingReportDetail(id) {
-  return request({ url: `/reading-reports/user/detail/${id}`, method: 'get' })
+  return request({ url: `/reading-reports/user/${id}`, method: 'get' })
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.hxq.smart_campus.constant.MessageConstant.*;
@@ -186,8 +187,12 @@ public class MakeupExamServiceImpl implements MakeupExamService {
         if (result <= 0) {
             throw new RuntimeException("新增补考安排成绩失败");
         }
-        // 修改考试状态
-        int r = makeupExamMapper.updateMakeupExamStatus(makeupExamScoreDTO.getId(), MAKEUP_EXAM_STATUS_PASSED);
+        // 根据补考成绩判断是否及格（60分及格线），修改考试状态
+        BigDecimal score = makeupExamScoreDTO.getMakeupScore();
+        String status = score.compareTo(new BigDecimal("60")) >= 0
+                ? MAKEUP_EXAM_STATUS_PASSED
+                : MAKEUP_EXAM_STATUS_FAILED;
+        int r = makeupExamMapper.updateMakeupExamStatus(makeupExamScoreDTO.getId(), status);
         if (r <= 0) {
             throw new RuntimeException("修改考试状态失败");
         }

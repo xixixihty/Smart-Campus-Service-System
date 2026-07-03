@@ -23,9 +23,19 @@ public interface ReadingReportService {
      */
     ReadingReportResponseDTO insertReadingReport(ReadingReportCreateDTO readingReportCreateDTO);
     /**
-     * 获取我的读书报告详情
-     * @param semester
-     * @return
+     * 获取我的读书报告列表（分页）
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @param semester 学期（可选）
+     * @return 分页列表
      */
-    ReadingReportDetailVO getMyReadingReportDetail(String semester);
+    PageInfo<ReadingReportListVO> getMyReadingReportList(Integer pageNum, Integer pageSize, String semester);
+
+    /**
+     * 根据ID获取阅读报告详情
+     * @param id 报告ID
+     * @param currentUserId 当前用户ID（用于归属校验）
+     * @return 报告详情
+     */
+    ReadingReportDetailVO getReadingReportDetailById(Long id, Long currentUserId);
 }

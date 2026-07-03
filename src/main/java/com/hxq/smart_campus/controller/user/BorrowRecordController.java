@@ -31,9 +31,8 @@ public class BorrowRecordController {
     @PostMapping
     @Operation(summary = "创建借阅记录")
     public Result<BorrowResponseDTO> insertBorrowRecord(@RequestBody BorrowCreateDTO borrowCreateDTO) {
-        if (borrowCreateDTO.getUserId() == null) {
-            borrowCreateDTO.setUserId(SecurityUtils.getCurrentUserId());
-        }
+        // 始终从服务端获取当前用户ID，防止前端篡改
+        borrowCreateDTO.setUserId(SecurityUtils.getCurrentUserId());
         log.info("创建借阅记录，参数：{}", borrowCreateDTO);
         BorrowResponseDTO borrowResponseDTO = borrowRecordService.insertBorrowRecord(borrowCreateDTO);
         return Result.success(borrowResponseDTO);
@@ -69,7 +68,6 @@ public class BorrowRecordController {
      * @param pageNum
      * @param pageSize
      * @param status
-     * @param userId
      * @return
      */
     @GetMapping("/my")
@@ -77,12 +75,9 @@ public class BorrowRecordController {
     public Result<PageInfo<BorrowRecordListVO>> getBorrowRecordMyList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Long userId
+            @RequestParam(required = false) String status
     ) {
-        if (userId == null) {
-            userId = SecurityUtils.getCurrentUserId();
-        }
+        Long userId = SecurityUtils.getCurrentUserId();
         log.info("获取我的借阅记录，参数：pageNum={}, pageSize={}, status={}, userId={}", pageNum, pageSize, status, userId);
         PageInfo<BorrowRecordListVO> pageInfo = borrowRecordService.getBorrowRecordMyList(pageNum, pageSize, status, userId);
         return Result.success(pageInfo);

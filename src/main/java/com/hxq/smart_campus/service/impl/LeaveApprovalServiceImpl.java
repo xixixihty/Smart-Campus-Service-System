@@ -146,8 +146,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
                 } else {
                     log.warn("管理员越权审批教师请假: approverId={}, currentUserId={}, leaveId={}",
                             leaveRequestDetailVO.getApproverId(), currentUserId, id);
-                    // 允许通过但记录日志
-                    hasPermission = true;
+                    throw new BusinessException("您不是该申请的指定审批人，无权审批");
                 }
             } else {
                 hasPermission = true;

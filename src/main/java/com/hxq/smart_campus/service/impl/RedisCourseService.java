@@ -154,6 +154,12 @@ public class RedisCourseService {
         // 从数据库加载所有课程ID
         return courseIds;
     }
+
+    /**
+     * 加载Lua脚本
+     * @param path
+     * @return
+     */
     private String loadScriptFromResource(String path) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {

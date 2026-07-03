@@ -1,5 +1,7 @@
 package com.hxq.smart_campus.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.pojo.Notification;
 import com.hxq.smart_campus.entity.vo.NotificationVO;
 import com.hxq.smart_campus.mapper.NotificationMapper;
@@ -45,10 +47,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationVO> getNotificationList(String type) {
+    public PageInfo<NotificationVO> getNotificationList(Integer pageNum, Integer pageSize, String type) {
         Long userId = SecurityUtils.getCurrentUserId();
         String userType = SecurityUtils.getCurrentUserType();
-        return notificationMapper.getNotificationList(userId, userType, type);
+        PageHelper.startPage(pageNum, pageSize);
+        List<NotificationVO> list = notificationMapper.getNotificationList(userId, userType, type);
+        return new PageInfo<>(list);
     }
 
     @Override

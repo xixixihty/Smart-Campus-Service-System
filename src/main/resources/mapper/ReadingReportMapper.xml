@@ -3,6 +3,12 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hxq.smart_campus.mapper.ReadingReportMapper">
+    <!-- 新增读书报告（简易版，只含userId和semester） -->
+    <insert id="insertReadingReport" useGeneratedKeys="true" keyProperty="id">
+        insert into reading_report (user_id, semester, create_time)
+        values (#{userId}, #{semester}, now())
+    </insert>
+
     <!-- 新增读书报告（完整字段） -->
     <insert id="insertFullReport" useGeneratedKeys="true" keyProperty="id">
         insert into reading_report (user_id, semester, total_borrow, fav_category, analysis_text, create_time)

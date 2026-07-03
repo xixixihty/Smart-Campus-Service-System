@@ -24,6 +24,11 @@
         delete from course_schedule_class where schedule_id = #{scheduleId}
     </delete>
 
+    <!-- 根据排课ID获取关联的班级ID列表 -->
+    <select id="getClassIdsByScheduleId" resultType="java.lang.Long">
+        select class_id from course_schedule_class where schedule_id = #{scheduleId}
+    </select>
+
     <!-- 更新课程安排 -->
     <update id="updateCourseSchedule">
         update course_schedule

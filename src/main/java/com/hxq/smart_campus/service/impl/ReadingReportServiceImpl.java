@@ -49,6 +49,13 @@ public class ReadingReportServiceImpl implements ReadingReportService {
             throw new IllegalArgumentException("参数不能为空");
         }
 
+        // 自动从当前登录用户获取 userId
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId == null) {
+            throw new RuntimeException("未获取到当前用户信息");
+        }
+        readingReportCreateDTO.setUserId(userId);
+
         // 1. 先插入基础记录（userId + semester）
         int result = readingReportMapper.insertReadingReport(readingReportCreateDTO);
         if (result <= 0) {
@@ -58,7 +65,7 @@ public class ReadingReportServiceImpl implements ReadingReportService {
 
         // 2. 调用阅读分析服务获取偏好数据
         try {
-            ReadingAnalysisVO analysis = readingAnalysisService.analyzeReadingBehavior(readingReportCreateDTO.getUserId());
+            ReadingAnalysisVO analysis = readingAnalysisService.analyzeReadingBehavior(userId);
             if (analysis != null) {
                 int updateResult = readingReportMapper.updateReportAnalysis(
                         reportId,
@@ -85,19 +92,34 @@ public class ReadingReportServiceImpl implements ReadingReportService {
     }
 
     /**
-     * 获取我的读书报告详情（当前学期优先）
+     * 获取我的读书报告列表（分页）
      */
     @Override
-    public ReadingReportDetailVO getMyReadingReportDetail(String semester) {
+    public PageInfo<ReadingReportListVO> getMyReadingReportList(Integer pageNum, Integer pageSize, String semester) {
         Long userId = SecurityUtils.getCurrentUserId();
         if (userId == null) {
             throw new RuntimeException("未获取到当前用户信息");
         }
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReadingReportListVO> list = readingReportMapper.getReadingReportList(userId, semester);
+        return new PageInfo<>(list);
+    }
 
-        ReadingReportDetailVO detail = readingReportMapper.getReadingReportByUser(userId, semester);
+    /**
+     * 根据ID获取阅读报告详情（带归属校验）
+     */
+    @Override
+    public ReadingReportDetailVO getReadingReportDetailById(Long id, Long currentUserId) {
+        ReadingReportDetailVO detail = readingReportMapper.getReadingReportDetailById(id);
         if (detail == null) {
-            log.info("未找到该用户的阅读报告: userId={}, semester={}", userId, semester);
+            log.info("未找到阅读报告: id={}", id);
             return null;
+        }
+        // 校验报告归属：仅允许查看自己的报告
+        if (!currentUserId.equals(detail.getUserId())) {
+            log.warn("用户越权查看阅读报告: currentUserId={}, reportOwner={}, reportId={}",
+                    currentUserId, detail.getUserId(), id);
+            throw new RuntimeException("无权查看该报告");
         }
         return detail;
     }

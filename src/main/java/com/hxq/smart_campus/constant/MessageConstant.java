@@ -271,6 +271,10 @@ public class MessageConstant {
      * 补考状态取消
      */
     public static final String MAKEUP_EXAM_STATUS_CANCELED = "取消";
+    /**
+     * 补考状态未通过
+     */
+    public static final String MAKEUP_EXAM_STATUS_FAILED = "未通过";
 
 
     /**

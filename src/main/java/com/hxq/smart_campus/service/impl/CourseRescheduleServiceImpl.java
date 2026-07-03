@@ -67,6 +67,17 @@ public class CourseRescheduleServiceImpl implements CourseRescheduleService {
                     throw new BusinessException("目标教室在该时间段已被占用，请选择其他教室");
                 }
             }
+            // 检查班级冲突（目标班级在新时间段是否有其他课程）
+            List<Long> classIds = courseScheduleMapper.getClassIdsByScheduleId(item.getCourseScheduleId());
+            if (classIds != null && !classIds.isEmpty()) {
+                List<CourseScheduleDetailVO> classConflicts = courseScheduleMapper.checkClassConflict(
+                        schedule.getSemesterId(), classIds, item.getNewWeekDay(),
+                        item.getNewStartSection(), item.getNewEndSection(),
+                        schedule.getWeekRange(), item.getCourseScheduleId());
+                if (classConflicts != null && !classConflicts.isEmpty()) {
+                    throw new BusinessException("目标班级在该时间段已有排课，请选择其他时间");
+                }
+            }
         }
 
         for (CourseRescheduleCreateDTO.RescheduleItem item : dto.getItems()) {

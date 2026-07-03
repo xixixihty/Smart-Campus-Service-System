@@ -158,6 +158,13 @@ public interface CourseScheduleMapper {
      */
     int deleteCourseScheduleClasses(@Param("scheduleId") Long scheduleId);
 
+    /**
+     * 根据排课ID获取关联的班级ID列表
+     * @param scheduleId 排课ID
+     * @return 班级ID列表
+     */
+    List<Long> getClassIdsByScheduleId(@Param("scheduleId") Long scheduleId);
+
     // ============ 学生Dashboard相关 ============
 
     /**

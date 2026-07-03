@@ -1,5 +1,6 @@
 package com.hxq.smart_campus.controller.user;
 
+import com.github.pagehelper.PageInfo;
 import com.hxq.smart_campus.entity.vo.NotificationVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.NotificationService;
@@ -29,9 +30,13 @@ public class NotificationController {
 
     @GetMapping
     @Operation(summary = "获取通知列表")
-    public Result<List<NotificationVO>> getNotificationList(@RequestParam(required = false) String type) {
-        List<NotificationVO> list = notificationService.getNotificationList(type);
-        return Result.success(list);
+    public Result<PageInfo<NotificationVO>> getNotificationList(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String type
+    ) {
+        PageInfo<NotificationVO> pageInfo = notificationService.getNotificationList(pageNum, pageSize, type);
+        return Result.success(pageInfo);
     }
 
     @GetMapping("/unread-count")

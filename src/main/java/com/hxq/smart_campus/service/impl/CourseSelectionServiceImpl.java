@@ -14,6 +14,7 @@ import com.hxq.smart_campus.mapper.*;
 import com.hxq.smart_campus.service.CourseSelectionPeriodService;
 import com.hxq.smart_campus.service.CourseSelectionService;
 import com.hxq.smart_campus.service.CourseService;
+import com.hxq.smart_campus.service.SemesterService;
 import com.hxq.smart_campus.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -58,6 +59,8 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
 
     private final CourseCacheService courseCacheService;
 
+    private final SemesterService semesterService;
+
     private final RabbitTemplate rabbitTemplate;
 
     public CourseSelectionServiceImpl(
@@ -65,6 +68,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
             CourseSelectionPeriodService courseSelectionPeriodService,
             CourseService courseService,
             SemesterMapper semesterMapper,
+            SemesterService semesterService,
             CourseMapper courseMapper,
             StudentMapper studentMapper,
             RedisTemplate redisTemplate,
@@ -84,6 +88,7 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         this.redisCourseService = redisCourseService;
         this.redissonClient = redissonClient;
         this.courseCacheService = courseCacheService;
+        this.semesterService = semesterService;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -195,8 +200,14 @@ public class CourseSelectionServiceImpl implements CourseSelectionService {
         Long studentId = SecurityUtils.getCurrentUserId();
         log.info("学生退课，courseId={}, studentId={}", courseId, studentId);
         
-        // 根据courseId + studentId查找选课记录
-        List<CourseSelectionListVO> selections = courseSelectionMapper.getCourseSelectionList(studentId, courseId, null, null);
+        // 获取当前学期，避免跨学期匹配到历史记录
+        SemesterDetailVO currentSemester = semesterService.getCurrentSemester();
+        if (currentSemester == null) {
+            throw CourseSelectionException.courseSelectionNotExist("无法获取当前学期信息");
+        }
+        // 根据courseId + studentId + 当前学期 + 已选状态查找选课记录
+        List<CourseSelectionListVO> selections = courseSelectionMapper.getCourseSelectionList(
+                studentId, courseId, currentSemester.getId(), "已选");
         if (selections == null || selections.isEmpty()) {
             throw CourseSelectionException.courseSelectionNotExist("未选修该课程");
         }

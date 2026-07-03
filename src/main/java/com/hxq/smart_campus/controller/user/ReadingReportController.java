@@ -7,6 +7,7 @@ import com.hxq.smart_campus.entity.vo.ReadingReportDetailVO;
 import com.hxq.smart_campus.entity.vo.ReadingReportListVO;
 import com.hxq.smart_campus.result.Result;
 import com.hxq.smart_campus.service.ReadingReportService;
+import com.hxq.smart_campus.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +59,23 @@ public class ReadingReportController {
     }
 
     @GetMapping("/my")
-    @Operation(summary = "获取我的读书报告详情")
-    public Result<ReadingReportDetailVO> getMyReadingReportDetail(
+    @Operation(summary = "获取我的读书报告列表")
+    public Result<PageInfo<ReadingReportListVO>> getMyReadingReportList(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String semester
     ) {
-        log.info("获取我的读书报告详情，参数：{}", semester);
-        ReadingReportDetailVO readingReportDetailVO = readingReportService.getMyReadingReportDetail(semester);
-        return Result.success(readingReportDetailVO);
+        log.info("获取我的读书报告列表，参数：pageNum={}, pageSize={}, semester={}", pageNum, pageSize, semester);
+        PageInfo<ReadingReportListVO> pageInfo = readingReportService.getMyReadingReportList(pageNum, pageSize, semester);
+        return Result.success(pageInfo);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "获取阅读报告详情")
+    public Result<ReadingReportDetailVO> getReadingReportDetail(@PathVariable Long id) {
+        log.info("获取阅读报告详情，id={}", id);
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        ReadingReportDetailVO detail = readingReportService.getReadingReportDetailById(id, currentUserId);
+        return Result.success(detail);
     }
 }
