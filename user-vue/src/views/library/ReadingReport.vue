@@ -50,7 +50,7 @@
           </el-descriptions>
           <div v-if="currentReport.analysisText" class="analysis-section">
             <h4>AI 阅读分析</h4>
-            <p>{{ currentReport.analysisText }}</p>
+            <div class="analysis-content" v-html="renderMarkdown(currentReport.analysisText)"></div>
           </div>
           <el-empty v-else description="暂无分析内容" />
         </template>
@@ -62,7 +62,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { marked } from 'marked'
 import { getMyReadingReports, createReadingReport, getReadingReportDetail } from '@/api/readingReport'
+
+marked.setOptions({ breaks: true, gfm: true })
+
+const renderMarkdown = (text) => (text ? marked.parse(text) : '')
 
 const loading = ref(false)
 const submitLoading = ref(false)
@@ -130,5 +135,15 @@ onMounted(() => { fetchData() })
 .form-tip { color: #909399; font-size: 13px; margin-top: -8px; }
 .analysis-section { margin-top: 20px; }
 .analysis-section h4 { font-size: 15px; color: #303133; margin-bottom: 8px; }
-.analysis-section p { line-height: 1.8; white-space: pre-wrap; color: #606266; }
+.analysis-content { line-height: 1.8; color: #606266; }
+.analysis-content :deep(p) { margin: 6px 0; }
+.analysis-content :deep(h2) { font-size: 16px; margin: 12px 0 8px; color: #303133; }
+.analysis-content :deep(h3) { font-size: 15px; margin: 10px 0 6px; color: #303133; }
+.analysis-content :deep(ul), .analysis-content :deep(ol) { padding-left: 20px; margin: 6px 0; }
+.analysis-content :deep(li) { margin: 4px 0; }
+.analysis-content :deep(table) { border-collapse: collapse; width: 100%; margin: 8px 0; }
+.analysis-content :deep(th), .analysis-content :deep(td) { border: 1px solid #dcdfe6; padding: 6px 10px; text-align: left; }
+.analysis-content :deep(th) { background: #f5f7fa; }
+.analysis-content :deep(strong) { font-weight: 600; }
+.analysis-content :deep(blockquote) { border-left: 3px solid #409EFF; padding-left: 12px; margin: 8px 0; color: #909399; }
 </style>

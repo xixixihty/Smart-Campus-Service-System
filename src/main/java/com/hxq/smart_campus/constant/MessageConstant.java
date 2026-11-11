@@ -276,6 +276,36 @@ public class MessageConstant {
      */
     public static final String MAKEUP_EXAM_STATUS_FAILED = "未通过";
 
+    // ============ 补考场次状态（新） ============
+    /** 场次状态-待安排 */
+    public static final String SESSION_STATUS_PENDING = "待安排";
+    /** 场次状态-已安排 */
+    public static final String SESSION_STATUS_ARRANGED = "已安排";
+    /** 场次状态-已通知 */
+    public static final String SESSION_STATUS_NOTIFIED = "已通知";
+    /** 场次状态-已结束 */
+    public static final String SESSION_STATUS_FINISHED = "已结束";
+    /** 场次状态-已取消 */
+    public static final String SESSION_STATUS_CANCELED = "已取消";
+
+    // ============ 补考学生状态（新） ============
+    /** 学生补考状态-待通知 */
+    public static final String STUDENT_STATUS_PENDING = "待通知";
+    /** 学生补考状态-已通知 */
+    public static final String STUDENT_STATUS_NOTIFIED = "已通知";
+    /** 学生补考状态-已通过 */
+    public static final String STUDENT_STATUS_PASSED = "已通过";
+    /** 学生补考状态-未通过 */
+    public static final String STUDENT_STATUS_FAILED = "未通过";
+
+    // ============ 补考成绩相关 ============
+    /** 补考及格线 */
+    public static final java.math.BigDecimal MAKEUP_PASS_LINE = new java.math.BigDecimal("60");
+    /** 考试状态-补考通过 */
+    public static final String EXAM_STATUS_MAKEUP_PASSED = "补考通过";
+    /** 考试状态-补考未通过 */
+    public static final String EXAM_STATUS_MAKEUP_FAILED = "补考未通过";
+
 
     /**
      * 请假申请待审批
@@ -347,6 +377,14 @@ public class MessageConstant {
      * 通知类型-系统通知
      */
     public static final String NOTIFY_BIZ_GENERAL = "NOTIFICATION";
+    /** 通知类型-补考安排 */
+    public static final String NOTIFY_BIZ_MAKEUP_ARRANGED = "MAKEUP_ARRANGED";
+    /** 通知类型-补考取消 */
+    public static final String NOTIFY_BIZ_MAKEUP_CANCELED = "MAKEUP_CANCELED";
+    /** 通知类型-补考成绩 */
+    public static final String NOTIFY_BIZ_MAKEUP_SCORE = "MAKEUP_SCORE";
+    /** 通知类型-补考提醒 */
+    public static final String NOTIFY_BIZ_MAKEUP_REMINDER = "MAKEUP_REMINDER";
 
     // ============ 调课状态 ============
     /**

@@ -62,6 +62,7 @@
           <el-menu
             :key="'menu-' + userType"
             :default-active="activeMenu"
+            :default-openeds="defaultOpeneds"
             router
             background-color="#304156"
             text-color="#bfcbd9"
@@ -69,27 +70,132 @@
           >
             <!-- ========== 管理员菜单 ========== -->
             <template v-if="userType === 'admin'">
-              <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon><span>工作台</span></el-menu-item>
-              <el-menu-item index="/college"><el-icon><School /></el-icon><span>学院管理</span></el-menu-item>
-              <el-menu-item index="/major"><el-icon><Collection /></el-icon><span>专业管理</span></el-menu-item>
-              <el-menu-item index="/class"><el-icon><Grid /></el-icon><span>班级管理</span></el-menu-item>
-              <el-menu-item index="/classroom"><el-icon><HomeFilled /></el-icon><span>教室管理</span></el-menu-item>
-              <el-menu-item index="/teacher"><el-icon><Avatar /></el-icon><span>教师管理</span></el-menu-item>
-              <el-menu-item index="/student"><el-icon><User /></el-icon><span>学生管理</span></el-menu-item>
-              <el-menu-item index="/semester"><el-icon><Calendar /></el-icon><span>学期管理</span></el-menu-item>
-              <el-menu-item index="/course"><el-icon><Notebook /></el-icon><span>课程管理</span></el-menu-item>
-              <el-menu-item index="/course-schedule"><el-icon><Timer /></el-icon><span>排课管理</span></el-menu-item>
-              <el-menu-item index="/course-selection-period"><el-icon><Clock /></el-icon><span>选课时段</span></el-menu-item>
-              <el-menu-item index="/score-entry"><el-icon><Tickets /></el-icon><span>成绩管理</span></el-menu-item>
-              <el-menu-item index="/makeup-exam"><el-icon><EditPen /></el-icon><span>补考管理</span></el-menu-item>
-              <el-menu-item index="/book-category"><el-icon><FolderOpened /></el-icon><span>图书分类</span></el-menu-item>
-              <el-menu-item index="/book"><el-icon><CollectionTag /></el-icon><span>图书管理</span></el-menu-item>
-              <el-menu-item index="/borrow-record"><el-icon><Document /></el-icon><span>借阅记录</span></el-menu-item>
-              <el-menu-item index="/seat"><el-icon><Place /></el-icon><span>座位管理</span></el-menu-item>
-              <el-menu-item index="/notice"><el-icon><Bell /></el-icon><span>通知管理</span></el-menu-item>
-              <el-menu-item index="/leave-approval"><el-icon><Checked /></el-icon><span>请假审批</span></el-menu-item>
-              <el-menu-item index="/reschedule-approval"><el-icon><RefreshRight /></el-icon><span>调课审批</span></el-menu-item>
-              <el-menu-item index="/ai-assistant"><el-icon><Cpu /></el-icon><span>AI 智慧助手</span></el-menu-item>
+              <el-menu-item index="/dashboard">
+                <el-icon><Odometer /></el-icon>
+                <span>工作台</span>
+              </el-menu-item>
+
+              <el-sub-menu index="org">
+                <template #title>
+                  <el-icon><OfficeBuilding /></el-icon>
+                  <span>组织架构</span>
+                </template>
+                <el-menu-item index="/college">
+                  <el-icon><School /></el-icon>
+                  <span>学院管理</span>
+                </el-menu-item>
+                <el-menu-item index="/major">
+                  <el-icon><Collection /></el-icon>
+                  <span>专业管理</span>
+                </el-menu-item>
+                <el-menu-item index="/class">
+                  <el-icon><Grid /></el-icon>
+                  <span>班级管理</span>
+                </el-menu-item>
+                <el-menu-item index="/classroom">
+                  <el-icon><HomeFilled /></el-icon>
+                  <span>教室管理</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-sub-menu index="people">
+                <template #title>
+                  <el-icon><UserFilled /></el-icon>
+                  <span>人员管理</span>
+                </template>
+                <el-menu-item index="/teacher">
+                  <el-icon><Avatar /></el-icon>
+                  <span>教师管理</span>
+                </el-menu-item>
+                <el-menu-item index="/student">
+                  <el-icon><User /></el-icon>
+                  <span>学生管理</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-sub-menu index="teaching">
+                <template #title>
+                  <el-icon><Reading /></el-icon>
+                  <span>教学管理</span>
+                </template>
+                <el-menu-item index="/semester">
+                  <el-icon><Calendar /></el-icon>
+                  <span>学期管理</span>
+                </el-menu-item>
+                <el-menu-item index="/course">
+                  <el-icon><Notebook /></el-icon>
+                  <span>课程管理</span>
+                </el-menu-item>
+                <el-menu-item index="/course-schedule">
+                  <el-icon><Timer /></el-icon>
+                  <span>排课管理</span>
+                </el-menu-item>
+                <el-menu-item index="/course-selection-period">
+                  <el-icon><Clock /></el-icon>
+                  <span>选课时段</span>
+                </el-menu-item>
+                <el-menu-item index="/score-entry">
+                  <el-icon><Tickets /></el-icon>
+                  <span>成绩管理</span>
+                </el-menu-item>
+                <el-menu-item index="/makeup-exam">
+                  <el-icon><EditPen /></el-icon>
+                  <span>补考管理</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-sub-menu index="library">
+                <template #title>
+                  <el-icon><CollectionTag /></el-icon>
+                  <span>图书管理</span>
+                </template>
+                <el-menu-item index="/book-category">
+                  <el-icon><FolderOpened /></el-icon>
+                  <span>图书分类</span>
+                </el-menu-item>
+                <el-menu-item index="/book">
+                  <el-icon><Reading /></el-icon>
+                  <span>图书信息</span>
+                </el-menu-item>
+                <el-menu-item index="/borrow-record">
+                  <el-icon><Document /></el-icon>
+                  <span>借阅记录</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-sub-menu index="campus">
+                <template #title>
+                  <el-icon><Management /></el-icon>
+                  <span>校园服务</span>
+                </template>
+                <el-menu-item index="/seat">
+                  <el-icon><Place /></el-icon>
+                  <span>座位管理</span>
+                </el-menu-item>
+                <el-menu-item index="/notice">
+                  <el-icon><Bell /></el-icon>
+                  <span>通知管理</span>
+                </el-menu-item>
+                <el-menu-item index="/leave-approval">
+                  <el-icon><Checked /></el-icon>
+                  <span>请假审批</span>
+                </el-menu-item>
+                <el-menu-item index="/reschedule-approval">
+                  <el-icon><RefreshRight /></el-icon>
+                  <span>调课审批</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-sub-menu index="ai">
+                <template #title>
+                  <el-icon><Cpu /></el-icon>
+                  <span>AI 助手</span>
+                </template>
+                <el-menu-item index="/ai-assistant">
+                  <el-icon><ChatDotRound /></el-icon>
+                  <span>AI 智慧助手</span>
+                </el-menu-item>
+              </el-sub-menu>
             </template>
 
             <!-- ========== 教师菜单 ========== -->
@@ -154,6 +260,7 @@ const headerTitle = computed(() => {
 
 const activeMenu = computed(() => route.path)
 const isLoginPage = computed(() => route.path === '/login')
+const defaultOpeneds = ref(['org', 'people', 'teaching', 'library', 'campus', 'ai'])
 
 watch(() => route.path, () => {
   userType.value = localStorage.getItem('userType') || 'admin'

@@ -2,6 +2,7 @@ package com.hxq.smart_campus.config;
 
 import com.hxq.smart_campus.model.AlibabaOpenAiChatModel;
 import com.hxq.smart_campus.service.ai.AdminAITools;
+import com.hxq.smart_campus.service.ai.MarkdownFormatter;
 import com.hxq.smart_campus.service.ai.TeacherAITools;
 import com.hxq.smart_campus.service.ai.UserAITools;
 import io.micrometer.observation.ObservationRegistry;
@@ -13,6 +14,7 @@ import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.retry.RetryUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -21,14 +23,14 @@ import org.springframework.context.annotation.Primary;
 public class AIConfig {
 
     private static final String MARKDOWN_INSTRUCTION =
-            "\n\n所有回答请使用Markdown格式输出，包含表格、列表、标题等结构化展示。" +
-            "数据查询结果优先使用Markdown表格展示，使信息清晰易读。";
+            "\n\n" + MarkdownFormatter.OUTPUT_FORMAT_RULE;
 
     @Bean
     @Primary
-    public ChatModel alibabaChatModel(OpenAiApi openAiApi) {
+    public ChatModel alibabaChatModel(OpenAiApi openAiApi,
+                                      @Value("${spring.ai.openai.chat.options.model}") String model) {
         OpenAiChatOptions options = OpenAiChatOptions.builder()
-                .model("qwen-max")
+                .model(model)
                 .temperature(0.7)
                 .build();
         return new AlibabaOpenAiChatModel(openAiApi, options,

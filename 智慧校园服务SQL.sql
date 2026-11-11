@@ -578,3 +578,49 @@ ALTER TABLE makeup_exam ADD CONSTRAINT fk_makeup_exam_score_entry_id FOREIGN KEY
 ALTER TABLE score_audit_log ADD CONSTRAINT fk_audit_score_entry FOREIGN KEY (score_entry_id) REFERENCES score_entry(id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- 补考场次表（以课程为粒度组织补考）
+CREATE TABLE makeup_exam_session (
+    id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '主键',
+    course_id       BIGINT UNSIGNED NOT NULL                 COMMENT '课程ID',
+    semester_id     BIGINT UNSIGNED NOT NULL                 COMMENT '学期ID',
+    exam_date       DATE            NOT NULL                 COMMENT '考试日期',
+    exam_start_time TIME            NOT NULL                 COMMENT '考试开始时间',
+    exam_end_time   TIME            NOT NULL                 COMMENT '考试结束时间',
+    location        VARCHAR(100)    NOT NULL                 COMMENT '考试地点',
+    max_capacity    INT UNSIGNED    NOT NULL DEFAULT 60      COMMENT '人数上限',
+    enrolled_count  INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '已分配人数（冗余字段，便于快速查询）',
+    status          VARCHAR(20)     NOT NULL DEFAULT '待安排' COMMENT '场次状态：待安排/已安排/已通知/已结束/已取消',
+    create_time     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (id),
+    KEY idx_course_id (course_id),
+    KEY idx_semester_id (semester_id),
+    KEY idx_exam_date (exam_date),
+    KEY idx_status (status),
+    CONSTRAINT fk_session_course FOREIGN KEY (course_id) REFERENCES course(id),
+    CONSTRAINT fk_session_semester FOREIGN KEY (semester_id) REFERENCES semester(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='补考场次表';
+
+-- 补考学生表（场次与学生的多对多关联）
+CREATE TABLE makeup_exam_student (
+    id                BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '主键',
+    session_id        BIGINT UNSIGNED NOT NULL                 COMMENT '补考场次ID',
+    student_id        BIGINT UNSIGNED NOT NULL                 COMMENT '学生ID',
+    score_entry_id    BIGINT UNSIGNED NOT NULL                 COMMENT '原始成绩记录ID',
+    makeup_score      DECIMAL(5,2)    DEFAULT NULL             COMMENT '补考成绩',
+    student_status    VARCHAR(20)     NOT NULL DEFAULT '待通知' COMMENT '学生状态：待通知/已通知/已签到/缺考/已通过/未通过',
+    notification_time DATETIME        DEFAULT NULL             COMMENT '通知发送时间',
+    create_time       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_session_student (session_id, student_id),
+    UNIQUE KEY uk_session_score_entry (session_id, score_entry_id),
+    KEY idx_session_id (session_id),
+    KEY idx_student_id (student_id),
+    KEY idx_score_entry_id (score_entry_id),
+    KEY idx_student_status (student_status),
+    CONSTRAINT fk_ms_session FOREIGN KEY (session_id) REFERENCES makeup_exam_session(id),
+    CONSTRAINT fk_ms_student FOREIGN KEY (student_id) REFERENCES student(id),
+    CONSTRAINT fk_ms_score_entry FOREIGN KEY (score_entry_id) REFERENCES score_entry(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='补考学生表';

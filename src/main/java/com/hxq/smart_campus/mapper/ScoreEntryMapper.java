@@ -159,4 +159,10 @@ public interface ScoreEntryMapper {
     int checkTeacherCoursePermission(@Param("teacherId") Long teacherId,
                                       @Param("courseId") Long courseId,
                                       @Param("semesterId") Long semesterId);
+
+    /**
+     * 更新成绩记录的补考场次关联
+     */
+    @org.apache.ibatis.annotations.Update("UPDATE score_entry SET makeup_exam_id = #{sessionId} WHERE id = #{scoreEntryId}")
+    int updateMakeupExamId(@Param("scoreEntryId") Long scoreEntryId, @Param("sessionId") Long sessionId);
 }

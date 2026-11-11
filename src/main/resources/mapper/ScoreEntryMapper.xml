@@ -74,11 +74,12 @@
         select se.id, se.course_id, c.course_name, se.student_id, s.name as studentName, s.student_no as studentNo,
                se.semester_id, sm.name as semesterName, se.usual_score,
                se.final_score, se.total_score, se.makeup_score, se.score_point, c.credit, se.exam_status,
-               me.id as makeup_exam_id
+               COALESCE(mes.id, me.id) as makeup_exam_id
         from score_entry se
         left join course c on se.course_id = c.id
         left join student s on se.student_id = s.id
         left join semester sm on se.semester_id = sm.id
+        left join makeup_exam_session mes on se.makeup_exam_id = mes.id
         left join makeup_exam me on se.makeup_exam_id = me.id
         where se.id = #{id}
     </select>

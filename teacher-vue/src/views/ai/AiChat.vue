@@ -87,13 +87,24 @@
 import { ref, nextTick, onMounted } from 'vue'
 import { ChatDotRound, Cpu, User, Promotion, Delete } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { marked } from 'marked'
 import { chatStream } from '@/api/ai'
+
+marked.setOptions({ breaks: true, gfm: true })
 
 const chatMessages = ref([])
 const chatInput = ref('')
 const chatLoading = ref(false)
 const streamingContent = ref('')
 const chatMessagesRef = ref(null)
+let rawContent = ''
+
+const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[c]))
+
+const renderMarkdown = (text) => (text ? marked.parse(text) : '')
+const renderUserText = (text) => escapeHtml(text).replace(/\n/g, '<br>')
 
 const quickQuestions = [
   '我的课表是什么？',
@@ -118,27 +129,31 @@ const sendMessage = async () => {
   const msg = chatInput.value.trim()
   if (!msg || chatLoading.value) return
 
-  chatMessages.value.push({ role: 'user', content: msg.replace(/\n/g, '<br>') })
+  chatMessages.value.push({ role: 'user', content: renderUserText(msg) })
   chatInput.value = ''
   chatLoading.value = true
   streamingContent.value = ''
+  rawContent = ''
   await scrollToBottom()
 
   chatStream({
     message: msg,
     onMessage: (data) => {
-      streamingContent.value += data
+      rawContent += data
+      streamingContent.value = renderMarkdown(rawContent)
       scrollToBottom()
     },
     onDone: () => {
-      chatMessages.value.push({ role: 'assistant', content: streamingContent.value })
+      chatMessages.value.push({ role: 'assistant', content: renderMarkdown(rawContent) })
       streamingContent.value = ''
+      rawContent = ''
       chatLoading.value = false
       scrollToBottom()
     },
     onError: () => {
       chatMessages.value.push({ role: 'assistant', content: '抱歉，对话服务暂时不可用，请稍后重试。' })
       streamingContent.value = ''
+      rawContent = ''
       chatLoading.value = false
     }
   })
@@ -147,6 +162,7 @@ const sendMessage = async () => {
 const clearChat = () => {
   chatMessages.value = []
   streamingContent.value = ''
+  rawContent = ''
   ElMessage.success('对话已清空')
 }
 
@@ -314,6 +330,21 @@ onMounted(() => {
 .chat-bubble.streaming {
   min-width: 100px;
 }
+
+/* Markdown 内容样式 */
+.chat-bubble :deep(p) { margin: 6px 0; }
+.chat-bubble :deep(h2) { font-size: 16px; margin: 12px 0 8px; }
+.chat-bubble :deep(h3) { font-size: 15px; margin: 10px 0 6px; }
+.chat-bubble :deep(ul), .chat-bubble :deep(ol) { padding-left: 20px; margin: 6px 0; }
+.chat-bubble :deep(li) { margin: 4px 0; }
+.chat-bubble :deep(table) { border-collapse: collapse; width: 100%; margin: 8px 0; }
+.chat-bubble :deep(th), .chat-bubble :deep(td) { border: 1px solid #dcdfe6; padding: 6px 10px; text-align: left; }
+.chat-bubble :deep(th) { background: #f5f7fa; }
+.chat-bubble :deep(code) { background: rgba(0, 0, 0, 0.06); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+.chat-bubble :deep(pre) { background: #282c34; color: #abb2bf; padding: 12px; border-radius: 8px; overflow-x: auto; }
+.chat-bubble :deep(pre code) { background: none; padding: 0; color: inherit; }
+.chat-bubble :deep(strong) { font-weight: 600; }
+.chat-bubble :deep(blockquote) { border-left: 3px solid #409EFF; padding-left: 12px; margin: 8px 0; color: #606266; }
 
 .thinking-dots {
   display: inline-flex;

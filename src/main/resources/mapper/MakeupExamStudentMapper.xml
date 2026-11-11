@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.MakeupExamStudentMapper">
+
+    <!-- 批量插入学生关联 -->
+    <insert id="batchInsert">
+        INSERT INTO makeup_exam_student (session_id, student_id, score_entry_id, student_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.sessionId}, #{item.studentId}, #{item.scoreEntryId}, #{item.studentStatus})
+        </foreach>
+    </insert>
+
+    <!-- 查询某场次的学生列表 -->
+    <select id="selectBySessionId" resultType="com.hxq.smart_campus.entity.vo.MakeupExamStudentVO">
+        SELECT mes.id, mes.student_id, s.name AS studentName, s.student_no AS studentNo,
+               mes.score_entry_id, se.total_score AS originalScore, se.exam_status AS originalStatus,
+               mes.makeup_score, mes.student_status, mes.notification_time
+        FROM makeup_exam_student mes
+        JOIN student s ON mes.student_id = s.id
+        JOIN score_entry se ON mes.score_entry_id = se.id
+        WHERE mes.session_id = #{sessionId}
+        ORDER BY s.student_no ASC
+    </select>
+
+    <!-- 扫描补考资格 -->
+    <select id="scanCandidates" resultType="com.hxq.smart_campus.entity.vo.MakeupExamCandidateVO">
+        SELECT se.id AS scoreEntryId, se.student_id, s.name AS studentName, s.student_no AS studentNo,
+               se.total_score, se.exam_status,
+               CASE
+                   WHEN se.exam_status = '缺考' THEN '缺考'
+                   WHEN se.exam_status = '缓考' THEN '缓考'
+                   WHEN se.total_score &lt; 60 THEN '不及格'
+                   ELSE '其他'
+               END AS reason
+        FROM score_entry se
+        JOIN student s ON se.student_id = s.id
+        WHERE se.semester_id = #{semesterId}
+          <if test="courseId != null">AND se.course_id = #{courseId}</if>
+          AND (
+              (se.total_score &lt; 60 AND se.exam_status NOT IN ('补考通过', '缓考'))
+              OR se.exam_status = '缺考'
+              OR se.exam_status = '缓考'
+          )
+          AND se.student_id NOT IN (
+              SELECT mes2.student_id
+              FROM makeup_exam_student mes2
+              JOIN makeup_exam_session sess2 ON mes2.session_id = sess2.id
+              WHERE sess2.course_id = se.course_id
+                AND sess2.semester_id = se.semester_id
+                AND sess2.status NOT IN ('已取消', '已结束')
+          )
+        ORDER BY se.total_score ASC
+    </select>
+
+    <!-- 学生端：查询我的补考列表 -->
+    <select id="selectMySessions" resultType="com.hxq.smart_campus.entity.vo.MyMakeupSessionVO">
+        SELECT sess.id AS sessionId, c.course_name,
+               sess.exam_date, sess.exam_start_time, sess.exam_end_time,
+               sess.location, sess.status AS sessionStatus,
+               mes.student_status AS myStatus, mes.makeup_score,
+               mes.notification_time
+        FROM makeup_exam_student mes
+        JOIN makeup_exam_session sess ON mes.session_id = sess.id
+        JOIN course c ON sess.course_id = c.id
+        WHERE mes.student_id = #{studentId}
+          <if test="status != null and status != ''">AND mes.student_status = #{status}</if>
+        ORDER BY sess.exam_date DESC, sess.exam_start_time ASC
+    </select>
+
+    <!-- 学生时间冲突检测 -->
+    <select id="checkStudentTimeConflict" resultType="com.hxq.smart_campus.entity.vo.MyMakeupSessionVO">
+        SELECT sess.id AS sessionId, c.course_name, sess.exam_date,
+               sess.exam_start_time, sess.exam_end_time, sess.location
+        FROM makeup_exam_student mes
+        JOIN makeup_exam_session sess ON mes.session_id = sess.id
+        JOIN course c ON sess.course_id = c.id
+        WHERE mes.student_id = #{studentId}
+          AND sess.exam_date = #{examDate}
+          AND sess.status NOT IN ('已取消', '已结束')
+          AND (sess.exam_start_time &lt; #{examEndTime} AND sess.exam_end_time &gt; #{examStartTime})
+    </select>
+
+</mapper>

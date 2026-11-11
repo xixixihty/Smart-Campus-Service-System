@@ -88,12 +88,8 @@ public class ReadingAnalysisService {
 
             String systemPrompt =
                     "你是一个专业的阅读分析顾问。根据学生的借阅统计数据，提供个性化分析报告。" +
-                    "分析维度：\n" +
-                    "1. **阅读偏好**：基于图书分类分布，判断学生的阅读兴趣领域\n" +
-                    "2. **阅读活跃度**：基于借阅频率和月度趋势，给出活跃度评价\n" +
-                    "3. **借阅健康度**：分析逾期、归还情况\n" +
-                    "4. **个性化建议**：基于偏好推荐拓展阅读方向\n" +
-                    "请使用Markdown格式输出，保持简洁但数据驱动。";
+                    "回答固定使用以下小节：## 概览（阅读偏好与活跃度结论）、## 数据明细（分类分布与趋势，使用 Markdown 表格）、## 分析建议（2-5 条列表）。" +
+                    "\n\n" + MarkdownFormatter.OUTPUT_FORMAT_RULE;
 
             String userMessage = String.format(
                     "我是一位学生，以下是我的阅读统计：\n\n" +

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hxq.smart_campus.mapper.MakeupExamSessionMapper">
+
+    <!-- 新增补考场次 -->
+    <insert id="insert">
+        INSERT INTO makeup_exam_session (course_id, semester_id, exam_date, exam_start_time, exam_end_time, location, max_capacity, enrolled_count, status)
+        VALUES (#{courseId}, #{semesterId}, #{examDate}, #{examStartTime}, #{examEndTime}, #{location}, #{maxCapacity}, 0, '待安排')
+    </insert>
+
+    <!-- 更新补考场次 -->
+    <update id="update">
+        UPDATE makeup_exam_session
+        <set>
+            <if test="examDate != null">exam_date = #{examDate},</if>
+            <if test="examStartTime != null">exam_start_time = #{examStartTime},</if>
+            <if test="examEndTime != null">exam_end_time = #{examEndTime},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="maxCapacity != null">max_capacity = #{maxCapacity},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 查询场次详情 -->
+    <select id="selectDetailById" resultType="com.hxq.smart_campus.entity.vo.MakeupExamSessionDetailVO">
+        SELECT sess.id, sess.course_id, c.course_name, c.course_code,
+               sess.semester_id, sem.name AS semesterName,
+               sess.exam_date, sess.exam_start_time, sess.exam_end_time,
+               sess.location, sess.max_capacity, sess.enrolled_count,
+               sess.status, sess.create_time, sess.update_time
+        FROM makeup_exam_session sess
+        JOIN course c ON sess.course_id = c.id
+        JOIN semester sem ON sess.semester_id = sem.id
+        WHERE sess.id = #{id}
+    </select>
+
+    <!-- 分页查询场次列表 -->
+    <select id="selectList" resultType="com.hxq.smart_campus.entity.vo.MakeupExamSessionListVO">
+        SELECT sess.id, sess.course_id, c.course_name, c.course_code,
+               sess.semester_id, sem.name AS semesterName,
+               sess.exam_date, sess.exam_start_time, sess.exam_end_time,
+               sess.location, sess.max_capacity, sess.enrolled_count,
+               sess.status, sess.create_time
+        FROM makeup_exam_session sess
+        JOIN course c ON sess.course_id = c.id
+        JOIN semester sem ON sess.semester_id = sem.id
+        <where>
+            <if test="courseId != null">AND sess.course_id = #{courseId}</if>
+            <if test="semesterId != null">AND sess.semester_id = #{semesterId}</if>
+            <if test="status != null and status != ''">AND sess.status = #{status}</if>
+            <if test="examDate != null">AND sess.exam_date = #{examDate}</if>
+        </where>
+        ORDER BY sess.exam_date DESC, sess.exam_start_time ASC
+    </select>
+
+    <!-- 教室时间冲突检测 -->
+    <select id="checkClassroomConflict" resultType="com.hxq.smart_campus.entity.vo.MakeupExamSessionListVO">
+        SELECT sess.id, c.course_name, sess.exam_date, sess.exam_start_time, sess.exam_end_time, sess.location
+        FROM makeup_exam_session sess
+        JOIN course c ON sess.course_id = c.id
+        WHERE sess.location = #{location}
+          AND sess.exam_date = #{examDate}
+          AND sess.status NOT IN ('已取消', '已结束')
+          <if test="excludeId != null">AND sess.id != #{excludeId}</if>
+          AND (sess.exam_start_time &lt; #{examEndTime} AND sess.exam_end_time &gt; #{examStartTime})
+    </select>
+
+</mapper>
